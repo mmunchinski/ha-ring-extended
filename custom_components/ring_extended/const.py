@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any, Callable
 
 from homeassistant.components.sensor import (
@@ -80,6 +81,16 @@ def get_nested(data: dict, path: str, default: Any = None) -> Any:
 def _value_exists(attrs: dict, path: str) -> bool:
     """Check if a value exists at the given path."""
     return get_nested(attrs, path) is not None
+
+
+def _unix_to_datetime(timestamp: int | None) -> datetime | None:
+    """Convert Unix timestamp to datetime with timezone."""
+    if timestamp is None:
+        return None
+    try:
+        return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    except (ValueError, TypeError, OSError):
+        return None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -208,6 +219,7 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         device_class=SensorDeviceClass.TIMESTAMP,
         category="health",
         attr_path="health.last_update_time",
+        value_fn=lambda attrs: _unix_to_datetime(get_nested(attrs, "health.last_update_time")),
     ),
     RingExtendedSensorDescription(
         key="wifi_is_ring_network",

@@ -152,7 +152,31 @@ Examples:
 1. **Sensors not appearing**: Verify Ring integration is loaded first
 2. **"Unknown" values**: Attribute doesn't exist for that device type
 3. **No updates**: Updates come from Ring coordinator (~5 min interval)
+4. **Timestamp sensor errors**: If a sensor with `device_class=TIMESTAMP` throws errors about `'int' object has no attribute 'tzinfo'`, the Ring API is returning a Unix timestamp integer instead of a datetime. Use a `value_fn` to convert:
+   ```python
+   value_fn=lambda attrs: _unix_to_datetime(get_nested(attrs, "path.to.timestamp"))
+   ```
+
+## Data Type Handling
+
+### Timestamps
+Ring API returns timestamps as Unix integers (e.g., `1766949790`). Home Assistant's timestamp device class expects datetime objects with timezone. Use the `_unix_to_datetime()` helper in const.py:
+
+```python
+def _unix_to_datetime(timestamp: int | None) -> datetime | None:
+    """Convert Unix timestamp to datetime with timezone."""
+    if timestamp is None:
+        return None
+    try:
+        return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    except (ValueError, TypeError, OSError):
+        return None
+```
+
+### Booleans
+Some Ring attributes use integers (0/1) instead of booleans. Convert with `value_fn=lambda attrs: bool(get_nested(attrs, "path"))`.
 
 ## Version History
 
+- **1.0.1**: Fix timestamp conversion for `last_update_time` sensor (Unix int → datetime)
 - **1.0.0**: Initial release with 130+ sensors across 16 categories
