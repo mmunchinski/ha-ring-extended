@@ -28,8 +28,12 @@ class RingExtendedConfigFlow(ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         errors: dict[str, str] = {}
 
-        # Check if Ring integration is configured
-        if RING_DOMAIN not in self.hass.data:
+        # Check if Ring integration is configured (check config entries, not hass.data)
+        ring_entries = [
+            entry for entry in self.hass.config_entries.async_entries()
+            if entry.domain == RING_DOMAIN
+        ]
+        if not ring_entries:
             return self.async_abort(reason="ring_not_configured")
 
         # Check if already configured
