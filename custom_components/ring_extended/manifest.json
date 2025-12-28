@@ -1,0 +1,13 @@
+{
+  "domain": "ring_extended",
+  "name": "Ring Extended Sensors",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["ring"],
+  "documentation": "https://github.com/YOUR_USERNAME/ring_extended",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/YOUR_USERNAME/ring_extended/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

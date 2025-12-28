@@ -1,0 +1,295 @@
+{
+  "description": "Ring device attribute paths extracted from HA diagnostic export. Use as reference for sensor implementation.",
+  "source_file": "config_entry-ring-*.json → data.device_data[].* ",
+  
+  "sensor_definitions": {
+    "health_connectivity": [
+      {"key": "rssi", "path": "health.rssi", "type": "float", "unit": "dBm", "device_class": "signal_strength"},
+      {"key": "rssi_category", "path": "health.rssi_category", "type": "enum", "values": ["good", "okay", "poor"]},
+      {"key": "connected", "path": "health.connected", "type": "bool", "device_class": "connectivity"},
+      {"key": "packet_loss", "path": "health.packet_loss", "type": "float", "unit": "%"},
+      {"key": "packet_loss_category", "path": "health.packet_loss_category", "type": "enum"},
+      {"key": "bandwidth", "path": "health.bandwidth", "type": "int", "unit": "kbps"},
+      {"key": "current_bandwidth", "path": "health.current_bandwidth", "type": "int", "unit": "kbps"},
+      {"key": "current_bandwidth_mb", "path": "health.current_bandwidth_mb", "type": "float", "unit": "Mbps"},
+      {"key": "current_bandwidth_category", "path": "health.current_bandwidth_category", "type": "enum"},
+      {"key": "egress_tx_rate", "path": "health.egress_tx_rate", "type": "str_float", "unit": "Mbps"},
+      {"key": "egress_tx_rate_category", "path": "health.egress_tx_rate_category", "type": "enum"},
+      {"key": "tx_rate", "path": "health.tx_rate", "type": "int"},
+      {"key": "wifi_channel", "path": "health.channel", "type": "str"},
+      {"key": "wifi_name", "path": "health.wifi_name", "type": "str", "redacted": true},
+      {"key": "wifi_is_ring_network", "path": "health.wifi_is_ring_network", "type": "bool"},
+      {"key": "network_connection_value", "path": "health.network_connection_value", "type": "enum", "values": ["wifi"]},
+      {"key": "sidewalk_connection", "path": "health.sidewalk_connection", "type": "bool"},
+      {"key": "rss_connected", "path": "health.rss_connected", "type": "bool"},
+      {"key": "uptime_sec", "path": "health.uptime_sec", "type": "int", "unit": "s", "device_class": "duration"},
+      {"key": "last_update_time", "path": "health.last_update_time", "type": "timestamp"},
+      {"key": "fast_ping_hop1_score", "path": "health.fast_ping_hop1_score", "type": "str_float"}
+    ],
+    
+    "power_battery": [
+      {"key": "battery_percentage", "path": "health.battery_percentage", "type": "int", "unit": "%", "device_class": "battery"},
+      {"key": "battery_percentage_category", "path": "health.battery_percentage_category", "type": "enum"},
+      {"key": "battery_voltage", "path": "health.battery_voltage", "type": "float", "unit": "mV"},
+      {"key": "battery_voltage_category", "path": "health.battery_voltage_category", "type": "enum"},
+      {"key": "battery_present", "path": "health.battery_present", "type": "bool"},
+      {"key": "battery_save", "path": "health.battery_save", "type": "bool"},
+      {"key": "battery_error", "path": "health.battery_error", "type": "bool"},
+      {"key": "second_battery_percentage_category", "path": "health.second_battery_percentage_category", "type": "enum"},
+      {"key": "second_battery_voltage_category", "path": "health.second_battery_voltage_category", "type": "enum"},
+      {"key": "ac_power", "path": "health.ac_power", "type": "int_bool"},
+      {"key": "transformer_voltage", "path": "health.transformer_voltage", "type": "float", "unit": "V"},
+      {"key": "transformer_voltage_category", "path": "health.transformer_voltage_category", "type": "enum"},
+      {"key": "external_connection", "path": "health.external_connection", "type": "bool"},
+      {"key": "ext_power_state", "path": "health.ext_power_state", "type": "int"},
+      {"key": "run_mode", "path": "health.run_mode", "type": "enum", "values": ["low_power"]},
+      {"key": "pref_run_mode", "path": "health.pref_run_mode", "type": "enum"}
+    ],
+    
+    "firmware": [
+      {"key": "firmware_version", "path": "health.firmware_version", "type": "str"},
+      {"key": "firmware_version_status", "path": "health.firmware_version_status", "type": "enum", "values": ["Up to Date"]},
+      {"key": "ota_status", "path": "health.ota_status", "type": "enum", "values": ["timeout"]},
+      {"key": "firmware_avg_bitrate", "path": "health.firmware_avg_bitrate", "type": "str_int", "unit": "kbps"}
+    ],
+    
+    "video_streaming": [
+      {"key": "vod_enabled", "path": "health.vod_enabled", "type": "bool"},
+      {"key": "vod_status", "path": "settings.vod_status", "type": "enum", "values": ["enabled", "disabled"]},
+      {"key": "vod_suspended", "path": "settings.vod_suspended", "type": "int_bool"},
+      {"key": "enable_vod", "path": "settings.enable_vod", "type": "int_bool"},
+      {"key": "stream_resolution", "path": "health.stream_resolution", "type": "int"},
+      {"key": "video_packets_total", "path": "health.video_packets_total", "type": "str_int"},
+      {"key": "live_view_disabled", "path": "settings.live_view_disabled", "type": "bool"},
+      {"key": "live_view_preset_profile", "path": "settings.live_view_preset_profile", "type": "enum", "values": ["low", "middle", "high", "highest"]},
+      {"key": "extended_live_view", "path": "settings.extended_live_view", "type": "int"},
+      {"key": "exposure_control", "path": "settings.exposure_control", "type": "int"},
+      {"key": "preroll_enabled", "path": "settings.preroll_enabled", "type": "bool"},
+      {"key": "max_resolution_mode", "path": "settings.max_resolution_mode", "type": "int"},
+      {"key": "max_resolution_mode_eligible", "path": "settings.max_resolution_mode_eligible", "type": "bool"},
+      {"key": "encryption_enabled", "path": "settings.video_settings.encryption_enabled", "type": "bool"},
+      {"key": "hevc_enabled", "path": "settings.video_settings.hevc_enabled", "type": "bool"},
+      {"key": "max_digital_zoom_level", "path": "features.video_rendering.max_digital_zoom_level", "type": "float"},
+      {"key": "live_view_pip_mode", "path": "features.live_view_pip_mode", "type": "enum"},
+      {"key": "active_streaming_event_led_enabled", "path": "settings.active_streaming_event_led_enabled", "type": "bool"}
+    ],
+    
+    "audio": [
+      {"key": "enable_audio_recording", "path": "settings.enable_audio_recording", "type": "bool"},
+      {"key": "doorbell_volume", "path": "settings.doorbell_volume", "type": "int", "range": [0, 11]},
+      {"key": "voice_volume", "path": "settings.voice_volume", "type": "int"},
+      {"key": "chime_enable", "path": "settings.chime_settings.enable", "type": "bool"},
+      {"key": "chime_type", "path": "settings.chime_settings.type", "type": "int"},
+      {"key": "chime_duration", "path": "settings.chime_settings.duration", "type": "int", "unit": "s"},
+      {"key": "enable_live_view_audio_override", "path": "settings.audio_settings.enable_live_view_audio_override", "type": "bool"}
+    ],
+    
+    "motion_detection": [
+      {"key": "motion_detection_enabled", "path": "settings.motion_detection_enabled", "type": "bool"},
+      {"key": "advanced_motion_detection_enabled", "path": "settings.advanced_motion_detection_enabled", "type": "bool"},
+      {"key": "advanced_motion_detection_human_only_mode", "path": "settings.advanced_motion_detection_human_only_mode", "type": "bool"},
+      {"key": "advanced_motion_detection_types", "path": "settings.advanced_motion_detection_types", "type": "list"},
+      {"key": "people_detection_eligible", "path": "settings.people_detection_eligible", "type": "bool"},
+      {"key": "motion_snooze_preset_profile", "path": "settings.motion_snooze_preset_profile", "type": "enum"},
+      {"key": "motion_snooze_presets", "path": "settings.motion_snooze_presets", "type": "list"},
+      {"key": "loitering_threshold", "path": "settings.loitering_threshold", "type": "int", "unit": "s"},
+      {"key": "motion_zones", "path": "settings.motion_zones", "type": "list"},
+      {"key": "advanced_motion_zones_enabled", "path": "settings.advanced_motion_zones_enabled", "type": "bool"},
+      {"key": "advanced_motion_zones_type", "path": "settings.advanced_motion_zones_type", "type": "str"},
+      {"key": "pir_sensitivity_1", "path": "settings.pir_sensitivity_1", "type": "int"},
+      {"key": "flick_elim_recommended_mode", "path": "settings.flick_elim_recommended_mode", "type": "int"}
+    ],
+    
+    "cv_detection_types": {
+      "_note": "Each detection type has: enabled, mode, record, notification",
+      "_path_pattern": "settings.cv_settings.detection_types.{type}.{field}",
+      "types": ["human", "motion", "other_motion", "loitering", "moving_vehicle", "vehicle", "animal", "package_delivery", "package_pickup", "unverified_motion", "motion_stop"],
+      "fields": [
+        {"name": "enabled", "type": "bool"},
+        {"name": "mode", "type": "enum", "values": ["edge", "cloud", "none"]},
+        {"name": "record", "type": "bool_or_null"},
+        {"name": "notification", "type": "bool"}
+      ]
+    },
+    
+    "cv_thresholds": [
+      {"key": "cv_threshold_loitering", "path": "settings.cv_settings.threshold.loitering", "type": "float", "unit": "s"},
+      {"key": "cv_threshold_package_delivery", "path": "settings.cv_settings.threshold.package_delivery", "type": "float", "unit": "s"},
+      {"key": "cv_threshold_unverified_motion", "path": "settings.cv_settings.threshold.unverified_motion", "type": "float"}
+    ],
+    
+    "cv_search": [
+      {"key": "natural_language_search_enabled", "path": "settings.cv_settings.search_types.natural_language_search.enabled", "type": "bool"},
+      {"key": "natural_language_search_mode", "path": "settings.cv_settings.search_types.natural_language_search.mode", "type": "enum"}
+    ],
+    
+    "cv_paid_features": [
+      {"key": "paid_human", "path": "settings.cv_paid_features.human", "type": "bool"},
+      {"key": "paid_motion", "path": "settings.cv_paid_features.motion", "type": "bool"},
+      {"key": "paid_other_motion", "path": "settings.cv_paid_features.other_motion", "type": "bool"},
+      {"key": "paid_loitering", "path": "settings.cv_paid_features.loitering", "type": "bool"},
+      {"key": "paid_vehicle", "path": "settings.cv_paid_features.vehicle", "type": "bool"},
+      {"key": "paid_animal", "path": "settings.cv_paid_features.animal", "type": "bool"},
+      {"key": "paid_package_delivery", "path": "settings.cv_paid_features.package_delivery", "type": "bool"},
+      {"key": "paid_package_pickup", "path": "settings.cv_paid_features.package_pickup", "type": "bool"},
+      {"key": "paid_baby_cry", "path": "settings.cv_paid_features.baby_cry", "type": "bool"},
+      {"key": "paid_car_alarm", "path": "settings.cv_paid_features.car_alarm", "type": "bool"},
+      {"key": "paid_co2_smoke_alarm", "path": "settings.cv_paid_features.co2_smoke_alarm", "type": "bool"},
+      {"key": "paid_dog_bark", "path": "settings.cv_paid_features.dog_bark", "type": "bool"},
+      {"key": "paid_general_sound", "path": "settings.cv_paid_features.general_sound", "type": "bool"},
+      {"key": "paid_glass_break", "path": "settings.cv_paid_features.glass_break", "type": "bool"},
+      {"key": "paid_cv_triggers", "path": "settings.cv_paid_features.cv_triggers", "type": "bool"}
+    ],
+    
+    "other_paid_features": [
+      {"key": "paid_alexa_concierge", "path": "settings.other_paid_features.alexa_concierge", "type": "bool"},
+      {"key": "paid_sheila_cv", "path": "settings.other_paid_features.sheila_cv", "type": "bool"},
+      {"key": "paid_sheila_recording", "path": "settings.other_paid_features.sheila_recording", "type": "bool"},
+      {"key": "paid_critical_alerts", "path": "settings.other_paid_features.critical_alerts", "type": "bool"},
+      {"key": "paid_system_level_pip", "path": "settings.other_paid_features.system_level_pip", "type": "bool"},
+      {"key": "paid_extended_live_view", "path": "settings.other_paid_features.extended_live_view", "type": "bool"},
+      {"key": "paid_snapshot_capture_plus", "path": "settings.other_paid_features.snapshot_capture_plus", "type": "bool"},
+      {"key": "paid_live_speak", "path": "settings.other_paid_features.live_speak", "type": "bool"},
+      {"key": "paid_closed_caption", "path": "settings.other_paid_features.closed_caption", "type": "bool"},
+      {"key": "paid_daily_digest", "path": "settings.other_paid_features.daily_digest", "type": "bool"},
+      {"key": "paid_ding_call", "path": "settings.other_paid_features.ding_call", "type": "bool"},
+      {"key": "paid_natural_language_search", "path": "settings.other_paid_features.natural_language_search", "type": "bool"},
+      {"key": "paid_multicam_live_view", "path": "settings.other_paid_features.multicam_live_view", "type": "bool"},
+      {"key": "paid_package_protection", "path": "settings.other_paid_features.package_protection", "type": "bool"},
+      {"key": "paid_alarm_triggered_recording", "path": "settings.other_paid_features.alarm_triggered_recording", "type": "bool"},
+      {"key": "paid_recording_24x7", "path": "settings.other_paid_features.recording_24x7", "type": "bool"}
+    ],
+    
+    "notifications": [
+      {"key": "enable_rich_notifications", "path": "settings.enable_rich_notifications", "type": "bool"},
+      {"key": "rich_notifications_billing_eligible", "path": "settings.rich_notifications_billing_eligible", "type": "bool"},
+      {"key": "rich_notifications_face_crop_enabled", "path": "settings.rich_notifications_face_crop_enabled", "type": "bool"},
+      {"key": "rich_notifications_scene_source", "path": "settings.rich_notifications_scene_source", "type": "enum", "values": ["firmware", "cloud"]},
+      {"key": "rich_notifications_eligible", "path": "features.rich_notifications_eligible", "type": "bool"}
+    ],
+    
+    "recording_storage": [
+      {"key": "user_specified_recording_ttl", "path": "settings.user_specified_recording_ttl", "type": "int", "unit": "days"},
+      {"key": "lite_24x7_subscribed", "path": "settings.lite_24x7.subscribed", "type": "bool"},
+      {"key": "lite_24x7_enabled", "path": "settings.lite_24x7.enabled", "type": "bool"},
+      {"key": "lite_24x7_frequency_secs", "path": "settings.lite_24x7.frequency_secs", "type": "int", "unit": "s"},
+      {"key": "lite_24x7_resolution_p", "path": "settings.lite_24x7.resolution_p", "type": "int", "unit": "p"},
+      {"key": "lite_24x7_footage_ttl", "path": "settings.lite_24x7_footage_ttl", "type": "int", "unit": "hours"},
+      {"key": "offline_motion_subscribed", "path": "settings.offline_motion_event_settings.subscribed", "type": "bool"},
+      {"key": "offline_motion_enabled", "path": "settings.offline_motion_event_settings.enabled", "type": "bool"},
+      {"key": "offline_motion_max_upload_kb", "path": "settings.offline_motion_event_settings.max_upload_kb", "type": "int"},
+      {"key": "offline_motion_resolution_p", "path": "settings.offline_motion_event_settings.resolution_p", "type": "int"}
+    ],
+    
+    "floodlight": [
+      {"key": "floodlight_on", "path": "health.floodlight_on", "type": "bool"},
+      {"key": "white_led_on", "path": "health.white_led_on", "type": "bool"},
+      {"key": "floodlight_priority", "path": "settings.floodlight_settings.priority", "type": "int"},
+      {"key": "floodlight_duration", "path": "settings.floodlight_settings.duration", "type": "int", "unit": "s"},
+      {"key": "floodlight_brightness", "path": "settings.floodlight_settings.brightness", "type": "int", "range": [0, 10]},
+      {"key": "floodlight_always_on", "path": "settings.floodlight_settings.always_on", "type": "bool"},
+      {"key": "floodlight_always_on_duration", "path": "settings.floodlight_settings.always_on_duration", "type": "int"},
+      {"key": "light_snooze_duration", "path": "settings.light_snooze_settings.duration", "type": "int"},
+      {"key": "light_snooze_always_on", "path": "settings.light_snooze_settings.always_on", "type": "bool"}
+    ],
+    
+    "radar_birds_eye": [
+      {"key": "birds_eye_view_enabled", "path": "settings.radar_settings.birds_eye_view_enabled", "type": "bool"},
+      {"key": "bez_feature_enabled", "path": "settings.radar_settings.bez_feature_enabled", "type": "bool"},
+      {"key": "bez_filtering_enabled", "path": "settings.radar_settings.bez_filtering_enabled", "type": "bool"},
+      {"key": "installation_height", "path": "settings.radar_settings.installation_height", "type": "float", "unit": "m"},
+      {"key": "auto_motion_sensitivity_enabled", "path": "settings.radar_settings.auto_motion_sensitivity_enabled", "type": "bool_or_null"}
+    ],
+    
+    "concierge": [
+      {"key": "concierge_mode", "path": "settings.concierge_settings.mode", "type": "enum", "values": ["disabled"]},
+      {"key": "concierge_alexa_delay_ms", "path": "settings.concierge_settings.alexa_settings.delay_ms", "type": "int", "unit": "ms"},
+      {"key": "concierge_autoreply_delay_ms", "path": "settings.concierge_settings.autoreply_settings.delay_ms", "type": "int", "unit": "ms"}
+    ],
+    
+    "local_processing_sheila": [
+      {"key": "sheila_cv_processing_enabled", "path": "settings.sheila_settings.cv_processing_enabled", "type": "bool"},
+      {"key": "sheila_local_storage_enabled", "path": "settings.sheila_settings.local_storage_enabled", "type": "bool"},
+      {"key": "sheila_camera_eligible", "path": "features.sheila_camera_eligible", "type": "bool"},
+      {"key": "sheila_camera_processing_eligible", "path": "features.sheila_camera_processing_eligible", "type": "bool"}
+    ],
+    
+    "feature_eligibility": [
+      {"key": "cfes_eligible", "path": "features.cfes_eligible", "type": "bool"},
+      {"key": "motions_enabled", "path": "features.motions_enabled", "type": "bool"},
+      {"key": "show_recordings", "path": "features.show_recordings", "type": "bool"},
+      {"key": "show_vod_settings", "path": "features.show_vod_settings", "type": "bool"},
+      {"key": "show_offline_motion_events", "path": "features.show_offline_motion_events", "type": "bool"},
+      {"key": "show_24x7_lite", "path": "features.show_24x7_lite", "type": "bool"},
+      {"key": "motion_zone_recommendation", "path": "features.motion_zone_recommendation", "type": "bool"},
+      {"key": "chime_auto_detect_capable", "path": "features.chime_auto_detect_capable", "type": "bool"},
+      {"key": "dynamic_network_switching_eligible", "path": "features.dynamic_network_switching_eligible", "type": "bool"},
+      {"key": "recording_24x7_eligible", "path": "features.recording_24x7_eligible", "type": "bool_or_null"},
+      {"key": "recording_mode", "path": "features.video_recording.recording_mode", "type": "enum"},
+      {"key": "recording_enabled", "path": "features.video_recording.recording_enabled", "type": "bool"},
+      {"key": "recording_state", "path": "features.video_recording.recording_state", "type": "enum"}
+    ],
+    
+    "device_status": [
+      {"key": "night_mode_on", "path": "health.night_mode_on", "type": "bool"},
+      {"key": "siren_on", "path": "health.siren_on", "type": "bool"},
+      {"key": "hatch_open", "path": "health.hatch_open", "type": "bool"},
+      {"key": "stolen", "path": "stolen", "type": "bool"},
+      {"key": "owned", "path": "owned", "type": "bool"},
+      {"key": "subscribed", "path": "subscribed", "type": "bool"},
+      {"key": "subscribed_motions", "path": "subscribed_motions", "type": "bool"},
+      {"key": "is_sidewalk_gateway", "path": "is_sidewalk_gateway", "type": "bool"}
+    ],
+    
+    "device_identity": [
+      {"key": "device_kind", "path": "kind", "type": "str"},
+      {"key": "device_type", "path": "health.device_type", "type": "str"},
+      {"key": "time_zone", "path": "time_zone", "type": "str"},
+      {"key": "created_at", "path": "created_at", "type": "datetime"}
+    ],
+    
+    "network_settings": [
+      {"key": "multi_net_pref", "path": "settings.network_settings.multi_net_pref", "type": "int"}
+    ],
+    
+    "server_settings": [
+      {"key": "ring_media_server_enabled", "path": "settings.server_settings.ring_media_server_enabled", "type": "bool"},
+      {"key": "ring_media_server_host", "path": "settings.server_settings.ring_media_server_host", "type": "str"}
+    ],
+    
+    "misc_flags": [
+      {"key": "stark_enabled", "path": "settings.stark_enabled", "type": "bool"},
+      {"key": "stark_enrolled", "path": "settings.stark_enrolled", "type": "bool"}
+    ]
+  },
+  
+  "device_types": {
+    "doorbell_oyster": {"family": "doorbells", "name": "Battery Doorbell"},
+    "cocoa_doorbell_v2": {"family": "doorbells", "name": "Doorbell 4"},
+    "doorbell_portal": {"family": "doorbells", "name": "Doorbell Pro"},
+    "lpd_v1": {"family": "doorbells", "name": "Doorbell Wired"},
+    "lpd_v2": {"family": "doorbells", "name": "Doorbell Wired Gen 2"},
+    "jbox_v1": {"family": "doorbells", "name": "Doorbell Elite"},
+    "stickup_cam": {"family": "stickup_cams", "name": "Stick Up Cam"},
+    "stickup_cam_v4": {"family": "stickup_cams", "name": "Stick Up Cam Battery"},
+    "spotlightw_v2": {"family": "stickup_cams", "name": "Spotlight Cam Wired"},
+    "hp_cam_v1": {"family": "stickup_cams", "name": "Floodlight Cam"},
+    "hp_cam_v2": {"family": "stickup_cams", "name": "Floodlight Cam Pro"},
+    "cocoa_floodlight": {"family": "stickup_cams", "name": "Floodlight Cam Wired Plus"},
+    "three_p_cam": {"family": "stickup_cams", "name": "Third-party Camera"},
+    "base_station_v1": {"family": "other", "name": "Ring Alarm Base Station"},
+    "chime": {"family": "chimes", "name": "Ring Chime"},
+    "chime_pro": {"family": "chimes", "name": "Ring Chime Pro"}
+  },
+  
+  "helper_functions": {
+    "get_nested_value": "def get_nested(d, path, default=None):\n    keys = path.split('.')\n    for key in keys:\n        if isinstance(d, dict):\n            d = d.get(key)\n        else:\n            return default\n        if d is None:\n            return default\n    return d",
+    
+    "type_coercion": {
+      "str_float": "float(value) if value else None",
+      "str_int": "int(value) if value else None", 
+      "int_bool": "bool(int(value)) if value is not None else None",
+      "bool_or_null": "value if value is not None else None"
+    }
+  }
+}
