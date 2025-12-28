@@ -7,6 +7,7 @@ from typing import Any
 from homeassistant.components.ring import DOMAIN as RING_DOMAIN
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
@@ -15,11 +16,32 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from .const import (
+    CATEGORY_NAMES,
     CATEGORY_SENSORS,
     DEVICE_FAMILIES,
     DOMAIN,
     RingExtendedSensorDescription,
 )
+
+# Short prefixes for sensor names (keep UI clean)
+CATEGORY_PREFIXES = {
+    "health": "Health",
+    "power": "Power",
+    "firmware": "Firmware",
+    "video": "Video",
+    "audio": "Audio",
+    "motion": "Motion",
+    "cv_detection": "CV",
+    "cv_paid": "Paid CV",
+    "other_paid": "Paid",
+    "notifications": "Notify",
+    "recording": "Recording",
+    "floodlight": "Light",
+    "radar": "Radar",
+    "local_processing": "Local",
+    "features": "Feature",
+    "device_status": "Status",
+}
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -104,6 +126,7 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
 
     entity_description: RingExtendedSensorDescription
     _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(
         self,
@@ -120,8 +143,20 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
         device_id = getattr(device, "device_id", None) or getattr(device, "id", "unknown")
         self._attr_unique_id = f"{device_id}_{description.key}"
 
-        # Entity name uses translation_key
+        # Build name with category prefix
+        category = description.category
+        prefix = CATEGORY_PREFIXES.get(category, category.title())
+        self._category_prefix = prefix
+
+        # Entity name uses translation_key for the base name
         self._attr_translation_key = description.translation_key
+
+    @property
+    def name(self) -> str:
+        """Return the name with category prefix."""
+        # Get the base name from translation or key
+        base_name = self.entity_description.key.replace("_", " ").title()
+        return f"{self._category_prefix}: {base_name}"
 
     @property
     def device_info(self) -> dict[str, Any]:
