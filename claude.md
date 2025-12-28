@@ -56,17 +56,30 @@ ha-ring-extended/
 
 ## Technical Details
 
-### Accessing Ring Data
+### Accessing Ring Data (HA 2024.1+)
+
+The Ring integration uses the modern `runtime_data` pattern. Data is stored on the config entry, not in `hass.data`:
+
 ```python
 from homeassistant.components.ring import DOMAIN as RING_DOMAIN
 
-ring_data = hass.data[RING_DOMAIN]
-for entry_id, entry_data in ring_data.items():
-    coordinator = entry_data["coordinator"]
-    ring_api = entry_data["ring"]
-    devices = ring_api.devices()
-    for device in devices.get("doorbells", []):
-        attrs = device._attrs  # Raw API data
+# Find Ring config entries
+ring_entries = [
+    e for e in hass.config_entries.async_entries()
+    if e.domain == RING_DOMAIN
+]
+ring_entry = ring_entries[0]
+
+# Access RingData from runtime_data
+ring_data = ring_entry.runtime_data
+# RingData has: api, devices, devices_coordinator, listen_coordinator
+
+coordinator = ring_data.devices_coordinator
+devices = ring_data.devices  # RingDevices object
+
+# Iterate device families
+for device in devices.doorbells:
+    attrs = device._attrs  # Raw API data
 ```
 
 ### Device Linking
