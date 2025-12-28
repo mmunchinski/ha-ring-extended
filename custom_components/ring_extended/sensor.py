@@ -16,6 +16,7 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from .const import (
+    ALL_SENSORS,
     CATEGORY_NAMES,
     CATEGORY_SENSORS,
     DEVICE_FAMILIES,
@@ -75,16 +76,8 @@ async def async_setup_entry(
         _LOGGER.error("Ring devices not found in runtime_data")
         return
 
-    enabled_categories: list[str] = entry.data.get("categories", [])
-    if not enabled_categories:
-        _LOGGER.warning("No sensor categories enabled")
-        return
-
-    # Collect sensor descriptions for enabled categories
-    sensor_descriptions: list[RingExtendedSensorDescription] = []
-    for category in enabled_categories:
-        if category in CATEGORY_SENSORS:
-            sensor_descriptions.extend(CATEGORY_SENSORS[category])
+    # Get enabled categories - these will be enabled by default
+    enabled_categories: set[str] = set(entry.data.get("categories", []))
 
     entities: list[RingExtendedSensor] = []
 
@@ -105,15 +98,18 @@ async def async_setup_entry(
             _LOGGER.debug("Processing device: %s with %d attrs",
                          getattr(device, "name", "unknown"), len(device_attrs))
 
-            # Create sensors for this device
-            for description in sensor_descriptions:
+            # Create sensors for ALL categories
+            for description in ALL_SENSORS:
                 # Check if this sensor's attribute exists for this device
                 if description.is_available(device_attrs):
+                    # Enable by default only if category was selected
+                    is_enabled = description.category in enabled_categories
                     entities.append(
                         RingExtendedSensor(
                             device=device,
                             coordinator=coordinator,
                             description=description,
+                            enabled_default=is_enabled,
                         )
                     )
 
@@ -133,11 +129,15 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
         device: Any,
         coordinator: DataUpdateCoordinator,
         description: RingExtendedSensorDescription,
+        enabled_default: bool = True,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._device = device
         self.entity_description = description
+
+        # Set whether entity is enabled by default based on category selection
+        self._attr_entity_registry_enabled_default = enabled_default
 
         # Build unique ID
         device_id = getattr(device, "device_id", None) or getattr(device, "id", "unknown")
