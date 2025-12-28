@@ -30,9 +30,27 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Ring Extended sensors from a config entry."""
-    ring_data = hass.data.get(RING_DOMAIN)
-    if not ring_data:
-        _LOGGER.error("Ring integration data not found")
+    # Get the ring_entry stored by __init__.py
+    our_data = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
+    ring_entry = our_data.get("ring_entry")
+
+    if not ring_entry or not hasattr(ring_entry, 'runtime_data'):
+        _LOGGER.error("Ring entry or runtime_data not found")
+        return
+
+    ring_data = ring_entry.runtime_data
+
+    # Access the devices coordinator and devices from runtime_data
+    # RingData has: api, devices, devices_coordinator, listen_coordinator
+    coordinator = getattr(ring_data, 'devices_coordinator', None)
+    devices_dict = getattr(ring_data, 'devices', None)
+
+    if coordinator is None:
+        _LOGGER.error("Ring devices_coordinator not found in runtime_data")
+        return
+
+    if devices_dict is None:
+        _LOGGER.error("Ring devices not found in runtime_data")
         return
 
     enabled_categories: list[str] = entry.data.get("categories", [])
@@ -48,45 +66,34 @@ async def async_setup_entry(
 
     entities: list[RingExtendedSensor] = []
 
-    # Iterate through all Ring config entries
-    for ring_entry_id, ring_entry_data in ring_data.items():
-        if not isinstance(ring_entry_data, dict):
-            continue
+    # devices_dict is a RingDevices object with doorbells, stickup_cams, chimes, other
+    _LOGGER.debug("Ring devices type: %s", type(devices_dict))
 
-        coordinator = ring_entry_data.get("coordinator")
-        ring_api = ring_entry_data.get("ring")
+    # Iterate through all device families
+    for family in DEVICE_FAMILIES:
+        devices = getattr(devices_dict, family, []) or []
+        _LOGGER.debug("Found %d devices in family %s", len(devices), family)
 
-        if coordinator is None or ring_api is None:
-            _LOGGER.debug("Skipping entry %s: missing coordinator or ring API", ring_entry_id)
-            continue
+        for device in devices:
+            device_attrs = getattr(device, "_attrs", {})
+            if not device_attrs:
+                _LOGGER.debug("Device %s has no _attrs", getattr(device, "name", "unknown"))
+                continue
 
-        # Get devices from the Ring API
-        try:
-            devices_dict = ring_api.devices()
-        except Exception as err:
-            _LOGGER.error("Failed to get Ring devices: %s", err)
-            continue
+            _LOGGER.debug("Processing device: %s with %d attrs",
+                         getattr(device, "name", "unknown"), len(device_attrs))
 
-        # Iterate through all device families
-        for family in DEVICE_FAMILIES:
-            devices = devices_dict.get(family, [])
-            for device in devices:
-                device_attrs = getattr(device, "_attrs", {})
-                if not device_attrs:
-                    _LOGGER.debug("Device %s has no _attrs", getattr(device, "name", "unknown"))
-                    continue
-
-                # Create sensors for this device
-                for description in sensor_descriptions:
-                    # Check if this sensor's attribute exists for this device
-                    if description.is_available(device_attrs):
-                        entities.append(
-                            RingExtendedSensor(
-                                device=device,
-                                coordinator=coordinator,
-                                description=description,
-                            )
+            # Create sensors for this device
+            for description in sensor_descriptions:
+                # Check if this sensor's attribute exists for this device
+                if description.is_available(device_attrs):
+                    entities.append(
+                        RingExtendedSensor(
+                            device=device,
+                            coordinator=coordinator,
+                            description=description,
                         )
+                    )
 
     _LOGGER.info("Setting up %d Ring Extended sensors", len(entities))
     async_add_entities(entities)

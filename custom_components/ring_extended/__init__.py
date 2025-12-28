@@ -18,27 +18,31 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Ring Extended from a config entry."""
-    # Verify Ring integration is loaded and has data
-    ring_data = hass.data.get(RING_DOMAIN)
-    if not ring_data:
+    # Find Ring config entries
+    ring_entries = [
+        e for e in hass.config_entries.async_entries()
+        if e.domain == RING_DOMAIN
+    ]
+    if not ring_entries:
         raise ConfigEntryNotReady(
-            "Ring integration is not loaded. Please configure the Ring integration first."
+            "Ring integration is not configured. Please set up Ring first."
         )
 
-    # Check if any Ring config entries have data
-    has_valid_data = False
-    for ring_entry_id, ring_entry_data in ring_data.items():
-        if isinstance(ring_entry_data, dict) and ring_entry_data.get("coordinator"):
-            has_valid_data = True
-            break
-
-    if not has_valid_data:
+    # Check if Ring entries have runtime_data (new HA pattern)
+    ring_entry = ring_entries[0]
+    if not hasattr(ring_entry, 'runtime_data') or ring_entry.runtime_data is None:
+        _LOGGER.debug("Ring runtime_data not yet available, will retry")
         raise ConfigEntryNotReady(
-            "Ring integration has no valid data. Please wait for Ring to finish loading."
+            "Ring integration is still loading. Will retry shortly."
         )
+
+    _LOGGER.debug("Ring runtime_data found: %s", type(ring_entry.runtime_data))
 
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = entry.data
+    hass.data[DOMAIN][entry.entry_id] = {
+        "config": entry.data,
+        "ring_entry": ring_entry,
+    }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
