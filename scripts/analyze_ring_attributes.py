@@ -20,19 +20,25 @@ Usage:
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
 
-# Add parent directory to path to import const
-sys.path.insert(0, str(Path(__file__).parent.parent / "custom_components" / "ring_extended"))
 
-try:
-    from const import ALL_SENSORS, get_nested
-except ImportError:
-    print("Error: Could not import from const.py")
-    print("Make sure you're running from the ring_extended repository root")
-    sys.exit(1)
+def get_nested(data: dict, path: str, default: Any = None) -> Any:
+    """Safely get nested dictionary value using dot notation."""
+    if data is None:
+        return default
+    keys = path.split(".")
+    for key in keys:
+        if isinstance(data, dict):
+            data = data.get(key)
+        else:
+            return default
+        if data is None:
+            return default
+    return data
 
 
 def extract_all_paths(data: dict, prefix: str = "") -> set[str]:
@@ -70,12 +76,25 @@ def extract_all_paths(data: dict, prefix: str = "") -> set[str]:
     return paths
 
 
-def get_defined_paths() -> set[str]:
-    """Get all attribute paths defined in our sensors."""
+def get_defined_paths_from_file() -> set[str]:
+    """Extract attribute paths from const.py by parsing the file."""
+    const_path = Path(__file__).parent.parent / "custom_components" / "ring_extended" / "const.py"
+
+    if not const_path.exists():
+        print(f"Error: Could not find {const_path}")
+        sys.exit(1)
+
     paths = set()
-    for sensor in ALL_SENSORS:
-        if sensor.attr_path:
-            paths.add(sensor.attr_path)
+    content = const_path.read_text()
+
+    # Find all attr_path="..." patterns
+    pattern = r'attr_path\s*=\s*["\']([^"\']+)["\']'
+    matches = re.findall(pattern, content)
+
+    for match in matches:
+        if match:  # Skip empty paths
+            paths.add(match)
+
     return paths
 
 
@@ -86,10 +105,17 @@ def load_diagnostics(file_path: str) -> dict:
     return data
 
 
-def fetch_diagnostics(host: str, token: str, entry_id: str) -> dict:
+def fetch_diagnostics(host: str, token: str, entry_id: str | None = None) -> dict:
     """Fetch diagnostics from HA API."""
     import urllib.request
     import ssl
+
+    # If no entry_id provided, first get the Ring config entry
+    if not entry_id:
+        entry_id = get_ring_entry_id(host, token)
+        if not entry_id:
+            print("Error: Could not find Ring config entry")
+            sys.exit(1)
 
     url = f"http://{host}:8123/api/diagnostics/config_entry/{entry_id}"
     headers = {
@@ -106,6 +132,35 @@ def fetch_diagnostics(host: str, token: str, entry_id: str) -> dict:
 
     with urllib.request.urlopen(req, context=ctx, timeout=30) as response:
         return json.loads(response.read().decode())
+
+
+def get_ring_entry_id(host: str, token: str) -> str | None:
+    """Get the Ring config entry ID from Home Assistant."""
+    import urllib.request
+    import ssl
+
+    url = f"http://{host}:8123/api/config/config_entries/entry"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    req = urllib.request.Request(url, headers=headers)
+
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
+    try:
+        with urllib.request.urlopen(req, context=ctx, timeout=30) as response:
+            entries = json.loads(response.read().decode())
+            for entry in entries:
+                if entry.get("domain") == "ring":
+                    return entry.get("entry_id")
+    except Exception as e:
+        print(f"Error fetching config entries: {e}")
+
+    return None
 
 
 def extract_device_data(diagnostics: dict) -> list[dict]:
@@ -140,7 +195,9 @@ def analyze(diagnostics: dict, show_all: bool = False) -> None:
     print(f"\nFound {len(devices)} Ring device(s)\n")
     print("=" * 70)
 
-    defined_paths = get_defined_paths()
+    defined_paths = get_defined_paths_from_file()
+    print(f"Loaded {len(defined_paths)} sensor paths from const.py")
+
     all_ring_paths: set[str] = set()
 
     for i, device in enumerate(devices):
@@ -230,8 +287,7 @@ def main():
     )
     parser.add_argument(
         "--entry-id",
-        default="01JDM8BKMNN9MKQ06DNE71HZ1T",
-        help="Ring config entry ID"
+        help="Ring config entry ID (optional, will auto-detect)"
     )
     parser.add_argument(
         "--show-all",
