@@ -70,6 +70,9 @@
         "name": "Sidewalk Connected"
       },
       "uptime_sec": {
+        "name": "Uptime (Seconds)"
+      },
+      "uptime_formatted": {
         "name": "Uptime"
       },
       "last_update_time": {

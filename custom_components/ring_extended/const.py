@@ -78,6 +78,20 @@ def get_nested(data: dict, path: str, default: Any = None) -> Any:
     return data
 
 
+def _format_uptime(seconds: int | None) -> str | None:
+    """Convert seconds to human-readable uptime format."""
+    if seconds is None:
+        return None
+    try:
+        seconds = int(seconds)
+        days = seconds // 86400
+        hours = (seconds % 86400) // 3600
+        mins = (seconds % 3600) // 60
+        return f"{days}d {hours}h {mins}m"
+    except (ValueError, TypeError):
+        return None
+
+
 def _value_exists(attrs: dict, path: str) -> bool:
     """Check if a value exists at the given path."""
     return get_nested(attrs, path) is not None
@@ -212,6 +226,13 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         state_class=SensorStateClass.TOTAL_INCREASING,
         category="health",
         attr_path="health.uptime_sec",
+    ),
+    RingExtendedSensorDescription(
+        key="uptime_formatted",
+        translation_key="uptime_formatted",
+        category="health",
+        attr_path="health.uptime_sec",
+        value_fn=lambda attrs: _format_uptime(get_nested(attrs, "health.uptime_sec")),
     ),
     RingExtendedSensorDescription(
         key="last_update_time",

@@ -176,7 +176,26 @@ def _unix_to_datetime(timestamp: int | None) -> datetime | None:
 ### Booleans
 Some Ring attributes use integers (0/1) instead of booleans. Convert with `value_fn=lambda attrs: bool(get_nested(attrs, "path"))`.
 
+### Duration/Uptime
+Ring returns uptime as raw seconds. Use `_format_uptime()` helper for human-readable format:
+
+```python
+def _format_uptime(seconds: int | None) -> str | None:
+    """Convert seconds to human-readable uptime format."""
+    if seconds is None:
+        return None
+    try:
+        seconds = int(seconds)
+        days = seconds // 86400
+        hours = (seconds % 86400) // 3600
+        mins = (seconds % 3600) // 60
+        return f"{days}d {hours}h {mins}m"
+    except (ValueError, TypeError):
+        return None
+```
+
 ## Version History
 
+- **1.0.2**: Add human-readable `uptime_formatted` sensor (e.g., "5d 12h 30m")
 - **1.0.1**: Fix timestamp conversion for `last_update_time` sensor (Unix int → datetime)
 - **1.0.0**: Initial release with 130+ sensors across 16 categories
