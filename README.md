@@ -1,7 +1,7 @@
 # Ring Extended Sensors for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/release/YOUR_USERNAME/ring_extended.svg)](https://github.com/YOUR_USERNAME/ring_extended/releases)
+[![GitHub Release](https://img.shields.io/github/release/mmunchinski/ha-ring-extended.svg)](https://github.com/mmunchinski/ha-ring-extended/releases)
 
 Expose **249 hidden Ring device attributes** as Home Assistant sensors. This integration surfaces the health metrics, CV detection settings, subscription features, and device configurations that Ring's API provides but the core integration doesn't expose.
 
@@ -44,7 +44,7 @@ Expose **249 hidden Ring device attributes** as Home Assistant sensors. This int
 
 1. Open HACS → Integrations
 2. Click ⋮ menu → **Custom repositories**
-3. Add `https://github.com/YOUR_USERNAME/ring_extended` as **Integration**
+3. Add `https://github.com/mmunchinski/ha-ring-extended` as **Integration**
 4. Search for "Ring Extended" and download
 5. Restart Home Assistant
 6. Add integration: **Settings → Devices & Services → Add Integration → Ring Extended**
