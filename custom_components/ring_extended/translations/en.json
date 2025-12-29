@@ -1,0 +1,785 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ring Extended Sensors",
+        "description": "Select which sensor categories to enable. All sensors will attach to your existing Ring devices.",
+        "data": {
+          "categories": "Sensor Categories"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Ring Extended is already configured",
+      "ring_not_configured": "Ring integration is not configured. Please set up the Ring integration first."
+    },
+    "error": {
+      "no_categories_selected": "Please select at least one category"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ring Extended Options",
+        "description": "Modify which sensor categories are enabled. Changes require a reload.",
+        "data": {
+          "categories": "Sensor Categories"
+        }
+      }
+    },
+    "error": {
+      "no_categories_selected": "Please select at least one category"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ac_power": {
+        "name": "Ac Power"
+      },
+      "active_motion_filter": {
+        "name": "Active Motion Filter"
+      },
+      "active_streaming_event_led": {
+        "name": "Active Streaming Event LED"
+      },
+      "advanced_motion_detection_enabled": {
+        "name": "Advanced Motion Detection Enabled"
+      },
+      "advanced_motion_detection_human_only_mode": {
+        "name": "Advanced Motion Detection Human Only Mode"
+      },
+      "advanced_motion_enabled": {
+        "name": "Advanced Motion Enabled"
+      },
+      "advanced_motion_zones_enabled": {
+        "name": "Advanced Motion Zones Enabled"
+      },
+      "advanced_motion_zones_type": {
+        "name": "Advanced Motion Zones Type"
+      },
+      "ai_warnings_allowed": {
+        "name": "AI Warnings Allowed"
+      },
+      "ai_warnings_eligible": {
+        "name": "AI Warnings Eligible"
+      },
+      "ai_warnings_enabled": {
+        "name": "AI Warnings Enabled"
+      },
+      "alexa_greetings_allowed": {
+        "name": "Alexa Greetings Allowed"
+      },
+      "alexa_greetings_eligible": {
+        "name": "Alexa Greetings Eligible"
+      },
+      "alexa_greetings_enabled": {
+        "name": "Alexa Greetings Enabled"
+      },
+      "animal_detection_eligible": {
+        "name": "Animal Detection Eligible"
+      },
+      "auto_motion_sensitivity_enabled": {
+        "name": "Auto Motion Sensitivity Enabled"
+      },
+      "bandwidth": {
+        "name": "Bandwidth"
+      },
+      "bandwidth_last_time": {
+        "name": "Bandwidth Last Time"
+      },
+      "battery_error": {
+        "name": "Battery Error"
+      },
+      "battery_life": {
+        "name": "Battery Life"
+      },
+      "battery_percentage": {
+        "name": "Battery Percentage"
+      },
+      "battery_percentage_category": {
+        "name": "Battery Percentage Category"
+      },
+      "battery_present": {
+        "name": "Battery Present"
+      },
+      "battery_save": {
+        "name": "Battery Save"
+      },
+      "battery_voltage": {
+        "name": "Battery Voltage"
+      },
+      "battery_voltage_category": {
+        "name": "Battery Voltage Category"
+      },
+      "bez_feature_enabled": {
+        "name": "BEZ Feature"
+      },
+      "bez_filtering_enabled": {
+        "name": "BEZ Filtering"
+      },
+      "birds_eye_view_enabled": {
+        "name": "Birds Eye View Enabled"
+      },
+      "camera_location_indoor": {
+        "name": "Camera Location Indoor"
+      },
+      "cfes_eligible": {
+        "name": "CFES Eligible"
+      },
+      "chime_auto_detect_capable": {
+        "name": "Chime Auto Detect Capable"
+      },
+      "chime_duration": {
+        "name": "Chime Duration"
+      },
+      "chime_enable": {
+        "name": "Chime Enable"
+      },
+      "chime_settings_eligible": {
+        "name": "Chime Settings Eligible"
+      },
+      "chime_settings_type": {
+        "name": "Chime Settings Type"
+      },
+      "connected": {
+        "name": "Connected"
+      },
+      "continuous_recording_available": {
+        "name": "Continuous Recording Available"
+      },
+      "continuous_recording_supported": {
+        "name": "Continuous Recording Supported"
+      },
+      "created_at": {
+        "name": "Created At"
+      },
+      "current_bandwidth_category": {
+        "name": "Current Bandwidth Category"
+      },
+      "current_bandwidth_mb": {
+        "name": "Current Bandwidth MB"
+      },
+      "current_bandwidth_raw": {
+        "name": "Current Bandwidth Raw"
+      },
+      "cv_threshold_loitering": {
+        "name": "CV Threshold Loitering"
+      },
+      "cv_threshold_package_delivery": {
+        "name": "CV Threshold Package Delivery"
+      },
+      "cv_triggers": {
+        "name": "CV Triggers"
+      },
+      "data_collection_enabled": {
+        "name": "Data Collection Enabled"
+      },
+      "device_kind": {
+        "name": "Device Kind"
+      },
+      "device_placement_info": {
+        "name": "Device Placement Info"
+      },
+      "device_type": {
+        "name": "Device Type"
+      },
+      "doorbell_volume": {
+        "name": "Doorbell Volume"
+      },
+      "dynamic_network_switching_eligible": {
+        "name": "Dynamic Network Switching Eligible"
+      },
+      "egress_tx_rate": {
+        "name": "Egress Tx Rate"
+      },
+      "egress_tx_rate_category": {
+        "name": "Egress Tx Rate Category"
+      },
+      "enable_audio": {
+        "name": "Enable Audio"
+      },
+      "enable_audio_recording": {
+        "name": "Enable Audio Recording"
+      },
+      "enable_ir": {
+        "name": "IR Enabled"
+      },
+      "enable_ir_led": {
+        "name": "IR LED Enabled"
+      },
+      "enable_live_view_audio_override": {
+        "name": "Enable Live View Audio Override"
+      },
+      "enable_pir_validation": {
+        "name": "PIR Validation"
+      },
+      "enable_rich_notifications": {
+        "name": "Enable Rich Notifications"
+      },
+      "enable_rlmd": {
+        "name": "RLMD Enabled"
+      },
+      "enable_vod_setting": {
+        "name": "Enable VOD Setting"
+      },
+      "encryption_enabled": {
+        "name": "Encryption Enabled"
+      },
+      "exposure_control": {
+        "name": "Exposure Control"
+      },
+      "ext_power_state": {
+        "name": "Ext Power State"
+      },
+      "ext_power_state_root": {
+        "name": "Ext Power State Root"
+      },
+      "extended_live_view": {
+        "name": "Extended Live View"
+      },
+      "external_connection": {
+        "name": "External Connection"
+      },
+      "external_connection_health": {
+        "name": "External Connection Health"
+      },
+      "facing_window": {
+        "name": "Facing Window"
+      },
+      "fast_ping_hop1_score": {
+        "name": "Fast Ping Hop1 Score"
+      },
+      "firmware_avg_bitrate": {
+        "name": "Firmware Avg Bitrate"
+      },
+      "firmware_version": {
+        "name": "Firmware Version"
+      },
+      "firmware_version_status": {
+        "name": "Firmware Version Status"
+      },
+      "flick_elim_recommended_mode": {
+        "name": "Flick Elim Recommended Mode"
+      },
+      "floodlight_always_on": {
+        "name": "Floodlight Always On"
+      },
+      "floodlight_brightness": {
+        "name": "Floodlight Brightness"
+      },
+      "floodlight_duration": {
+        "name": "Floodlight Duration"
+      },
+      "floodlight_on": {
+        "name": "Floodlight On"
+      },
+      "hatch_open": {
+        "name": "Hatch Open"
+      },
+      "hevc_enabled": {
+        "name": "HEVC/H.265 Enabled"
+      },
+      "installation_height": {
+        "name": "Installation Height"
+      },
+      "iperf_tcp_throughput": {
+        "name": "TCP Throughput"
+      },
+      "ir_led_brightness": {
+        "name": "IR LED Brightness"
+      },
+      "ir_led_settings": {
+        "name": "IR LED Settings"
+      },
+      "is_sidewalk_gateway": {
+        "name": "Is Sidewalk Gateway"
+      },
+      "last_update_time": {
+        "name": "Last Update Time"
+      },
+      "led_status": {
+        "name": "LED Status"
+      },
+      "light_schedule_enabled": {
+        "name": "Light Schedule Enabled"
+      },
+      "light_settings": {
+        "name": "Light Settings"
+      },
+      "lite_24x7_enabled": {
+        "name": "Lite 24X7 Enabled"
+      },
+      "lite_24x7_footage_ttl": {
+        "name": "Lite 24X7 Footage Ttl"
+      },
+      "lite_24x7_frequency_secs": {
+        "name": "Lite 24X7 Frequency Secs"
+      },
+      "lite_24x7_frequency_secs_powered": {
+        "name": "Lite 24X7 Frequency Secs Powered"
+      },
+      "lite_24x7_resolution_p": {
+        "name": "Lite 24X7 Resolution P"
+      },
+      "lite_24x7_subscribed": {
+        "name": "Lite 24X7 Subscribed"
+      },
+      "live_view_audio_privacy_eligible": {
+        "name": "Live View Audio Privacy Eligible"
+      },
+      "live_view_disabled": {
+        "name": "Live View Disabled"
+      },
+      "live_view_pip_mode": {
+        "name": "Live View PiP Mode"
+      },
+      "live_view_preset_profile": {
+        "name": "Live View Preset Profile"
+      },
+      "loitering_threshold": {
+        "name": "Loitering Threshold"
+      },
+      "luma_light_threshold": {
+        "name": "Light Threshold"
+      },
+      "luma_night_threshold": {
+        "name": "Night Threshold"
+      },
+      "max_digital_zoom_level": {
+        "name": "Max Digital Zoom Level"
+      },
+      "max_resolution_mode": {
+        "name": "Max Resolution Mode"
+      },
+      "max_resolution_mode_eligible": {
+        "name": "Max Resolution Mode Eligible"
+      },
+      "mic_volume": {
+        "name": "Mic Volume"
+      },
+      "motion_announcement": {
+        "name": "Motion Announcement"
+      },
+      "motion_detection_enabled": {
+        "name": "Motion Detection Enabled"
+      },
+      "motion_detection_enabled_root": {
+        "name": "Motion Detection Enabled Root"
+      },
+      "motion_message_enabled": {
+        "name": "Motion Message Enabled"
+      },
+      "motion_snooze_preset_profile": {
+        "name": "Motion Snooze Preset Profile"
+      },
+      "motion_snooze_privacy_timeout": {
+        "name": "Motion Snooze Privacy Timeout"
+      },
+      "motion_stop_edge_eligible": {
+        "name": "Motion Stop Edge Eligible"
+      },
+      "motion_zone_recommendation": {
+        "name": "Motion Zone Recommendation"
+      },
+      "motions_enabled": {
+        "name": "Motions Enabled"
+      },
+      "multiple_detection_events_enabled": {
+        "name": "Multiple Detection Events Enabled"
+      },
+      "natural_language_search_enabled": {
+        "name": "Natural Language Search Enabled"
+      },
+      "natural_language_search_mode": {
+        "name": "Natural Language Search Mode"
+      },
+      "network_connection_value": {
+        "name": "Network Connection Value"
+      },
+      "night_mode": {
+        "name": "Night Mode"
+      },
+      "night_mode_on": {
+        "name": "Night Mode On"
+      },
+      "night_mode_status": {
+        "name": "Night Mode Status"
+      },
+      "night_vision_enabled": {
+        "name": "Night Vision Enabled"
+      },
+      "offline_motion_enabled": {
+        "name": "Offline Motion Enabled"
+      },
+      "ota_status": {
+        "name": "Ota Status"
+      },
+      "owned": {
+        "name": "Owned"
+      },
+      "package_warning_activation_eligible": {
+        "name": "Package Warning Activation Eligible"
+      },
+      "package_warning_active": {
+        "name": "Package Warning Active"
+      },
+      "package_warning_automation_eligible": {
+        "name": "Package Warning Automation Eligible"
+      },
+      "package_warning_enabled": {
+        "name": "Package Warning Enabled"
+      },
+      "packet_loss": {
+        "name": "Packet Loss"
+      },
+      "packet_loss_category": {
+        "name": "Packet Loss Category"
+      },
+      "paid_alarm_triggered_recording": {
+        "name": "Paid: Alarm Triggered Recording"
+      },
+      "paid_alexa_concierge": {
+        "name": "Paid: Alexa Concierge"
+      },
+      "paid_animal": {
+        "name": "Paid: Animal"
+      },
+      "paid_baby_cry": {
+        "name": "Paid: Baby Cry"
+      },
+      "paid_car_alarm": {
+        "name": "Paid: Car Alarm"
+      },
+      "paid_closed_caption": {
+        "name": "Paid: Closed Caption"
+      },
+      "paid_co2_smoke_alarm": {
+        "name": "Paid: Co2 Smoke Alarm"
+      },
+      "paid_critical_alerts": {
+        "name": "Paid: Critical Alerts"
+      },
+      "paid_daily_digest": {
+        "name": "Paid: Daily Digest"
+      },
+      "paid_ding_call": {
+        "name": "Paid: Ding Call"
+      },
+      "paid_dog_bark": {
+        "name": "Paid: Dog Bark"
+      },
+      "paid_extended_live_view": {
+        "name": "Paid: Extended Live View"
+      },
+      "paid_general_sound": {
+        "name": "Paid: General Sound"
+      },
+      "paid_glass_break": {
+        "name": "Paid: Glass Break"
+      },
+      "paid_human": {
+        "name": "Paid: Human"
+      },
+      "paid_live_speak": {
+        "name": "Paid: Live Speak"
+      },
+      "paid_loitering": {
+        "name": "Paid: Loitering"
+      },
+      "paid_motion": {
+        "name": "Paid: Motion"
+      },
+      "paid_multicam_live_view": {
+        "name": "Paid: Multicam Live View"
+      },
+      "paid_natural_language_search": {
+        "name": "Paid: Natural Language Search"
+      },
+      "paid_other_motion": {
+        "name": "Paid: Other Motion"
+      },
+      "paid_package_delivery": {
+        "name": "Paid: Package Delivery"
+      },
+      "paid_package_pickup": {
+        "name": "Paid: Package Pickup"
+      },
+      "paid_package_protection": {
+        "name": "Paid: Package Protection"
+      },
+      "paid_recording_24x7": {
+        "name": "Paid: Recording 24X7"
+      },
+      "paid_sheila_cv": {
+        "name": "Paid: Sheila CV"
+      },
+      "paid_sheila_recording": {
+        "name": "Paid: Sheila Recording"
+      },
+      "paid_snapshot_capture_plus": {
+        "name": "Paid: Snapshot Capture Plus"
+      },
+      "paid_system_level_pip": {
+        "name": "Paid: System Level PiP"
+      },
+      "paid_vehicle": {
+        "name": "Paid: Vehicle"
+      },
+      "people_detection_eligible": {
+        "name": "People Detection Eligible"
+      },
+      "people_only_enabled": {
+        "name": "People Only Enabled"
+      },
+      "person_id_allowed": {
+        "name": "Person ID Allowed"
+      },
+      "person_id_eligible": {
+        "name": "Person ID Eligible"
+      },
+      "person_id_enabled": {
+        "name": "Person ID Enabled"
+      },
+      "pir_sensitivity_1": {
+        "name": "PIR Sensitivity"
+      },
+      "power_mode": {
+        "name": "Power Mode"
+      },
+      "powered_on": {
+        "name": "Powered On"
+      },
+      "pref_run_mode": {
+        "name": "Pref Run Mode"
+      },
+      "preroll_enabled": {
+        "name": "Preroll Enabled"
+      },
+      "privacy_cover_enabled": {
+        "name": "Privacy Cover Enabled"
+      },
+      "ptz_setup_complete": {
+        "name": "PTZ Setup Complete"
+      },
+      "recording_24x7_eligible": {
+        "name": "Recording 24X7 Eligible"
+      },
+      "recording_enabled": {
+        "name": "Recording Enabled"
+      },
+      "recording_mode": {
+        "name": "Recording Mode"
+      },
+      "recording_state": {
+        "name": "Recording State"
+      },
+      "retinal_tuning_allowed": {
+        "name": "Retinal Tuning Allowed"
+      },
+      "retinal_tuning_eligible": {
+        "name": "Retinal Tuning Eligible"
+      },
+      "retinal_tuning_enabled": {
+        "name": "Retinal Tuning Enabled"
+      },
+      "retinal_tuning_max_zoom": {
+        "name": "Retinal Tuning Max Zoom"
+      },
+      "rich_notifications_billing_eligible": {
+        "name": "Rich Notifications Billing Eligible"
+      },
+      "rich_notifications_eligible": {
+        "name": "Rich Notifications Eligible"
+      },
+      "rich_notifications_face_crop_enabled": {
+        "name": "Rich Notifications Face Crop Enabled"
+      },
+      "rich_notifications_scene_source": {
+        "name": "Rich Notifications Scene Source"
+      },
+      "ring_cam_light_installed": {
+        "name": "Ring Cam Light Installed"
+      },
+      "ring_cam_setup_flow": {
+        "name": "Ring Cam Setup Flow"
+      },
+      "rlmd_distance": {
+        "name": "RLMD Distance"
+      },
+      "rss_connected": {
+        "name": "RSS Connected"
+      },
+      "rssi": {
+        "name": "WiFi Signal"
+      },
+      "rssi_category": {
+        "name": "WiFi Signal Quality"
+      },
+      "run_mode": {
+        "name": "Run Mode"
+      },
+      "second_battery_percentage_category": {
+        "name": "Second Battery Percentage Category"
+      },
+      "second_battery_voltage_category": {
+        "name": "Second Battery Voltage Category"
+      },
+      "sensitivity": {
+        "name": "Sensitivity"
+      },
+      "shadow_correction_enabled": {
+        "name": "Shadow Correction Enabled"
+      },
+      "sheila_camera_eligible": {
+        "name": "Sheila Camera Eligible"
+      },
+      "sheila_camera_processing_eligible": {
+        "name": "Sheila Camera Processing Eligible"
+      },
+      "sheila_cv_processing_enabled": {
+        "name": "Sheila CV Processing Enabled"
+      },
+      "sheila_local_storage_enabled": {
+        "name": "Sheila Local Storage Enabled"
+      },
+      "show_24x7_lite": {
+        "name": "Show 24X7 Lite"
+      },
+      "show_offline_motion_events": {
+        "name": "Show Offline Motion Events"
+      },
+      "show_radar_data": {
+        "name": "Show Radar Data"
+      },
+      "show_recordings": {
+        "name": "Show Recordings"
+      },
+      "show_vod_settings": {
+        "name": "Show VOD Settings"
+      },
+      "sidewalk_connection": {
+        "name": "Sidewalk Connection"
+      },
+      "single_alert_allowed": {
+        "name": "Single Alert Allowed"
+      },
+      "single_alert_eligible": {
+        "name": "Single Alert Eligible"
+      },
+      "single_alert_enabled": {
+        "name": "Single Alert Enabled"
+      },
+      "siren_on": {
+        "name": "Siren On"
+      },
+      "siren_seconds_remaining": {
+        "name": "Siren Seconds Remaining"
+      },
+      "stark_enabled": {
+        "name": "Stark Enabled"
+      },
+      "stark_enrolled": {
+        "name": "Stark Enrolled"
+      },
+      "stolen": {
+        "name": "Stolen"
+      },
+      "stream_profile": {
+        "name": "Stream Profile"
+      },
+      "stream_profile_setting": {
+        "name": "Stream Profile Setting"
+      },
+      "stream_resolution": {
+        "name": "Stream Resolution"
+      },
+      "stream_setting": {
+        "name": "Stream Setting"
+      },
+      "subscribed": {
+        "name": "Subscribed"
+      },
+      "subscribed_motions": {
+        "name": "Subscribed Motions"
+      },
+      "terms_of_service_accepted": {
+        "name": "Terms Of Service Accepted"
+      },
+      "time_zone": {
+        "name": "Time Zone"
+      },
+      "transformer_score": {
+        "name": "Transformer Score"
+      },
+      "transformer_score_features": {
+        "name": "Transformer Score Features"
+      },
+      "transformer_status": {
+        "name": "Transformer Status"
+      },
+      "transformer_voltage": {
+        "name": "Transformer Voltage"
+      },
+      "transformer_voltage_category": {
+        "name": "Transformer Voltage Category"
+      },
+      "tx_rate": {
+        "name": "TX Rate"
+      },
+      "unusual_alert_allowed": {
+        "name": "Unusual Alert Allowed"
+      },
+      "unusual_alert_eligible": {
+        "name": "Unusual Alert Eligible"
+      },
+      "unusual_alert_enabled": {
+        "name": "Unusual Alert Enabled"
+      },
+      "unusual_alert_learning_state": {
+        "name": "Unusual Alert Learning State"
+      },
+      "uptime_formatted": {
+        "name": "Uptime Formatted"
+      },
+      "uptime_sec": {
+        "name": "Uptime Sec"
+      },
+      "user_specified_recording_ttl": {
+        "name": "User Specified Recording Ttl"
+      },
+      "vehicle_detection_eligible": {
+        "name": "Vehicle Detection Eligible"
+      },
+      "video_donation_eligible": {
+        "name": "Video Donation Eligible"
+      },
+      "video_packets_total": {
+        "name": "Video Packets Total"
+      },
+      "vod_enabled": {
+        "name": "Video on Demand"
+      },
+      "vod_status": {
+        "name": "VOD Status"
+      },
+      "vod_suspended": {
+        "name": "VOD Suspended"
+      },
+      "voice_volume": {
+        "name": "Voice Volume"
+      },
+      "voice_volume_powered": {
+        "name": "Voice Volume Powered"
+      },
+      "white_led_on": {
+        "name": "White LED On"
+      },
+      "wifi_channel": {
+        "name": "Wifi Channel"
+      },
+      "wifi_is_ring_network": {
+        "name": "Wifi Is Ring Network"
+      }
+    }
+  }
+}
