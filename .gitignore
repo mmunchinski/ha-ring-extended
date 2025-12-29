@@ -68,3 +68,10 @@ venv.bak/
 # Home Assistant
 *.log
 home-assistant.log*
+
+# Development files (not needed for HACS release)
+claude.md
+scripts/
+ring_extended_spec.md
+ring_extended_attributes.json
+ring_attributes.md
