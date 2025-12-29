@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="120" fill="#1a9fff"/>
+
+  <!-- Inner ring shape -->
+  <circle cx="128" cy="128" r="70" fill="none" stroke="white" stroke-width="16"/>
+
+  <!-- Center dot (doorbell button style) -->
+  <circle cx="128" cy="128" r="20" fill="white"/>
+
+  <!-- Sensor nodes radiating outward -->
+  <!-- Top -->
+  <circle cx="128" cy="28" r="12" fill="white"/>
+  <line x1="128" y1="58" x2="128" y2="44" stroke="white" stroke-width="4"/>
+
+  <!-- Bottom -->
+  <circle cx="128" cy="228" r="12" fill="white"/>
+  <line x1="128" y1="198" x2="128" y2="212" stroke="white" stroke-width="4"/>
+
+  <!-- Left -->
+  <circle cx="28" cy="128" r="12" fill="white"/>
+  <line x1="58" y1="128" x2="44" y2="128" stroke="white" stroke-width="4"/>
+
+  <!-- Right -->
+  <circle cx="228" cy="128" r="12" fill="white"/>
+  <line x1="198" y1="128" x2="212" y2="128" stroke="white" stroke-width="4"/>
+
+  <!-- Diagonal nodes -->
+  <!-- Top-right -->
+  <circle cx="199" cy="57" r="10" fill="white" opacity="0.8"/>
+  <line x1="175" y1="81" x2="185" y2="71" stroke="white" stroke-width="3" opacity="0.8"/>
+
+  <!-- Top-left -->
+  <circle cx="57" cy="57" r="10" fill="white" opacity="0.8"/>
+  <line x1="81" y1="81" x2="71" y2="71" stroke="white" stroke-width="3" opacity="0.8"/>
+
+  <!-- Bottom-right -->
+  <circle cx="199" cy="199" r="10" fill="white" opacity="0.8"/>
+  <line x1="175" y1="175" x2="185" y2="185" stroke="white" stroke-width="3" opacity="0.8"/>
+
+  <!-- Bottom-left -->
+  <circle cx="57" cy="199" r="10" fill="white" opacity="0.8"/>
+  <line x1="81" y1="175" x2="71" y2="185" stroke="white" stroke-width="3" opacity="0.8"/>
+</svg>
