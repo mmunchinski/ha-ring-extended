@@ -238,6 +238,16 @@ def _format_uptime(seconds: int | None) -> str | None:
 
 ## Version History
 
+- **1.1.0**: Major expansion - 249 sensors total
+  - Added 6 sound detection CV types: baby_cry, car_alarm, co2_smoke_alarm, dog_bark, general_sound, glass_break
+  - Added 100+ new sensors from Ring API discovery including:
+    - Health: bandwidth metrics, transformer status, video packets, privacy cover
+    - Power: battery_life (root), power_mode, powered_on
+    - Video: IR settings, luma thresholds, night mode, camera placement
+    - Audio: mic_volume, live view audio override
+    - Motion: RLMD, PIR validation, motion announcement
+    - Features: 40+ new eligibility flags (AI warnings, person ID, retinal tuning, unusual alerts, etc.)
+    - Device Status: time_zone, created_at, LED status, siren countdown
 - **1.0.2**: Add human-readable `uptime_formatted` sensor (e.g., "5d 12h 30m")
 - **1.0.1**: Fix timestamp conversion for `last_update_time` sensor (Unix int → datetime)
 - **1.0.0**: Initial release with 130+ sensors across 16 categories

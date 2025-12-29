@@ -248,6 +248,111 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="health",
         attr_path="health.wifi_is_ring_network",
     ),
+    RingExtendedSensorDescription(
+        key="current_bandwidth_raw",
+        translation_key="current_bandwidth_raw",
+        native_unit_of_measurement="kbps",
+        state_class=SensorStateClass.MEASUREMENT,
+        category="health",
+        attr_path="health.current_bandwidth",
+    ),
+    RingExtendedSensorDescription(
+        key="current_bandwidth_category",
+        translation_key="current_bandwidth_category",
+        category="health",
+        attr_path="health.current_bandwidth_category",
+    ),
+    RingExtendedSensorDescription(
+        key="bandwidth_last_time",
+        translation_key="bandwidth_last_time",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        category="health",
+        attr_path="health.bandwidth_last_time",
+        value_fn=lambda attrs: _unix_to_datetime(get_nested(attrs, "health.bandwidth_last_time")),
+    ),
+    RingExtendedSensorDescription(
+        key="device_type",
+        translation_key="device_type",
+        category="health",
+        attr_path="health.device_type",
+    ),
+    RingExtendedSensorDescription(
+        key="external_connection_health",
+        translation_key="external_connection_health",
+        category="health",
+        attr_path="health.external_connection",
+    ),
+    RingExtendedSensorDescription(
+        key="fast_ping_hop1_score",
+        translation_key="fast_ping_hop1_score",
+        category="health",
+        attr_path="health.fast_ping_hop1_score",
+    ),
+    RingExtendedSensorDescription(
+        key="iperf_tcp_throughput",
+        translation_key="iperf_tcp_throughput",
+        native_unit_of_measurement="Mbps",
+        state_class=SensorStateClass.MEASUREMENT,
+        category="health",
+        attr_path="health.iperf_tcp_throughput",
+    ),
+    RingExtendedSensorDescription(
+        key="privacy_cover_enabled",
+        translation_key="privacy_cover_enabled",
+        category="health",
+        attr_path="health.privacy_cover_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="rss_connected",
+        translation_key="rss_connected",
+        category="health",
+        attr_path="health.rss_connected",
+    ),
+    RingExtendedSensorDescription(
+        key="second_battery_percentage_category",
+        translation_key="second_battery_percentage_category",
+        category="health",
+        attr_path="health.second_battery_percentage_category",
+    ),
+    RingExtendedSensorDescription(
+        key="second_battery_voltage_category",
+        translation_key="second_battery_voltage_category",
+        category="health",
+        attr_path="health.second_battery_voltage_category",
+    ),
+    RingExtendedSensorDescription(
+        key="stream_profile",
+        translation_key="stream_profile",
+        category="health",
+        attr_path="health.stream_profile",
+    ),
+    RingExtendedSensorDescription(
+        key="transformer_score",
+        translation_key="transformer_score",
+        category="health",
+        attr_path="health.transformer_score",
+    ),
+    RingExtendedSensorDescription(
+        key="transformer_status",
+        translation_key="transformer_status",
+        category="health",
+        attr_path="health.transformer_status",
+    ),
+    RingExtendedSensorDescription(
+        key="tx_rate",
+        translation_key="tx_rate",
+        native_unit_of_measurement="Mbps",
+        state_class=SensorStateClass.MEASUREMENT,
+        category="health",
+        attr_path="health.tx_rate",
+    ),
+    RingExtendedSensorDescription(
+        key="video_packets_total",
+        translation_key="video_packets_total",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        category="health",
+        attr_path="health.video_packets_total",
+    ),
 )
 
 # Power & Battery sensors
@@ -339,6 +444,39 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="pref_run_mode",
         category="power",
         attr_path="health.pref_run_mode",
+    ),
+    RingExtendedSensorDescription(
+        key="battery_life",
+        translation_key="battery_life",
+        native_unit_of_measurement=PERCENTAGE,
+        device_class=SensorDeviceClass.BATTERY,
+        state_class=SensorStateClass.MEASUREMENT,
+        category="power",
+        attr_path="battery_life",
+    ),
+    RingExtendedSensorDescription(
+        key="ext_power_state_root",
+        translation_key="ext_power_state_root",
+        category="power",
+        attr_path="ext_power_state",
+    ),
+    RingExtendedSensorDescription(
+        key="external_connection",
+        translation_key="external_connection",
+        category="power",
+        attr_path="external_connection",
+    ),
+    RingExtendedSensorDescription(
+        key="power_mode",
+        translation_key="power_mode",
+        category="power",
+        attr_path="settings.power_mode",
+    ),
+    RingExtendedSensorDescription(
+        key="powered_on",
+        translation_key="powered_on",
+        category="power",
+        attr_path="settings.powered_on",
     ),
 )
 
@@ -453,6 +591,72 @@ VIDEO_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="video",
         attr_path="features.video_rendering.max_digital_zoom_level",
     ),
+    RingExtendedSensorDescription(
+        key="enable_ir",
+        translation_key="enable_ir",
+        category="video",
+        attr_path="settings.enable_ir",
+    ),
+    RingExtendedSensorDescription(
+        key="enable_ir_led",
+        translation_key="enable_ir_led",
+        category="video",
+        attr_path="settings.enable_ir_led",
+    ),
+    RingExtendedSensorDescription(
+        key="ir_led_brightness",
+        translation_key="ir_led_brightness",
+        category="video",
+        attr_path="settings.ir_led_brightness",
+    ),
+    RingExtendedSensorDescription(
+        key="luma_light_threshold",
+        translation_key="luma_light_threshold",
+        category="video",
+        attr_path="settings.luma_light_threshold",
+    ),
+    RingExtendedSensorDescription(
+        key="luma_night_threshold",
+        translation_key="luma_night_threshold",
+        category="video",
+        attr_path="settings.luma_night_threshold",
+    ),
+    RingExtendedSensorDescription(
+        key="stream_profile_setting",
+        translation_key="stream_profile_setting",
+        category="video",
+        attr_path="settings.stream_profile",
+    ),
+    RingExtendedSensorDescription(
+        key="stream_setting",
+        translation_key="stream_setting",
+        category="video",
+        attr_path="settings.stream_setting",
+    ),
+    RingExtendedSensorDescription(
+        key="night_mode",
+        translation_key="night_mode",
+        category="video",
+        attr_path="settings.night_mode",
+    ),
+    RingExtendedSensorDescription(
+        key="camera_location_indoor",
+        translation_key="camera_location_indoor",
+        category="video",
+        attr_path="camera_location_indoor",
+    ),
+    RingExtendedSensorDescription(
+        key="facing_window",
+        translation_key="facing_window",
+        category="video",
+        attr_path="facing_window",
+    ),
+    RingExtendedSensorDescription(
+        key="enable_vod_setting",
+        translation_key="enable_vod_setting",
+        category="video",
+        attr_path="settings.enable_vod",
+    ),
 )
 
 # Audio sensors
@@ -488,6 +692,36 @@ AUDIO_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         category="audio",
         attr_path="settings.chime_settings.duration",
+    ),
+    RingExtendedSensorDescription(
+        key="enable_audio",
+        translation_key="enable_audio",
+        category="audio",
+        attr_path="settings.enable_audio",
+    ),
+    RingExtendedSensorDescription(
+        key="mic_volume",
+        translation_key="mic_volume",
+        category="audio",
+        attr_path="settings.mic_volume",
+    ),
+    RingExtendedSensorDescription(
+        key="enable_live_view_audio_override",
+        translation_key="enable_live_view_audio_override",
+        category="audio",
+        attr_path="settings.audio_settings.enable_live_view_audio_override",
+    ),
+    RingExtendedSensorDescription(
+        key="voice_volume_powered",
+        translation_key="voice_volume_powered",
+        category="audio",
+        attr_path="settings.voice_volume_powered",
+    ),
+    RingExtendedSensorDescription(
+        key="chime_settings_type",
+        translation_key="chime_settings_type",
+        category="audio",
+        attr_path="settings.chime_settings.type",
     ),
 )
 
@@ -543,6 +777,61 @@ MOTION_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="motion",
         attr_path="settings.pir_sensitivity_1",
     ),
+    RingExtendedSensorDescription(
+        key="motion_detection_enabled_root",
+        translation_key="motion_detection_enabled_root",
+        category="motion",
+        attr_path="motion_detection_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="enable_pir_validation",
+        translation_key="enable_pir_validation",
+        category="motion",
+        attr_path="settings.enable_pir_validation",
+    ),
+    RingExtendedSensorDescription(
+        key="enable_rlmd",
+        translation_key="enable_rlmd",
+        category="motion",
+        attr_path="settings.enable_rlmd",
+    ),
+    RingExtendedSensorDescription(
+        key="rlmd_distance",
+        translation_key="rlmd_distance",
+        category="motion",
+        attr_path="settings.rlmd_distance",
+    ),
+    RingExtendedSensorDescription(
+        key="sensitivity",
+        translation_key="sensitivity",
+        category="motion",
+        attr_path="settings.sensitivity",
+    ),
+    RingExtendedSensorDescription(
+        key="active_motion_filter",
+        translation_key="active_motion_filter",
+        category="motion",
+        attr_path="settings.active_motion_filter",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_snooze_privacy_timeout",
+        translation_key="motion_snooze_privacy_timeout",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        category="motion",
+        attr_path="settings.motion_snooze_privacy_timeout",
+    ),
+    RingExtendedSensorDescription(
+        key="advanced_motion_zones_type",
+        translation_key="advanced_motion_zones_type",
+        category="motion",
+        attr_path="settings.advanced_motion_zones_type",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_announcement",
+        translation_key="motion_announcement",
+        category="motion",
+        attr_path="settings.motion_announcement",
+    ),
 )
 
 # CV Detection Types - these will be generated dynamically
@@ -558,6 +847,13 @@ CV_DETECTION_TYPES = [
     "package_pickup",
     "unverified_motion",
     "motion_stop",
+    # Sound detection types
+    "baby_cry",
+    "car_alarm",
+    "co2_smoke_alarm",
+    "dog_bark",
+    "general_sound",
+    "glass_break",
 ]
 
 CV_DETECTION_TYPE_NAMES = {
@@ -572,6 +868,13 @@ CV_DETECTION_TYPE_NAMES = {
     "package_pickup": "Package Pickup",
     "unverified_motion": "Unverified Motion",
     "motion_stop": "Motion Stop",
+    # Sound detection types
+    "baby_cry": "Baby Cry",
+    "car_alarm": "Car Alarm",
+    "co2_smoke_alarm": "CO2/Smoke Alarm",
+    "dog_bark": "Dog Bark",
+    "general_sound": "General Sound",
+    "glass_break": "Glass Break",
 }
 
 
@@ -632,6 +935,18 @@ CV_THRESHOLD_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="natural_language_search_enabled",
         category="cv_detection",
         attr_path="settings.cv_settings.search_types.natural_language_search.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="natural_language_search_mode",
+        translation_key="natural_language_search_mode",
+        category="cv_detection",
+        attr_path="settings.cv_settings.search_types.natural_language_search.mode",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_triggers",
+        translation_key="cv_triggers",
+        category="cv_detection",
+        attr_path="settings.cv_paid_features.cv_triggers",
     ),
 )
 
@@ -785,6 +1100,42 @@ OTHER_PAID_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="other_paid",
         attr_path="settings.other_paid_features.critical_alerts",
     ),
+    RingExtendedSensorDescription(
+        key="paid_alarm_triggered_recording",
+        translation_key="paid_alarm_triggered_recording",
+        category="other_paid",
+        attr_path="settings.other_paid_features.alarm_triggered_recording",
+    ),
+    RingExtendedSensorDescription(
+        key="paid_closed_caption",
+        translation_key="paid_closed_caption",
+        category="other_paid",
+        attr_path="settings.other_paid_features.closed_caption",
+    ),
+    RingExtendedSensorDescription(
+        key="paid_ding_call",
+        translation_key="paid_ding_call",
+        category="other_paid",
+        attr_path="settings.other_paid_features.ding_call",
+    ),
+    RingExtendedSensorDescription(
+        key="paid_live_speak",
+        translation_key="paid_live_speak",
+        category="other_paid",
+        attr_path="settings.other_paid_features.live_speak",
+    ),
+    RingExtendedSensorDescription(
+        key="paid_snapshot_capture_plus",
+        translation_key="paid_snapshot_capture_plus",
+        category="other_paid",
+        attr_path="settings.other_paid_features.snapshot_capture_plus",
+    ),
+    RingExtendedSensorDescription(
+        key="paid_system_level_pip",
+        translation_key="paid_system_level_pip",
+        category="other_paid",
+        attr_path="settings.other_paid_features.system_level_pip",
+    ),
 )
 
 # Notification sensors
@@ -869,6 +1220,19 @@ RECORDING_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="recording",
         attr_path="settings.offline_motion_event_settings.enabled",
     ),
+    RingExtendedSensorDescription(
+        key="lite_24x7_frequency_secs_powered",
+        translation_key="lite_24x7_frequency_secs_powered",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        category="recording",
+        attr_path="settings.lite_24x7.frequency_secs_powered",
+    ),
+    RingExtendedSensorDescription(
+        key="data_collection_enabled",
+        translation_key="data_collection_enabled",
+        category="recording",
+        attr_path="settings.data_collection_enabled",
+    ),
 )
 
 # Floodlight sensors
@@ -905,6 +1269,24 @@ FLOODLIGHT_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="floodlight",
         attr_path="settings.floodlight_settings.always_on",
     ),
+    RingExtendedSensorDescription(
+        key="ring_cam_light_installed",
+        translation_key="ring_cam_light_installed",
+        category="floodlight",
+        attr_path="ring_cam_light_installed",
+    ),
+    RingExtendedSensorDescription(
+        key="light_settings",
+        translation_key="light_settings",
+        category="floodlight",
+        attr_path="settings.light_settings",
+    ),
+    RingExtendedSensorDescription(
+        key="ir_led_settings",
+        translation_key="ir_led_settings",
+        category="floodlight",
+        attr_path="settings.ir_led_settings",
+    ),
 )
 
 # Radar / Bird's Eye View sensors
@@ -934,6 +1316,12 @@ RADAR_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="radar",
         attr_path="settings.radar_settings.installation_height",
     ),
+    RingExtendedSensorDescription(
+        key="auto_motion_sensitivity_enabled",
+        translation_key="auto_motion_sensitivity_enabled",
+        category="radar",
+        attr_path="settings.radar_settings.auto_motion_sensitivity_enabled",
+    ),
 )
 
 # Local Processing (Sheila) sensors
@@ -961,6 +1349,18 @@ LOCAL_PROCESSING_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="sheila_camera_processing_eligible",
         category="local_processing",
         attr_path="features.sheila_camera_processing_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="stark_enabled",
+        translation_key="stark_enabled",
+        category="local_processing",
+        attr_path="settings.stark_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="stark_enrolled",
+        translation_key="stark_enrolled",
+        category="local_processing",
+        attr_path="settings.stark_enrolled",
     ),
 )
 
@@ -1020,6 +1420,288 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="features",
         attr_path="features.dynamic_network_switching_eligible",
     ),
+    RingExtendedSensorDescription(
+        key="advanced_motion_enabled",
+        translation_key="advanced_motion_enabled",
+        category="features",
+        attr_path="features.advanced_motion_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="ai_warnings_eligible",
+        translation_key="ai_warnings_eligible",
+        category="features",
+        attr_path="features.ai_automated_warnings.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="ai_warnings_allowed",
+        translation_key="ai_warnings_allowed",
+        category="features",
+        attr_path="features.ai_automated_warnings.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="ai_warnings_enabled",
+        translation_key="ai_warnings_enabled",
+        category="features",
+        attr_path="features.ai_automated_warnings.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="alexa_greetings_eligible",
+        translation_key="alexa_greetings_eligible",
+        category="features",
+        attr_path="features.alexa_plus_greetings.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="alexa_greetings_allowed",
+        translation_key="alexa_greetings_allowed",
+        category="features",
+        attr_path="features.alexa_plus_greetings.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="alexa_greetings_enabled",
+        translation_key="alexa_greetings_enabled",
+        category="features",
+        attr_path="features.alexa_plus_greetings.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="animal_detection_eligible",
+        translation_key="animal_detection_eligible",
+        category="features",
+        attr_path="features.animal_detection_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="chime_auto_detect_capable",
+        translation_key="chime_auto_detect_capable",
+        category="features",
+        attr_path="features.chime_auto_detect_capable",
+    ),
+    RingExtendedSensorDescription(
+        key="chime_settings_eligible",
+        translation_key="chime_settings_eligible",
+        category="features",
+        attr_path="features.chime_settings.is_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="light_schedule_enabled",
+        translation_key="light_schedule_enabled",
+        category="features",
+        attr_path="features.light_schedule_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="live_view_audio_privacy_eligible",
+        translation_key="live_view_audio_privacy_eligible",
+        category="features",
+        attr_path="features.live_view_audio_privacy_controls.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="live_view_pip_mode",
+        translation_key="live_view_pip_mode",
+        category="features",
+        attr_path="features.live_view_pip_mode",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_message_enabled",
+        translation_key="motion_message_enabled",
+        category="features",
+        attr_path="features.motion_message_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_stop_edge_eligible",
+        translation_key="motion_stop_edge_eligible",
+        category="features",
+        attr_path="features.motion_stop_edge_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zone_recommendation",
+        translation_key="motion_zone_recommendation",
+        category="features",
+        attr_path="features.motion_zone_recommendation",
+    ),
+    RingExtendedSensorDescription(
+        key="multiple_detection_events_enabled",
+        translation_key="multiple_detection_events_enabled",
+        category="features",
+        attr_path="features.multiple_detection_events.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="night_vision_enabled",
+        translation_key="night_vision_enabled",
+        category="features",
+        attr_path="features.night_vision_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="package_warning_activation_eligible",
+        translation_key="package_warning_activation_eligible",
+        category="features",
+        attr_path="features.package_warning.activation_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="package_warning_active",
+        translation_key="package_warning_active",
+        category="features",
+        attr_path="features.package_warning.active",
+    ),
+    RingExtendedSensorDescription(
+        key="package_warning_automation_eligible",
+        translation_key="package_warning_automation_eligible",
+        category="features",
+        attr_path="features.package_warning.automation_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="package_warning_enabled",
+        translation_key="package_warning_enabled",
+        category="features",
+        attr_path="features.package_warning.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="people_only_enabled",
+        translation_key="people_only_enabled",
+        category="features",
+        attr_path="features.people_only_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="person_id_eligible",
+        translation_key="person_id_eligible",
+        category="features",
+        attr_path="features.person_identification.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="person_id_allowed",
+        translation_key="person_id_allowed",
+        category="features",
+        attr_path="features.person_identification.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="person_id_enabled",
+        translation_key="person_id_enabled",
+        category="features",
+        attr_path="features.person_identification.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="ptz_setup_complete",
+        translation_key="ptz_setup_complete",
+        category="features",
+        attr_path="features.ptz_setup_complete",
+    ),
+    RingExtendedSensorDescription(
+        key="retinal_tuning_eligible",
+        translation_key="retinal_tuning_eligible",
+        category="features",
+        attr_path="features.retinal_tuning.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="retinal_tuning_allowed",
+        translation_key="retinal_tuning_allowed",
+        category="features",
+        attr_path="features.retinal_tuning.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="retinal_tuning_enabled",
+        translation_key="retinal_tuning_enabled",
+        category="features",
+        attr_path="features.retinal_tuning.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="retinal_tuning_max_zoom",
+        translation_key="retinal_tuning_max_zoom",
+        category="features",
+        attr_path="features.retinal_tuning.rt_max_digital_zoom_level",
+    ),
+    RingExtendedSensorDescription(
+        key="shadow_correction_enabled",
+        translation_key="shadow_correction_enabled",
+        category="features",
+        attr_path="features.shadow_correction_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="show_24x7_lite",
+        translation_key="show_24x7_lite",
+        category="features",
+        attr_path="features.show_24x7_lite",
+    ),
+    RingExtendedSensorDescription(
+        key="show_offline_motion_events",
+        translation_key="show_offline_motion_events",
+        category="features",
+        attr_path="features.show_offline_motion_events",
+    ),
+    RingExtendedSensorDescription(
+        key="show_radar_data",
+        translation_key="show_radar_data",
+        category="features",
+        attr_path="features.show_radar_data",
+    ),
+    RingExtendedSensorDescription(
+        key="single_alert_eligible",
+        translation_key="single_alert_eligible",
+        category="features",
+        attr_path="features.single_alert.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="single_alert_allowed",
+        translation_key="single_alert_allowed",
+        category="features",
+        attr_path="features.single_alert.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="single_alert_enabled",
+        translation_key="single_alert_enabled",
+        category="features",
+        attr_path="features.single_alert.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="transformer_score_features",
+        translation_key="transformer_score_features",
+        category="features",
+        attr_path="features.transformer_score.score",
+    ),
+    RingExtendedSensorDescription(
+        key="unusual_alert_eligible",
+        translation_key="unusual_alert_eligible",
+        category="features",
+        attr_path="features.unusual_alert.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="unusual_alert_allowed",
+        translation_key="unusual_alert_allowed",
+        category="features",
+        attr_path="features.unusual_alert.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="unusual_alert_enabled",
+        translation_key="unusual_alert_enabled",
+        category="features",
+        attr_path="features.unusual_alert.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="unusual_alert_learning_state",
+        translation_key="unusual_alert_learning_state",
+        category="features",
+        attr_path="features.unusual_alert.learning.state",
+    ),
+    RingExtendedSensorDescription(
+        key="vehicle_detection_eligible",
+        translation_key="vehicle_detection_eligible",
+        category="features",
+        attr_path="features.vehicle_detection_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="video_donation_eligible",
+        translation_key="video_donation_eligible",
+        category="features",
+        attr_path="features.video_donation.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="continuous_recording_available",
+        translation_key="continuous_recording_available",
+        category="features",
+        attr_path="features.video_recording.recording_mode_availability.continuous.available",
+    ),
+    RingExtendedSensorDescription(
+        key="continuous_recording_supported",
+        translation_key="continuous_recording_supported",
+        category="features",
+        attr_path="features.video_recording.recording_mode_availability.continuous.supported",
+    ),
 )
 
 # Device Status sensors
@@ -1071,6 +1753,79 @@ DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="device_kind",
         category="device_status",
         attr_path="kind",
+    ),
+    RingExtendedSensorDescription(
+        key="led_status",
+        translation_key="led_status",
+        category="device_status",
+        attr_path="led_status",
+    ),
+    RingExtendedSensorDescription(
+        key="night_mode_status",
+        translation_key="night_mode_status",
+        category="device_status",
+        attr_path="night_mode_status",
+    ),
+    RingExtendedSensorDescription(
+        key="ring_cam_setup_flow",
+        translation_key="ring_cam_setup_flow",
+        category="device_status",
+        attr_path="ring_cam_setup_flow",
+    ),
+    RingExtendedSensorDescription(
+        key="siren_seconds_remaining",
+        translation_key="siren_seconds_remaining",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        category="device_status",
+        attr_path="siren_status.seconds_remaining",
+    ),
+    RingExtendedSensorDescription(
+        key="subscribed_motions",
+        translation_key="subscribed_motions",
+        category="device_status",
+        attr_path="subscribed_motions",
+    ),
+    RingExtendedSensorDescription(
+        key="time_zone",
+        translation_key="time_zone",
+        category="device_status",
+        attr_path="time_zone",
+    ),
+    RingExtendedSensorDescription(
+        key="created_at",
+        translation_key="created_at",
+        category="device_status",
+        attr_path="created_at",
+    ),
+    RingExtendedSensorDescription(
+        key="active_streaming_event_led",
+        translation_key="active_streaming_event_led",
+        category="device_status",
+        attr_path="settings.active_streaming_event_led_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="device_placement_info",
+        translation_key="device_placement_info",
+        category="device_status",
+        attr_path="settings.device_placement_info",
+    ),
+    RingExtendedSensorDescription(
+        key="flick_elim_recommended_mode",
+        translation_key="flick_elim_recommended_mode",
+        category="device_status",
+        attr_path="settings.flick_elim_recommended_mode",
+    ),
+    RingExtendedSensorDescription(
+        key="max_resolution_mode_eligible",
+        translation_key="max_resolution_mode_eligible",
+        category="device_status",
+        attr_path="settings.max_resolution_mode_eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="terms_of_service_accepted",
+        translation_key="terms_of_service_accepted",
+        category="device_status",
+        attr_path="settings.terms_of_service_accepted",
     ),
 )
 
