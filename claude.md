@@ -147,6 +147,48 @@ Examples:
 - Core Ring integration must be configured and working
 - No additional Python packages required
 
+## Attribute Analysis & Maintenance
+
+Ring's API attributes change over time (new features, deprecations). Use the analysis script to detect changes:
+
+### Getting Diagnostics
+
+**Option 1: Manual download (recommended)**
+1. Go to Settings → Devices & Services → Ring
+2. Click 3-dot menu → **Download Diagnostics**
+3. Save the JSON file
+
+**Option 2: HA API (requires token)**
+1. Create long-lived access token: Profile → Long-Lived Access Tokens
+2. Use with `--host` and `--token` flags
+
+### Running the Analysis
+
+```bash
+# Analyze downloaded diagnostics file
+python scripts/analyze_ring_attributes.py /path/to/diagnostics.json
+
+# Show all attributes (verbose)
+python scripts/analyze_ring_attributes.py diagnostics.json --show-all
+
+# Fetch directly from HA API
+python scripts/analyze_ring_attributes.py --host 192.168.1.201 --token YOUR_TOKEN
+```
+
+### Output
+
+The script reports:
+- **New attributes**: In Ring API but not exposed as sensors (potential additions)
+- **Missing attributes**: Defined as sensors but not in Ring data (potentially deprecated)
+
+### Adding New Sensors
+
+When new attributes are found:
+1. Add sensor definition to appropriate tuple in `const.py`
+2. Add translation in `strings.json` and `translations/en.json`
+3. Update version in `manifest.json`
+4. Deploy and test
+
 ## Common Issues
 
 1. **Sensors not appearing**: Verify Ring integration is loaded first
