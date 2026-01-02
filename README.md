@@ -11,6 +11,7 @@ Expose **249 hidden Ring device attributes** as Home Assistant sensors. This int
 - **Attaches to existing devices** - Sensors appear under your current Ring devices
 - **Selective categories** - Enable only the sensor groups you want
 - **All device types** - Supports doorbells, stick-up cams, floodlights, and more
+- **Firmware history tracking** - Persistent changelog of firmware updates with notifications
 
 ### Sensor Categories
 
@@ -18,7 +19,7 @@ Expose **249 hidden Ring device attributes** as Home Assistant sensors. This int
 |----------|-----------------|
 | **Health** | WiFi signal (RSSI), bandwidth, packet loss, uptime, TX rate, video packets |
 | **Power** | Battery %, voltage, AC power, transformer voltage, power mode |
-| **Firmware** | Version, update status, OTA status, bitrate |
+| **Firmware** | Version, update status, OTA status, bitrate, version history |
 | **Video** | Stream resolution, VOD status, HEVC, IR settings, night mode, camera placement |
 | **Audio** | Recording enabled, doorbell volume, mic volume, live view audio |
 | **Motion** | Detection enabled, sensitivity, loitering, RLMD, PIR validation, zones |
@@ -73,6 +74,7 @@ sensor.front_door_uptime               # 1003992 s
 sensor.front_door_cv_human_enabled     # true
 sensor.front_door_cv_human_mode        # edge
 sensor.front_door_firmware_version     # cam-1.28.10800
+sensor.front_door_firmware_history     # cam-1.28.10800 (2 updates)
 sensor.front_door_lite_24x7_enabled    # true
 sensor.backyard_floodlight_brightness  # 8
 sensor.backyard_birds_eye_view_enabled # true
@@ -90,7 +92,11 @@ Create automations that alert when battery voltage drops or battery health categ
 See which subscription features are enabled across devices and verify CV detection modes.
 
 ### Firmware Tracking
-Monitor firmware versions and OTA update status across your Ring fleet.
+Monitor firmware versions and OTA update status across your Ring fleet. Each device has a "Firmware: History" sensor that tracks:
+- Current firmware version
+- Date firmware was first seen
+- Complete changelog with timestamps
+- Automatic notifications when firmware updates
 
 ## Troubleshooting
 

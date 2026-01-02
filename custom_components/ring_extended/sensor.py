@@ -23,6 +23,7 @@ from .const import (
     DOMAIN,
     RingExtendedSensorDescription,
 )
+from .firmware_history import FirmwareHistoryTracker
 
 # Short prefixes for sensor names (keep UI clean)
 CATEGORY_PREFIXES = {
@@ -113,6 +114,24 @@ async def async_setup_entry(
                         )
                     )
 
+    # Add per-device firmware history sensors
+    firmware_tracker = our_data.get("firmware_tracker")
+    if firmware_tracker:
+        for family in DEVICE_FAMILIES:
+            devices = getattr(devices_dict, family, []) or []
+            for device in devices:
+                device_attrs = getattr(device, "_attrs", {})
+                # Only add for devices that have firmware info
+                if device_attrs.get("health", {}).get("firmware_version"):
+                    entities.append(
+                        RingDeviceFirmwareHistorySensor(
+                            device=device,
+                            coordinator=coordinator,
+                            firmware_tracker=firmware_tracker,
+                        )
+                    )
+        _LOGGER.info("Added per-device firmware history sensors")
+
     _LOGGER.info("Setting up %d Ring Extended sensors", len(entities))
     async_add_entities(entities)
 
@@ -195,6 +214,101 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
             return self.entity_description.is_available(attrs)
         except (KeyError, TypeError, AttributeError):
             return False
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self.async_write_ha_state()
+
+
+class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
+    """Sensor showing firmware history for a specific Ring device."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_icon = "mdi:history"
+
+    def __init__(
+        self,
+        device: Any,
+        coordinator: DataUpdateCoordinator,
+        firmware_tracker: FirmwareHistoryTracker,
+    ) -> None:
+        """Initialize the per-device firmware history sensor."""
+        super().__init__(coordinator)
+        self._device = device
+        self._firmware_tracker = firmware_tracker
+
+        device_id = str(getattr(device, "device_id", None) or getattr(device, "id", "unknown"))
+        self._device_id = device_id
+        self._attr_unique_id = f"{device_id}_firmware_history"
+        self._attr_name = "Firmware: History"
+
+    @property
+    def device_info(self) -> dict[str, Any]:
+        """Return device info to link this sensor to the existing Ring device."""
+        device_id = getattr(self._device, "device_id", None) or getattr(self._device, "id", None)
+        if device_id is None:
+            return None
+        return {
+            "identifiers": {(RING_DOMAIN, device_id)},
+        }
+
+    @property
+    def native_value(self) -> str:
+        """Return the current firmware version and change count."""
+        history = self._firmware_tracker.get_device_history(self._device_id)
+        current_version = self._firmware_tracker._current_versions.get(self._device_id, "Unknown")
+        change_count = len(history)
+
+        if change_count <= 1:
+            return current_version
+        else:
+            return f"{current_version} ({change_count - 1} updates)"
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return firmware history as attributes."""
+        history = self._firmware_tracker.get_device_history(self._device_id)
+
+        if not history:
+            return {
+                "current_version": "Unknown",
+                "history": [],
+                "total_changes": 0,
+            }
+
+        # Format history entries
+        formatted_history = []
+        for entry in reversed(history):  # Most recent first
+            ts = entry.get("timestamp", "")
+            if ts:
+                try:
+                    from datetime import datetime
+                    dt = datetime.fromisoformat(ts)
+                    date_str = dt.strftime("%Y-%m-%d %H:%M")
+                except ValueError:
+                    date_str = ts[:16]
+            else:
+                date_str = "Unknown"
+
+            prev = entry.get("previous_version")
+            ver = entry.get("version", "?")
+
+            if prev:
+                formatted_history.append(f"{date_str}: {prev} -> {ver}")
+            else:
+                formatted_history.append(f"{date_str}: {ver} (initial)")
+
+        current = history[-1] if history else {}
+        first_seen = history[0].get("timestamp", "")[:10] if history else "Unknown"
+
+        return {
+            "current_version": current.get("version", "Unknown"),
+            "first_seen": first_seen,
+            "total_updates": max(0, len(history) - 1),
+            "history": formatted_history,
+        }
 
     @callback
     def _handle_coordinator_update(self) -> None:
