@@ -12,6 +12,7 @@ Expose **249 hidden Ring device attributes** as Home Assistant sensors. This int
 - **Selective categories** - Enable only the sensor groups you want
 - **All device types** - Supports doorbells, stick-up cams, floodlights, and more
 - **Firmware history tracking** - Persistent changelog of firmware updates with notifications
+- **Coordinator health monitoring** - Detects when Ring updates stop working
 
 ### Sensor Categories
 
@@ -98,6 +99,40 @@ Monitor firmware versions and OTA update status across your Ring fleet. Each dev
 - Complete changelog with timestamps
 - Automatic notifications when firmware updates
 
+### Coordinator Health Monitoring
+The integration includes a diagnostic sensor that monitors the Ring integration's update coordinator:
+
+```
+sensor.ring_extended_diagnostics_coordinator_health
+```
+
+**States:**
+- `Healthy` - Updates received within last 10 minutes (normal operation)
+- `Stale` - No updates for 10-30 minutes (may indicate issues)
+- `Critical` - No updates for 30+ minutes (coordinator likely stuck)
+- `Failed` - Coordinator reporting errors
+
+**Attributes:**
+- `minutes_since_update` - Time since last Ring data refresh
+- `update_count` - Number of coordinator updates since HA started
+- `last_update` - Timestamp of last successful update
+- `last_update_success` - Whether coordinator is working
+
+**Example Automation:**
+```yaml
+automation:
+  - alias: "Ring Coordinator Stale Alert"
+    trigger:
+      - platform: state
+        entity_id: sensor.ring_extended_diagnostics_coordinator_health
+        to: "Stale"
+        for: "00:05:00"
+    action:
+      - service: notify.mobile_app
+        data:
+          message: "Ring updates have stalled - consider reloading Ring integration"
+```
+
 ## Troubleshooting
 
 ### Sensors not appearing
@@ -112,6 +147,8 @@ Monitor firmware versions and OTA update status across your Ring fleet. Each dev
 ### Sensors not updating
 - Updates come from the Ring integration's coordinator (every ~5 minutes)
 - Check that the Ring integration itself is updating
+- Monitor `sensor.ring_extended_diagnostics_coordinator_health` for status
+- If status is `Stale` or `Critical`, try reloading the Ring integration
 
 ## Technical Details
 

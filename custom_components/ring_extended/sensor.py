@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from homeassistant.components.ring import DOMAIN as RING_DOMAIN
@@ -10,6 +11,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -131,6 +133,16 @@ async def async_setup_entry(
                         )
                     )
         _LOGGER.info("Added per-device firmware history sensors")
+
+    # Add coordinator health sensor
+    entities.append(
+        RingCoordinatorHealthSensor(
+            hass=hass,
+            coordinator=coordinator,
+            entry_id=entry.entry_id,
+        )
+    )
+    _LOGGER.info("Added coordinator health sensor")
 
     _LOGGER.info("Setting up %d Ring Extended sensors", len(entities))
     async_add_entities(entities)
@@ -284,7 +296,6 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
             ts = entry.get("timestamp", "")
             if ts:
                 try:
-                    from datetime import datetime
                     dt = datetime.fromisoformat(ts)
                     date_str = dt.strftime("%Y-%m-%d %H:%M")
                 except ValueError:
@@ -313,4 +324,126 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
+        self.async_write_ha_state()
+
+
+class RingCoordinatorHealthSensor(CoordinatorEntity, SensorEntity):
+    """Sensor showing the health status of the Ring coordinator."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_icon = "mdi:heart-pulse"
+    _attr_name = "Coordinator Health"
+
+    # Thresholds for health status (in minutes)
+    HEALTHY_THRESHOLD = 10  # Up to 10 minutes = healthy
+    STALE_THRESHOLD = 30  # 10-30 minutes = stale
+    # Over 30 minutes = critical
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: DataUpdateCoordinator,
+        entry_id: str,
+    ) -> None:
+        """Initialize the coordinator health sensor."""
+        super().__init__(coordinator)
+        self._hass = hass
+        self._entry_id = entry_id
+        self._attr_unique_id = f"{entry_id}_coordinator_health"
+        self._update_count = 0
+        self._last_update_time: datetime | None = datetime.now(timezone.utc)
+        self._unsub_timer: callable | None = None
+
+    async def async_added_to_hass(self) -> None:
+        """Run when entity is added to hass."""
+        await super().async_added_to_hass()
+        # Update every minute to keep minutes_since_update accurate
+        self._unsub_timer = async_track_time_interval(
+            self._hass,
+            self._async_update_time,
+            timedelta(minutes=1),
+        )
+
+    async def async_will_remove_from_hass(self) -> None:
+        """Run when entity is removed from hass."""
+        if self._unsub_timer:
+            self._unsub_timer()
+            self._unsub_timer = None
+        await super().async_will_remove_from_hass()
+
+    @callback
+    def _async_update_time(self, _now: datetime) -> None:
+        """Update the sensor to refresh minutes_since_update."""
+        self.async_write_ha_state()
+
+    @property
+    def device_info(self) -> dict[str, Any]:
+        """Return device info for this sensor."""
+        return {
+            "identifiers": {(DOMAIN, "ring_extended_diagnostics")},
+            "name": "Ring Extended Diagnostics",
+            "manufacturer": "Ring Extended",
+            "model": "Coordinator Monitor",
+        }
+
+    @property
+    def native_value(self) -> str:
+        """Return the health status."""
+        if not self.coordinator.last_update_success:
+            return "Failed"
+
+        if self._last_update_time is None:
+            return "Unknown"
+
+        minutes_ago = self._minutes_since_update
+        if minutes_ago is None:
+            return "Unknown"
+
+        if minutes_ago <= self.HEALTHY_THRESHOLD:
+            return "Healthy"
+        elif minutes_ago <= self.STALE_THRESHOLD:
+            return "Stale"
+        else:
+            return "Critical"
+
+    @property
+    def _minutes_since_update(self) -> float | None:
+        """Calculate minutes since the last update."""
+        if self._last_update_time is None:
+            return None
+        now = datetime.now(timezone.utc)
+        delta = now - self._last_update_time
+        return delta.total_seconds() / 60
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return additional state attributes."""
+        minutes_ago = self._minutes_since_update
+
+        attrs = {
+            "last_update": self._last_update_time.isoformat() if self._last_update_time else None,
+            "minutes_since_update": round(minutes_ago, 1) if minutes_ago is not None else None,
+            "update_count": self._update_count,
+            "last_update_success": self.coordinator.last_update_success,
+            "healthy_threshold_minutes": self.HEALTHY_THRESHOLD,
+            "stale_threshold_minutes": self.STALE_THRESHOLD,
+        }
+
+        # Add status explanation
+        if minutes_ago is not None:
+            if minutes_ago <= self.HEALTHY_THRESHOLD:
+                attrs["status_detail"] = f"Updated {round(minutes_ago, 1)} min ago - normal operation"
+            elif minutes_ago <= self.STALE_THRESHOLD:
+                attrs["status_detail"] = f"Updated {round(minutes_ago, 1)} min ago - updates may be delayed"
+            else:
+                attrs["status_detail"] = f"Updated {round(minutes_ago, 1)} min ago - coordinator may be stuck"
+
+        return attrs
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._last_update_time = datetime.now(timezone.utc)
+        self._update_count += 1
         self.async_write_ha_state()
