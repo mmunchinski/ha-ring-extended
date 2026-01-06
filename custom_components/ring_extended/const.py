@@ -107,6 +107,31 @@ def _unix_to_datetime(timestamp: int | None) -> datetime | None:
         return None
 
 
+def _parse_throughput_to_mbps(value: str | int | float | None) -> float | None:
+    """Parse throughput value to Mbps.
+
+    Ring API returns values like '28972 Kbps' as strings.
+    Convert to numeric Mbps value.
+    """
+    if value is None:
+        return None
+    try:
+        if isinstance(value, (int, float)):
+            return float(value)
+        # Parse string like "28972 Kbps"
+        value_str = str(value).strip()
+        parts = value_str.split()
+        if not parts:
+            return None
+        num = float(parts[0])
+        # Convert Kbps to Mbps if needed
+        if len(parts) > 1 and "kbps" in parts[1].lower():
+            return round(num / 1000, 2)
+        return num
+    except (ValueError, TypeError, IndexError):
+        return None
+
+
 @dataclass(frozen=True, kw_only=True)
 class RingExtendedSensorDescription(SensorEntityDescription):
     """Describes Ring extended sensor entity."""
@@ -295,6 +320,7 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         category="health",
         attr_path="health.iperf_tcp_throughput",
+        value_fn=lambda attrs: _parse_throughput_to_mbps(get_nested(attrs, "health.iperf_tcp_throughput")),
     ),
     RingExtendedSensorDescription(
         key="privacy_cover_enabled",
