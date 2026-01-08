@@ -1,0 +1,941 @@
+openapi: 3.0.3
+info:
+  title: Ring API (Unofficial) - Live Data Reference
+  description: 'Unofficial OpenAPI specification for Ring device data structures.
+
+    Generated from live Ring API data via Home Assistant diagnostics on 2025-12-29.
+
+
+    **Device Types Found:** 13
+
+    **Total Devices Sampled:** 23
+
+    **CV Detection Types:** 17
+
+
+    WARNING: This is not an official API. Ring can change it at any time.'
+  version: 2.0.0
+  contact:
+    name: Personal Reference
+servers:
+- url: https://api.ring.com
+  description: Ring API
+- url: https://prd-api-us.prd.rings.solutions
+  description: Ring App API
+paths:
+  /clients_api/ring_devices:
+    get:
+      summary: Get all Ring devices
+      description: Returns all devices associated with the account
+      responses:
+        '200':
+          description: Device list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevicesResponse'
+  /clients_api/doorbots/{device_id}:
+    get:
+      summary: Get doorbell device details
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Doorbell device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RingDevice'
+  /clients_api/doorbots/{device_id}/health:
+    get:
+      summary: Get device health data
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Health data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceHealth'
+  /clients_api/doorbots/{device_id}/history:
+    get:
+      summary: Get device event history
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 20
+      responses:
+        '200':
+          description: Event history
+  /clients_api/doorbots/{device_id}/floodlight_light_on:
+    put:
+      summary: Turn floodlight on
+      description: "Verified: No request body required"
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+  /clients_api/doorbots/{device_id}/floodlight_light_off:
+    put:
+      summary: Turn floodlight off
+      description: "Verified: No request body required"
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+  /clients_api/doorbots/{device_id}/siren_on:
+    put:
+      summary: Turn siren on
+      description: "Verified: Duration in seconds (0-120)"
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - duration
+              properties:
+                duration:
+                  type: integer
+                  minimum: 0
+                  maximum: 120
+                  description: Siren duration in seconds
+      responses:
+        '200':
+          description: Success
+  /clients_api/doorbots/{device_id}/siren_off:
+    put:
+      summary: Turn siren off
+      description: "Verified: No request body required"
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+  /clients_api/doorbots/{device_id}/live_view:
+    post:
+      summary: Start live view session
+      description: |
+        UNVERIFIED: Initiates a live video stream. Actual streaming uses WebRTC
+        signaling via WebSocket (wss://api.prod.signalling.ring.devices.a2z.com).
+        Request/response structure not fully documented.
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Live view session info (structure unverified)
+  /clients_api/dings/active:
+    get:
+      summary: Get active dings/events
+      responses:
+        '200':
+          description: Active events
+  /clients_api/dings/{ding_id}/recording:
+    get:
+      summary: Get recording for a ding event
+      parameters:
+      - name: ding_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Recording URL/data
+  /clients_api/snapshots/image/{device_id}:
+    get:
+      summary: Get snapshot image
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Snapshot image
+          content:
+            image/jpeg: {}
+  /clients_api/chimes/{chime_id}:
+    get:
+      summary: Get chime device details
+      parameters:
+      - name: chime_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Chime device
+  /clients_api/chimes/{chime_id}/play_sound:
+    post:
+      summary: Test chime sound
+      description: "Verified: Plays a test sound on the chime"
+      parameters:
+      - name: chime_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - kind
+              properties:
+                kind:
+                  type: string
+                  enum: [ding, motion]
+                  description: Type of sound to play
+      responses:
+        '200':
+          description: Success
+  /clients_api/locations/{location_id}:
+    get:
+      summary: Get location details
+      parameters:
+      - name: location_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Location info
+  /groups/v1/locations/{location_id}/groups:
+    get:
+      summary: Get device groups for a location
+      parameters:
+      - name: location_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Device groups
+  /evm/v2/history/locations/{location_id}:
+    get:
+      summary: Get event history for a location
+      parameters:
+      - name: location_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Location event history
+  /devices/v1/devices/{device_id}/settings:
+    get:
+      summary: Get device settings
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Device settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceSettings'
+    patch:
+      summary: Update device settings
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceSettings'
+      responses:
+        '200':
+          description: Updated settings
+  /commands/v1/devices/{device_id}/device_rpc:
+    post:
+      summary: Send RPC command to device
+      description: |
+        Send an RPC command to a Ring device. Available commands vary by device type.
+        Check device's `health.supported_rpc_commands` for available commands.
+      parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RPCCommand'
+      responses:
+        '200':
+          description: Command result
+components:
+  schemas:
+    DevicesResponse:
+      type: object
+      properties:
+        doorbots:
+          type: array
+          items:
+            $ref: '#/components/schemas/RingDevice'
+        authorized_doorbots:
+          type: array
+          items:
+            $ref: '#/components/schemas/RingDevice'
+        stickup_cams:
+          type: array
+          items:
+            $ref: '#/components/schemas/RingDevice'
+        chimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChimeDevice'
+        base_stations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BaseStation'
+    DeviceTypes:
+      type: string
+      description: Known Ring device type identifiers
+      enum:
+      - base_station_v1
+      - cocoa_camera
+      - cocoa_camera_v2
+      - cocoa_camera_v3
+      - cocoa_doorbell_v2
+      - cocoa_doorbell_v5
+      - cocoa_floodlight_v2
+      - doorbell_oyster
+      - floodlight_pro
+      - stickup_cam_medusa
+      - stickup_cam_mini
+      - stickup_cam_mini_v2
+      - three_p_cam
+    RingDevice:
+      type: object
+      description: Ring camera/doorbell device
+      properties:
+        id:
+          type: integer
+          description: Unique device ID
+        description:
+          type: string
+          description: User-assigned device name
+        device_id:
+          type: string
+          description: Hardware device ID
+        kind:
+          $ref: '#/components/schemas/DeviceTypes'
+        time_zone:
+          type: string
+          example: America/New_York
+        firmware_version:
+          type: string
+        owned:
+          type: boolean
+        stolen:
+          type: boolean
+        subscribed:
+          type: boolean
+        subscribed_motions:
+          type: boolean
+        is_sidewalk_gateway:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        location_id:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        address:
+          type: string
+        battery_life:
+          type: string
+        external_connection:
+          type: boolean
+        alerts:
+          $ref: '#/components/schemas/DeviceAlerts'
+        health:
+          $ref: '#/components/schemas/DeviceHealth'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+        features:
+          $ref: '#/components/schemas/DeviceFeatures'
+        owner:
+          $ref: '#/components/schemas/Owner'
+    DeviceAlerts:
+      type: object
+      properties:
+        connection:
+          type: string
+          enum:
+          - online
+          - offline
+        ota_status:
+          type: string
+    Owner:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+    DeviceHealth:
+      type: object
+      properties:
+        ac_power:
+          type: integer
+          example: 0
+        bandwidth:
+          type: integer
+          example: 28767
+          description: Network bandwidth in kbps
+        bandwidth_last_time:
+          type: integer
+          example: 1767086257
+        battery_error:
+          type: boolean
+          example: false
+        battery_percentage:
+          type: integer
+          example: 37
+          description: Battery level (0-100)
+        battery_percentage_category:
+          type: string
+          example: poor
+        battery_present:
+          type: boolean
+          example: true
+        battery_save:
+          type: boolean
+          example: false
+        battery_voltage:
+          type: number
+          format: float
+          example: 3596.0
+          description: Battery voltage in mV
+        battery_voltage_category:
+          type: string
+          example: good
+        channel:
+          type: string
+          example: '7'
+        connected:
+          type: boolean
+          example: true
+        current_bandwidth:
+          type: integer
+          example: 28767
+        current_bandwidth_category:
+          type: string
+          example: unknown
+        current_bandwidth_mb:
+          type: number
+          format: float
+          example: 28.8
+        device_type:
+          type: string
+          example: doorbell_oyster
+        egress_tx_rate:
+          type: string
+          example: '18.31'
+        egress_tx_rate_category:
+          type: string
+          example: poor
+        ext_power_state:
+          type: integer
+          example: 0
+        external_connection:
+          type: boolean
+          example: false
+        fast_ping_hop1_score:
+          type: string
+          example: '16.8'
+        firmware_avg_bitrate:
+          type: string
+          example: '0'
+        firmware_version:
+          type: string
+          example: 21.0.4
+          description: Current firmware version
+        firmware_version_status:
+          type: string
+          example: Up to Date
+        floodlight_on:
+          type: boolean
+          example: false
+        hatch_open:
+          type: boolean
+          example: false
+        iperf_tcp_throughput:
+          type: string
+          example: 29582 Kbps
+        last_update_time:
+          type: integer
+          example: 1767086257
+        network_connection_value:
+          type: string
+          example: wifi
+        night_mode_on:
+          type: boolean
+          example: false
+        ota_status:
+          type: string
+          example: timeout
+        packet_loss:
+          type: number
+          format: float
+          example: 44739236.0
+          description: Network packet loss percentage
+        packet_loss_category:
+          type: string
+          example: poor
+        pref_run_mode:
+          type: string
+          example: low_power
+        privacy_cover_enabled:
+          type: boolean
+          example: false
+        rss_connected:
+          type: boolean
+          example: true
+        rssi:
+          type: number
+          format: float
+          example: -63.0
+          description: WiFi signal strength in dBm
+        rssi_category:
+          type: string
+          example: okay
+        run_mode:
+          type: string
+          example: low_power
+        second_battery_percentage_category:
+          type: string
+          example: unknown
+        second_battery_voltage_category:
+          type: string
+          example: unknown
+        sidewalk_connection:
+          type: boolean
+          example: false
+        siren_on:
+          type: boolean
+          example: false
+        status_time:
+          type: integer
+          example: 57903882458136
+        stream_profile:
+          type: string
+          example: dynamic_avc
+        stream_resolution:
+          type: integer
+          example: 33
+        supported_rpc_commands:
+          type: array
+          items:
+            type: string
+        transformer_score:
+          type: string
+          example: best
+        transformer_status:
+          type: string
+          example: '6'
+        transformer_voltage:
+          type: number
+          format: float
+          example: 0.0
+          description: Doorbell transformer voltage
+        transformer_voltage_category:
+          type: string
+          example: poor
+        tx_rate:
+          type: integer
+          example: 5
+        uptime_sec:
+          type: integer
+          example: 1241332
+          description: Device uptime in seconds
+        video_packets_total:
+          type: string
+          example: '374'
+        vod_enabled:
+          type: boolean
+          example: true
+        white_led_on:
+          type: boolean
+          example: false
+        wifi_is_ring_network:
+          type: boolean
+          example: false
+        wifi_name:
+          type: string
+    CVDetectionTypes:
+      type: string
+      description: Computer vision detection type identifiers
+      enum:
+      - animal
+      - baby_cry
+      - car_alarm
+      - co2_smoke_alarm
+      - dog_bark
+      - general_sound
+      - glass_break
+      - human
+      - loitering
+      - motion
+      - motion_stop
+      - moving_vehicle
+      - other_motion
+      - package_delivery
+      - package_pickup
+      - unverified_motion
+      - vehicle
+    RPCCommand:
+      type: object
+      description: RPC command to send to a Ring device
+      required:
+        - command_name
+      properties:
+        command_name:
+          type: string
+          description: The RPC command to execute
+          enum:
+            - CV.ConfirmedEvent
+            - CV.KeepAlive
+            - CV.Reset
+            - CV.ResetFlows
+            - CloudCV.Event
+            - attestation
+            - mds_group_update
+            - mds_migration_package_available
+            - motion_snooze
+            - ping
+            - rsp.AppConnected
+            - rsp.CloseSession
+            - rsp.DynamicResolution
+            - rsp.StealthMode
+            - vod.prepare
+        request_id:
+          type: string
+          description: Optional request identifier
+        params:
+          type: object
+          description: Command-specific parameters
+          additionalProperties: true
+    CVDetectionConfig:
+      type: object
+      description: Configuration for a single CV detection type
+      properties:
+        enabled:
+          type: boolean
+        mode:
+          type: string
+          enum:
+          - edge
+          - cloud
+          - none
+          description: Processing mode
+        record:
+          type: boolean
+          nullable: true
+        notification:
+          type: boolean
+    ChimeDevice:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        device_id:
+          type: string
+        kind:
+          type: string
+          enum:
+          - chime
+          - chime_pro
+          - chime_v2
+        firmware_version:
+          type: string
+        owned:
+          type: boolean
+    BaseStation:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        device_id:
+          type: string
+        kind:
+          type: string
+          enum:
+          - base_station_v1
+          - base_station_v2
+        firmware_version:
+          type: string
+    DeviceSettings:
+      type: object
+      description: Device configuration settings
+      properties:
+        motion_detection_enabled:
+          type: boolean
+        advanced_motion_detection_enabled:
+          type: boolean
+        advanced_motion_detection_human_only_mode:
+          type: boolean
+        people_detection_eligible:
+          type: boolean
+        enable_audio_recording:
+          type: boolean
+        doorbell_volume:
+          type: integer
+          minimum: 0
+          maximum: 11
+        voice_volume:
+          type: integer
+        mic_volume:
+          type: integer
+        live_view_disabled:
+          type: boolean
+        live_view_preset_profile:
+          type: string
+          enum: [low, middle, high, highest]
+        extended_live_view:
+          type: integer
+        enable_vod:
+          type: integer
+        vod_status:
+          type: string
+          enum: [enabled, disabled]
+        exposure_control:
+          type: integer
+        enable_rich_notifications:
+          type: boolean
+        loitering_threshold:
+          type: integer
+        user_specified_recording_ttl:
+          type: integer
+          description: Recording retention in days
+        motion_snooze_preset_profile:
+          type: string
+        cv_settings:
+          type: object
+          properties:
+            detection_types:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/CVDetectionConfig'
+            threshold:
+              type: object
+              additionalProperties:
+                type: number
+            search_types:
+              type: object
+        cv_paid_features:
+          type: object
+          additionalProperties:
+            type: boolean
+        other_paid_features:
+          type: object
+          additionalProperties:
+            type: boolean
+        floodlight_settings:
+          type: object
+          properties:
+            brightness:
+              type: integer
+              minimum: 0
+              maximum: 10
+            duration:
+              type: integer
+            always_on:
+              type: boolean
+        lite_24x7:
+          type: object
+          properties:
+            subscribed:
+              type: boolean
+            enabled:
+              type: boolean
+            frequency_secs:
+              type: integer
+            resolution_p:
+              type: integer
+        chime_settings:
+          type: object
+          properties:
+            enable:
+              type: boolean
+            type:
+              type: integer
+            duration:
+              type: integer
+        sheila_settings:
+          type: object
+          properties:
+            cv_processing_enabled:
+              type: boolean
+            local_storage_enabled:
+              type: boolean
+        video_settings:
+          type: object
+          properties:
+            encryption_enabled:
+              type: boolean
+            hevc_enabled:
+              type: boolean
+    DeviceFeatures:
+      type: object
+      description: Device feature flags and eligibility
+      properties:
+        motions_enabled:
+          type: boolean
+        show_recordings:
+          type: boolean
+        show_vod_settings:
+          type: boolean
+        show_24x7_lite:
+          type: boolean
+        cfes_eligible:
+          type: boolean
+        rich_notifications_eligible:
+          type: boolean
+        recording_24x7_eligible:
+          type: boolean
+          nullable: true
+        vehicle_detection_eligible:
+          type: boolean
+        animal_detection_eligible:
+          type: boolean
+        sheila_camera_eligible:
+          type: boolean
+        sheila_camera_processing_eligible:
+          type: boolean
+        chime_auto_detect_capable:
+          type: boolean
+        night_vision_enabled:
+          type: boolean
+        advanced_motion_enabled:
+          type: boolean
+        people_only_enabled:
+          type: boolean
+        motion_zone_recommendation:
+          type: boolean
+        video_recording:
+          type: object
+          properties:
+            recording_mode:
+              type: string
+              enum: [motion, continuous]
+            recording_enabled:
+              type: boolean
+            recording_state:
+              type: string
+              enum: [active, inactive]
+        video_rendering:
+          type: object
+          properties:
+            max_digital_zoom_level:
+              type: number
+        live_view_pip_mode:
+          type: string
+        person_identification:
+          type: object
+          properties:
+            eligibility:
+              type: object
+              properties:
+                eligible:
+                  type: boolean
+            enablement:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                allowed:
+                  type: boolean
+        unusual_alert:
+          type: object
+          properties:
+            eligibility:
+              type: object
+              properties:
+                eligible:
+                  type: boolean
+            enablement:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Ring OAuth2 access token
+security:
+- bearerAuth: []
