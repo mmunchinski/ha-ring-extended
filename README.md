@@ -3,7 +3,7 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/release/mmunchinski/ha-ring-extended.svg)](https://github.com/mmunchinski/ha-ring-extended/releases)
 
-Expose **249 hidden Ring device attributes** as Home Assistant sensors. This integration surfaces the health metrics, CV detection settings, subscription features, and device configurations that Ring's API provides but the core integration doesn't expose.
+Expose **280 hidden Ring device attributes** as Home Assistant sensors. This integration surfaces the health metrics, CV detection settings, subscription features, and device configurations that Ring's API provides but the core integration doesn't expose.
 
 ## Features
 
@@ -18,21 +18,21 @@ Expose **249 hidden Ring device attributes** as Home Assistant sensors. This int
 
 | Category | Example Sensors |
 |----------|-----------------|
-| **Health** | WiFi signal (RSSI), bandwidth, packet loss, uptime, TX rate, video packets |
-| **Power** | Battery %, voltage, AC power, transformer voltage, power mode |
+| **Health** | WiFi signal (RSSI), bandwidth, packet loss, uptime, TX rate, video packets, alerts |
+| **Power** | Battery %, voltage, AC power, transformer voltage, power mode, battery level |
 | **Firmware** | Version, update status, OTA status, bitrate, version history |
-| **Video** | Stream resolution, VOD status, HEVC, IR settings, night mode, camera placement |
+| **Video** | Stream resolution, VOD status, HEVC, IR settings, server settings, bitrate profile |
 | **Audio** | Recording enabled, doorbell volume, mic volume, live view audio |
 | **Motion** | Detection enabled, sensitivity, loitering, RLMD, PIR validation, zones |
-| **CV Detection** | Human/vehicle/animal/package/sound detection modes (17 types) |
+| **CV Detection** | Human/vehicle/animal/package/sound detection modes + record flags (17 types × 4) |
 | **CV Paid** | CV subscription feature flags |
 | **Other Paid** | Live speak, closed caption, alarm recording, snapshot capture |
-| **Notifications** | Rich notifications, face crop, scene source |
-| **Recording** | Retention days, snapshot interval, 24/7 lite settings |
+| **Notifications** | Rich notifications, face crop, scene source, concierge settings |
+| **Recording** | Retention days, snapshot interval, 24/7 lite, offline motion settings |
 | **Floodlight** | Brightness, duration, always-on, light settings |
 | **Radar** | Bird's Eye View, BEZ, auto motion sensitivity |
 | **Local Processing** | Sheila CV/storage, Stark settings |
-| **Features** | 40+ eligibility flags (AI warnings, person ID, unusual alerts, etc.) |
+| **Features** | 50+ eligibility flags (AI warnings, person ID, smart video search, etc.) |
 | **Device Status** | Timezone, LED status, siren countdown, setup flow |
 
 ## Requirements
