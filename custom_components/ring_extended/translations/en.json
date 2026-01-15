@@ -779,6 +779,303 @@
       },
       "wifi_is_ring_network": {
         "name": "Wifi Is Ring Network"
+      },
+      "video_brightness": {
+        "name": "Video Brightness"
+      },
+      "video_contrast": {
+        "name": "Video Contrast"
+      },
+      "video_saturation": {
+        "name": "Video Saturation"
+      },
+      "video_hdr_enabled": {
+        "name": "Video HDR Enabled"
+      },
+      "video_night_color_enabled": {
+        "name": "Video Night Color Enabled"
+      },
+      "video_rotate_180": {
+        "name": "Video Rotate 180°"
+      },
+      "video_aspect_ratio": {
+        "name": "Video Aspect Ratio"
+      },
+      "video_ae_level": {
+        "name": "Video Auto Exposure Level"
+      },
+      "video_ae_mode": {
+        "name": "Video Auto Exposure Mode"
+      },
+      "video_exposure_control": {
+        "name": "Video Exposure Control"
+      },
+      "video_clip_length_max": {
+        "name": "Video Clip Length Max"
+      },
+      "video_clip_length_min": {
+        "name": "Video Clip Length Min"
+      },
+      "video_clip_length_max_powered": {
+        "name": "Video Clip Length Max Powered"
+      },
+      "video_auto_clip_length_enabled": {
+        "name": "Video Auto Clip Length Enabled"
+      },
+      "video_high_fps_enabled": {
+        "name": "Video High FPS Enabled"
+      },
+      "video_tsvc_enabled": {
+        "name": "Video TSVC Enabled"
+      },
+      "video_encryption_eligibility_mode": {
+        "name": "Video Encryption Eligibility Mode"
+      },
+      "ptz_auto_scan_pause_ms": {
+        "name": "PTZ Auto Scan Pause"
+      },
+      "ptz_auto_scan_step_size": {
+        "name": "PTZ Auto Scan Step Size"
+      },
+      "ptz_pan_position_default": {
+        "name": "PTZ Pan Position Default"
+      },
+      "ptz_pan_position_max": {
+        "name": "PTZ Pan Position Max"
+      },
+      "ptz_pan_position_min": {
+        "name": "PTZ Pan Position Min"
+      },
+      "ptz_pan_max_speed": {
+        "name": "PTZ Pan Max Speed"
+      },
+      "ptz_pan_step_size": {
+        "name": "PTZ Pan Step Size"
+      },
+      "ptz_tilt_position_default": {
+        "name": "PTZ Tilt Position Default"
+      },
+      "ptz_tilt_position_max": {
+        "name": "PTZ Tilt Position Max"
+      },
+      "ptz_tilt_position_min": {
+        "name": "PTZ Tilt Position Min"
+      },
+      "ptz_tilt_max_speed": {
+        "name": "PTZ Tilt Max Speed"
+      },
+      "cv_threshold_motion": {
+        "name": "CV Threshold Motion"
+      },
+      "cv_threshold_other_motion": {
+        "name": "CV Threshold Other Motion"
+      },
+      "cv_human_confidence_day": {
+        "name": "CV Human Confidence Day"
+      },
+      "cv_human_confidence_night": {
+        "name": "CV Human Confidence Night"
+      },
+      "cv_motion_zone_overlap_day": {
+        "name": "CV Motion Zone Overlap Day"
+      },
+      "cv_motion_zone_overlap_night": {
+        "name": "CV Motion Zone Overlap Night"
+      },
+      "cv_object_size_max_day": {
+        "name": "CV Object Size Max Day"
+      },
+      "cv_object_size_max_night": {
+        "name": "CV Object Size Max Night"
+      },
+      "cv_object_size_min_day": {
+        "name": "CV Object Size Min Day"
+      },
+      "cv_object_size_min_night": {
+        "name": "CV Object Size Min Night"
+      },
+      "cv_object_time_overlap_day": {
+        "name": "CV Object Time Overlap Day"
+      },
+      "cv_object_time_overlap_night": {
+        "name": "CV Object Time Overlap Night"
+      },
+      "snapshot_frequency_secs": {
+        "name": "Snapshot Frequency"
+      },
+      "snapshot_frequency_secs_powered": {
+        "name": "Snapshot Frequency Powered"
+      },
+      "snapshot_frequency_after_secs": {
+        "name": "Snapshot Frequency After"
+      },
+      "snapshot_period_after_secs": {
+        "name": "Snapshot Period After"
+      },
+      "snapshot_max_upload_kb": {
+        "name": "Snapshot Max Upload KB"
+      },
+      "snapshot_lite_24x7_resolution_p": {
+        "name": "Snapshot Lite 24x7 Resolution"
+      },
+      "snapshot_ome_resolution_p": {
+        "name": "Snapshot OME Resolution"
+      },
+      "snapshot_close_container": {
+        "name": "Snapshot Close Container"
+      },
+      "snapshot_limited_network_rich_notifications": {
+        "name": "Snapshot Limited Network Rich Notifications"
+      },
+      "floodlight_adaptive_brightness_enabled": {
+        "name": "Floodlight Adaptive Brightness Enabled"
+      },
+      "floodlight_always_on_duration": {
+        "name": "Floodlight Always On Duration"
+      },
+      "floodlight_priority": {
+        "name": "Floodlight Priority"
+      },
+      "light_schedule_start_hour": {
+        "name": "Light Schedule Start Hour"
+      },
+      "light_schedule_start_minute": {
+        "name": "Light Schedule Start Minute"
+      },
+      "light_schedule_end_hour": {
+        "name": "Light Schedule End Hour"
+      },
+      "light_schedule_end_minute": {
+        "name": "Light Schedule End Minute"
+      },
+      "light_snooze_always_on": {
+        "name": "Light Snooze Always On"
+      },
+      "light_snooze_duration": {
+        "name": "Light Snooze Duration"
+      },
+      "pir_sensitivity1": {
+        "name": "PIR Sensitivity 1"
+      },
+      "pir_sensitivity2": {
+        "name": "PIR Sensitivity 2"
+      },
+      "pir_sensitivity3": {
+        "name": "PIR Sensitivity 3"
+      },
+      "pir_zone_mask": {
+        "name": "PIR Zone Mask"
+      },
+      "continuous_recording_unavailability_reason": {
+        "name": "Continuous Recording Unavailability Reason"
+      },
+      "hardware_id": {
+        "name": "Hardware ID"
+      },
+      "ring_net_id": {
+        "name": "Ring Net ID"
+      },
+      "imported_from_amazon": {
+        "name": "Imported From Amazon"
+      },
+      "legacy_fw_migrated": {
+        "name": "Legacy FW Migrated"
+      },
+      "third_party_manufacturer": {
+        "name": "Third Party Manufacturer"
+      },
+      "third_party_model": {
+        "name": "Third Party Model"
+      },
+      "cv_threshold_unverified_motion": {
+        "name": "CV Threshold Unverified Motion"
+      },
+      "cv_threshold_baby_cry": {
+        "name": "CV Threshold Baby Cry"
+      },
+      "cv_threshold_car_alarm": {
+        "name": "CV Threshold Car Alarm"
+      },
+      "cv_threshold_co2_smoke_alarm": {
+        "name": "CV Threshold CO2 Smoke Alarm"
+      },
+      "cv_threshold_dog_bark": {
+        "name": "CV Threshold Dog Bark"
+      },
+      "cv_threshold_general_sound": {
+        "name": "CV Threshold General Sound"
+      },
+      "cv_threshold_glass_break": {
+        "name": "CV Threshold Glass Break"
+      },
+      "offline_motion_frequency_after_secs": {
+        "name": "Offline Motion Frequency After"
+      },
+      "offline_motion_max_upload_kb": {
+        "name": "Offline Motion Max Upload KB"
+      },
+      "offline_motion_period_after_secs": {
+        "name": "Offline Motion Period After"
+      },
+      "offline_motion_resolution_p": {
+        "name": "Offline Motion Resolution"
+      },
+      "offline_motion_subscribed": {
+        "name": "Offline Motion Subscribed"
+      },
+      "concierge_mode": {
+        "name": "Concierge Mode"
+      },
+      "concierge_alexa_delay": {
+        "name": "Concierge Alexa Delay"
+      },
+      "concierge_autoreply_delay": {
+        "name": "Concierge Autoreply Delay"
+      },
+      "ring_media_server_enabled": {
+        "name": "Ring Media Server Enabled"
+      },
+      "ring_media_server_host": {
+        "name": "Ring Media Server Host"
+      },
+      "encryption_method": {
+        "name": "Encryption Method"
+      },
+      "max_bitrate_profile": {
+        "name": "Max Bitrate Profile"
+      },
+      "recording_24x7_mode": {
+        "name": "Recording 24x7 Mode"
+      },
+      "alert_connection": {
+        "name": "Alert Connection"
+      },
+      "alert_ota_status": {
+        "name": "Alert OTA Status"
+      },
+      "status_time": {
+        "name": "Status Time"
+      },
+      "battery_level": {
+        "name": "Battery Level"
+      },
+      "smart_video_description_eligible": {
+        "name": "Smart Video Description Eligible"
+      },
+      "smart_video_description_allowed": {
+        "name": "Smart Video Description Allowed"
+      },
+      "smart_video_description_enabled": {
+        "name": "Smart Video Description Enabled"
+      },
+      "smart_video_search_eligible": {
+        "name": "Smart Video Search Eligible"
+      },
+      "smart_video_search_allowed": {
+        "name": "Smart Video Search Allowed"
+      },
+      "smart_video_search_enabled": {
+        "name": "Smart Video Search Enabled"
       }
     }
   }
