@@ -1380,6 +1380,67 @@ CV_THRESHOLD_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="cv_detection",
         attr_path="settings.advanced_object_settings.object_time_overlap.night",
     ),
+    # Hybrid motion zones advanced object settings (newer devices)
+    RingExtendedSensorDescription(
+        key="cv_hybrid_human_confidence_day",
+        translation_key="cv_hybrid_human_confidence_day",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.human_detection_confidence.day",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_human_confidence_night",
+        translation_key="cv_hybrid_human_confidence_night",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.human_detection_confidence.night",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_motion_zone_overlap_day",
+        translation_key="cv_hybrid_motion_zone_overlap_day",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.motion_zone_overlap.day",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_motion_zone_overlap_night",
+        translation_key="cv_hybrid_motion_zone_overlap_night",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.motion_zone_overlap.night",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_object_size_max_day",
+        translation_key="cv_hybrid_object_size_max_day",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.object_size_maximum.day",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_object_size_max_night",
+        translation_key="cv_hybrid_object_size_max_night",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.object_size_maximum.night",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_object_size_min_day",
+        translation_key="cv_hybrid_object_size_min_day",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.object_size_minimum.day",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_object_size_min_night",
+        translation_key="cv_hybrid_object_size_min_night",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.object_size_minimum.night",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_object_time_overlap_day",
+        translation_key="cv_hybrid_object_time_overlap_day",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.object_time_overlap.day",
+    ),
+    RingExtendedSensorDescription(
+        key="cv_hybrid_object_time_overlap_night",
+        translation_key="cv_hybrid_object_time_overlap_night",
+        category="cv_detection",
+        attr_path="settings.hybrid_motion_zones.advanced_object_settings.object_time_overlap.night",
+    ),
 )
 
 # CV Paid Features sensors

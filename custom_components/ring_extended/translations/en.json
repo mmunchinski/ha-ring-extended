@@ -900,6 +900,36 @@
       "cv_object_time_overlap_night": {
         "name": "CV Object Time Overlap Night"
       },
+      "cv_hybrid_human_confidence_day": {
+        "name": "CV Hybrid Human Confidence Day"
+      },
+      "cv_hybrid_human_confidence_night": {
+        "name": "CV Hybrid Human Confidence Night"
+      },
+      "cv_hybrid_motion_zone_overlap_day": {
+        "name": "CV Hybrid Motion Zone Overlap Day"
+      },
+      "cv_hybrid_motion_zone_overlap_night": {
+        "name": "CV Hybrid Motion Zone Overlap Night"
+      },
+      "cv_hybrid_object_size_max_day": {
+        "name": "CV Hybrid Object Size Max Day"
+      },
+      "cv_hybrid_object_size_max_night": {
+        "name": "CV Hybrid Object Size Max Night"
+      },
+      "cv_hybrid_object_size_min_day": {
+        "name": "CV Hybrid Object Size Min Day"
+      },
+      "cv_hybrid_object_size_min_night": {
+        "name": "CV Hybrid Object Size Min Night"
+      },
+      "cv_hybrid_object_time_overlap_day": {
+        "name": "CV Hybrid Object Time Overlap Day"
+      },
+      "cv_hybrid_object_time_overlap_night": {
+        "name": "CV Hybrid Object Time Overlap Night"
+      },
       "snapshot_frequency_secs": {
         "name": "Snapshot Frequency"
       },
