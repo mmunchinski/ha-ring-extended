@@ -386,18 +386,6 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="health.status_time",
     ),
     RingExtendedSensorDescription(
-        key="battery_level",
-        translation_key="battery_level",
-        category="health",
-        attr_path="health.battery_level",
-    ),
-    RingExtendedSensorDescription(
-        key="package_warning_active",
-        translation_key="package_warning_active",
-        category="health",
-        attr_path="health.package_warning_active",
-    ),
-    RingExtendedSensorDescription(
         key="alert_connection",
         translation_key="alert_connection",
         category="health",
@@ -1879,12 +1867,6 @@ FLOODLIGHT_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="settings.floodlight_settings.always_on",
     ),
     RingExtendedSensorDescription(
-        key="ring_cam_light_installed",
-        translation_key="ring_cam_light_installed",
-        category="floodlight",
-        attr_path="ring_cam_light_installed",
-    ),
-    RingExtendedSensorDescription(
         key="light_settings",
         translation_key="light_settings",
         category="floodlight",
@@ -1915,31 +1897,6 @@ FLOODLIGHT_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="floodlight_priority",
         category="floodlight",
         attr_path="settings.floodlight_settings.priority",
-    ),
-    # Light schedule settings
-    RingExtendedSensorDescription(
-        key="light_schedule_start_hour",
-        translation_key="light_schedule_start_hour",
-        category="floodlight",
-        attr_path="settings.light_schedule_settings.start_hour",
-    ),
-    RingExtendedSensorDescription(
-        key="light_schedule_start_minute",
-        translation_key="light_schedule_start_minute",
-        category="floodlight",
-        attr_path="settings.light_schedule_settings.start_minute",
-    ),
-    RingExtendedSensorDescription(
-        key="light_schedule_end_hour",
-        translation_key="light_schedule_end_hour",
-        category="floodlight",
-        attr_path="settings.light_schedule_settings.end_hour",
-    ),
-    RingExtendedSensorDescription(
-        key="light_schedule_end_minute",
-        translation_key="light_schedule_end_minute",
-        category="floodlight",
-        attr_path="settings.light_schedule_settings.end_minute",
     ),
     # Light snooze settings
     RingExtendedSensorDescription(
@@ -2475,12 +2432,6 @@ DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="night_mode_status",
         category="device_status",
         attr_path="night_mode_status",
-    ),
-    RingExtendedSensorDescription(
-        key="ring_cam_setup_flow",
-        translation_key="ring_cam_setup_flow",
-        category="device_status",
-        attr_path="ring_cam_setup_flow",
     ),
     RingExtendedSensorDescription(
         key="siren_seconds_remaining",

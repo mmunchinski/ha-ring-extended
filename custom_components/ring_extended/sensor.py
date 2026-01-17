@@ -10,7 +10,6 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.update_coordinator import (
@@ -51,6 +50,36 @@ CATEGORY_PREFIXES = {
 _LOGGER = logging.getLogger(__name__)
 
 
+def _get_device_merged_attrs(device: Any) -> dict:
+    """Get merged attributes from device _attrs and _health_attrs.
+
+    Ring library stores some health data in _attrs.health (from main API)
+    and additional health data in _health_attrs (from health API endpoint).
+    We merge both to get the complete picture.
+    """
+    attrs = dict(getattr(device, "_attrs", {}) or {})
+
+    # Start with health data from _attrs (if any)
+    base_health = dict(attrs.get("health", {}) or {})
+
+    # Merge in _health_attrs (from separate health API call)
+    health_attrs = getattr(device, "_health_attrs", {}) or {}
+    if health_attrs:
+        base_health.update(health_attrs)
+
+    # Also check for alert-related data that might be nested
+    alerts = attrs.get("alerts", {})
+    if alerts:
+        # Add alert data with "alert_" prefix
+        for key, value in alerts.items():
+            base_health[f"alert_{key}"] = value
+
+    if base_health:
+        attrs["health"] = base_health
+
+    return attrs
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -83,14 +112,6 @@ async def async_setup_entry(
     # Get enabled categories - these will be enabled by default
     enabled_categories: set[str] = set(entry.data.get("categories", []))
 
-    # Get existing entity unique_ids to avoid creating duplicates
-    entity_registry = er.async_get(hass)
-    existing_unique_ids: set[str] = {
-        entity.unique_id
-        for entity in entity_registry.entities.values()
-        if entity.platform == DOMAIN and entity.config_entry_id == entry.entry_id
-    }
-
     entities: list[RingExtendedSensor] = []
 
     # devices_dict is a RingDevices object with doorbells, stickup_cams, chimes, other
@@ -102,25 +123,22 @@ async def async_setup_entry(
         _LOGGER.debug("Found %d devices in family %s", len(devices), family)
 
         for device in devices:
-            device_attrs = getattr(device, "_attrs", {})
+            device_attrs = _get_device_merged_attrs(device)
             if not device_attrs:
                 _LOGGER.debug("Device %s has no _attrs", getattr(device, "name", "unknown"))
                 continue
 
             device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
 
-            _LOGGER.debug("Processing device: %s with %d attrs",
-                         getattr(device, "name", "unknown"), len(device_attrs))
+            _LOGGER.debug("Processing device: %s with %d merged health keys",
+                          getattr(device, "name", "unknown"),
+                          len(device_attrs.get("health", {})))
 
             # Create sensors for ALL categories
             for description in ALL_SENSORS:
                 # Check if this sensor's attribute exists for this device
                 if description.is_available(device_attrs):
                     unique_id = f"{device_id}_{description.key}"
-
-                    # Skip if entity already exists in registry
-                    if unique_id in existing_unique_ids:
-                        continue
 
                     # Enable by default only if category was selected
                     is_enabled = description.category in enabled_categories
@@ -130,6 +148,7 @@ async def async_setup_entry(
                             coordinator=coordinator,
                             description=description,
                             enabled_default=is_enabled,
+                            ring_entry=ring_entry,
                         )
                     )
 
@@ -139,36 +158,30 @@ async def async_setup_entry(
         for family in DEVICE_FAMILIES:
             devices = getattr(devices_dict, family, []) or []
             for device in devices:
-                device_attrs = getattr(device, "_attrs", {})
+                device_attrs = _get_device_merged_attrs(device)
                 # Only add for devices that have firmware info
                 if device_attrs.get("health", {}).get("firmware_version"):
                     device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
-                    unique_id = f"{device_id}_firmware_history"
-
-                    # Skip if entity already exists
-                    if unique_id in existing_unique_ids:
-                        continue
 
                     entities.append(
                         RingDeviceFirmwareHistorySensor(
                             device=device,
                             coordinator=coordinator,
                             firmware_tracker=firmware_tracker,
+                            ring_entry=ring_entry,
                         )
                     )
         _LOGGER.info("Added per-device firmware history sensors")
 
-    # Add coordinator health sensor (skip if already exists)
-    coordinator_health_unique_id = f"{entry.entry_id}_coordinator_health"
-    if coordinator_health_unique_id not in existing_unique_ids:
-        entities.append(
-            RingCoordinatorHealthSensor(
-                hass=hass,
-                coordinator=coordinator,
-                entry_id=entry.entry_id,
-            )
+    # Add coordinator health sensor
+    entities.append(
+        RingCoordinatorHealthSensor(
+            hass=hass,
+            coordinator=coordinator,
+            entry_id=entry.entry_id,
         )
-        _LOGGER.info("Added coordinator health sensor")
+    )
+    _LOGGER.info("Added coordinator health sensor")
 
     _LOGGER.info("Setting up %d Ring Extended sensors", len(entities))
     async_add_entities(entities)
@@ -187,18 +200,23 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
         coordinator: DataUpdateCoordinator,
         description: RingExtendedSensorDescription,
         enabled_default: bool = True,
+        ring_entry: Any = None,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._device = device
+        self._ring_entry = ring_entry
         self.entity_description = description
+
+        # Store device identification for refreshing the reference
+        self._device_id = str(getattr(device, "device_id", None) or getattr(device, "id", "unknown"))
+        self._device_family = self._detect_device_family(device)
 
         # Set whether entity is enabled by default based on category selection
         self._attr_entity_registry_enabled_default = enabled_default
 
         # Build unique ID
-        device_id = getattr(device, "device_id", None) or getattr(device, "id", "unknown")
-        self._attr_unique_id = f"{device_id}_{description.key}"
+        self._attr_unique_id = f"{self._device_id}_{description.key}"
 
         # Build name with category prefix
         category = description.category
@@ -207,6 +225,41 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
 
         # Entity name uses translation_key for the base name
         self._attr_translation_key = description.translation_key
+
+    def _detect_device_family(self, device: Any) -> str:
+        """Detect which device family this device belongs to."""
+        device_type = type(device).__name__.lower()
+        if "doorbell" in device_type:
+            return "doorbells"
+        elif "chime" in device_type:
+            return "chimes"
+        elif "stickup" in device_type or "cam" in device_type:
+            return "stickup_cams"
+        return "other"
+
+    def _refresh_device(self) -> None:
+        """Refresh the device reference from the coordinator's devices."""
+        if self._ring_entry is None:
+            return
+
+        # Get fresh devices from runtime_data
+        try:
+            devices_dict = self._ring_entry.runtime_data.devices
+        except AttributeError:
+            return
+
+        # Search for the device in its family first, then others
+        families_to_search = [self._device_family] + [
+            f for f in DEVICE_FAMILIES if f != self._device_family
+        ]
+
+        for family in families_to_search:
+            devices = getattr(devices_dict, family, []) or []
+            for device in devices:
+                dev_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+                if dev_id == self._device_id:
+                    self._device = device
+                    return
 
     @property
     def name(self) -> str:
@@ -227,11 +280,15 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
             # Only identifiers - this links to existing Ring device, doesn't create new one
         }
 
+    def _get_merged_attrs(self) -> dict:
+        """Get merged attributes from device _attrs and _health_attrs."""
+        return _get_device_merged_attrs(self._device)
+
     @property
     def native_value(self) -> Any:
         """Return the sensor value."""
         try:
-            attrs = getattr(self._device, "_attrs", {})
+            attrs = self._get_merged_attrs()
             return self.entity_description.get_value(attrs)
         except (KeyError, TypeError, AttributeError) as err:
             _LOGGER.debug(
@@ -244,11 +301,8 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        if not self.coordinator.last_update_success:
-            return False
-
         try:
-            attrs = getattr(self._device, "_attrs", {})
+            attrs = self._get_merged_attrs()
             return self.entity_description.is_available(attrs)
         except (KeyError, TypeError, AttributeError):
             return False
@@ -256,6 +310,8 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
+        # Refresh the device reference to get fresh data
+        self._refresh_device()
         self.async_write_ha_state()
 
 
@@ -271,16 +327,52 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
         device: Any,
         coordinator: DataUpdateCoordinator,
         firmware_tracker: FirmwareHistoryTracker,
+        ring_entry: Any = None,
     ) -> None:
         """Initialize the per-device firmware history sensor."""
         super().__init__(coordinator)
         self._device = device
+        self._ring_entry = ring_entry
         self._firmware_tracker = firmware_tracker
 
         device_id = str(getattr(device, "device_id", None) or getattr(device, "id", "unknown"))
         self._device_id = device_id
+        self._device_family = self._detect_device_family(device)
         self._attr_unique_id = f"{device_id}_firmware_history"
         self._attr_name = "Firmware: History"
+
+    def _detect_device_family(self, device: Any) -> str:
+        """Detect which device family this device belongs to."""
+        device_type = type(device).__name__.lower()
+        if "doorbell" in device_type:
+            return "doorbells"
+        elif "chime" in device_type:
+            return "chimes"
+        elif "stickup" in device_type or "cam" in device_type:
+            return "stickup_cams"
+        return "other"
+
+    def _refresh_device(self) -> None:
+        """Refresh the device reference from the coordinator's devices."""
+        if self._ring_entry is None:
+            return
+
+        try:
+            devices_dict = self._ring_entry.runtime_data.devices
+        except AttributeError:
+            return
+
+        families_to_search = [self._device_family] + [
+            f for f in DEVICE_FAMILIES if f != self._device_family
+        ]
+
+        for family in families_to_search:
+            devices = getattr(devices_dict, family, []) or []
+            for device in devices:
+                dev_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+                if dev_id == self._device_id:
+                    self._device = device
+                    return
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -350,6 +442,7 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
+        self._refresh_device()
         self.async_write_ha_state()
 
 
@@ -380,6 +473,11 @@ class RingCoordinatorHealthSensor(CoordinatorEntity, SensorEntity):
         self._update_count = 0
         self._last_update_time: datetime | None = datetime.now(timezone.utc)
         self._unsub_timer: callable | None = None
+
+    @property
+    def available(self) -> bool:
+        """Return True - this sensor is always available."""
+        return True
 
     async def async_added_to_hass(self) -> None:
         """Run when entity is added to hass."""
