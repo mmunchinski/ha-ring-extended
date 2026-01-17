@@ -87,6 +87,11 @@ class FirmwareHistoryTracker:
 
         return None
 
+    def remove_device(self, device_id: str) -> None:
+        """Remove tracking data for a device that no longer exists."""
+        self._history.pop(device_id, None)
+        self._current_versions.pop(device_id, None)
+
     def get_device_history(self, device_id: str) -> list[dict[str, Any]]:
         """Get firmware history for a specific device."""
         return self._history.get(device_id, [])

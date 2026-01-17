@@ -13,6 +13,7 @@ Expose **430+ hidden Ring device attributes** as Home Assistant sensors. This in
 - **All device types** - Supports doorbells, stick-up cams, floodlights, and more
 - **Firmware history tracking** - Persistent changelog of firmware updates with notifications
 - **Coordinator health monitoring** - Detects when Ring updates stop working
+- **Automatic orphan cleanup** - Removes stale entities when devices are deleted from Ring
 
 ### Sensor Categories
 
@@ -132,6 +133,19 @@ automation:
         data:
           message: "Ring updates have stalled - consider reloading Ring integration"
 ```
+
+### Automatic Device Cleanup
+
+When you delete a Ring device from the Ring app/cloud, this integration automatically cleans up orphaned entities:
+
+- **On startup** - Scans for entities referencing devices no longer in Ring
+- **On coordinator refresh** - Detects newly removed devices and cleans up
+- **Firmware history** - Automatically purged for deleted devices
+
+You can also manually delete orphaned devices:
+1. Go to **Settings → Devices & Services → Devices**
+2. Find the orphaned device (will show 0 or unavailable entities)
+3. Click the device, then ⋮ menu → **Delete**
 
 ## Troubleshooting
 
