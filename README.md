@@ -14,6 +14,9 @@ Expose **430+ hidden Ring device attributes** as Home Assistant sensors. This in
 - **Firmware history tracking** - Persistent changelog of firmware updates with notifications
 - **Coordinator health monitoring** - Detects when Ring updates stop working
 - **Automatic orphan cleanup** - Removes stale entities when devices are deleted from Ring
+- **Entity reconciliation** - Automatically adds missing sensors when new definitions are added
+- **Clean uninstall** - Fully purges all entities and storage when integration is removed
+- **Diagnostics support** - Download API audit data for troubleshooting and sensor coverage analysis
 
 ### Sensor Categories
 
@@ -146,6 +149,37 @@ You can also manually delete orphaned devices:
 1. Go to **Settings → Devices & Services → Devices**
 2. Find the orphaned device (will show 0 or unavailable entities)
 3. Click the device, then ⋮ menu → **Delete**
+
+### Entity Reconciliation
+
+When you update Ring Extended to a version with new sensor definitions, the integration automatically:
+
+- **Adds missing entities** - New sensors are created for existing devices on reload
+- **Removes stale entities** - Sensors for deprecated definitions are cleaned up
+- **Ensures consistency** - Same-model devices always have the same entity structure
+
+This means you don't need to remove and re-add the integration to get new sensors after an update.
+
+### Diagnostics & API Audit
+
+Download diagnostic data to analyze sensor coverage and troubleshoot issues:
+
+1. Go to **Settings → Devices & Services → Ring Extended**
+2. Click ⋮ menu → **Download diagnostics**
+
+The diagnostic file includes:
+- **Sensor coverage analysis** - Which API attributes have sensors vs uncovered
+- **Model comparison** - Lists devices by model for consistency checking
+- **Inconsistency detection** - Flags same-model devices with different attributes
+- **Full device attributes** - Raw API data (with sensitive info redacted)
+
+### Clean Uninstall
+
+When you remove the Ring Extended integration, it fully cleans up:
+
+- All entities are removed from the entity registry
+- Firmware history storage is deleted
+- No orphaned entries remain in Home Assistant
 
 ## Troubleshooting
 

@@ -96,6 +96,13 @@ class FirmwareHistoryTracker:
         """Get firmware history for a specific device."""
         return self._history.get(device_id, [])
 
+    async def async_clear_all(self) -> None:
+        """Clear all firmware history data and remove storage file."""
+        self._history = {}
+        self._current_versions = {}
+        await self._store.async_remove()
+        _LOGGER.info("Cleared all firmware history data")
+
     def get_all_history(self) -> dict[str, list[dict[str, Any]]]:
         """Get all firmware history."""
         return self._history

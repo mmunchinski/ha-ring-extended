@@ -10,6 +10,7 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.update_coordinator import (
@@ -82,6 +83,14 @@ async def async_setup_entry(
     # Get enabled categories - these will be enabled by default
     enabled_categories: set[str] = set(entry.data.get("categories", []))
 
+    # Get existing entity unique_ids to avoid creating duplicates
+    entity_registry = er.async_get(hass)
+    existing_unique_ids: set[str] = {
+        entity.unique_id
+        for entity in entity_registry.entities.values()
+        if entity.platform == DOMAIN and entity.config_entry_id == entry.entry_id
+    }
+
     entities: list[RingExtendedSensor] = []
 
     # devices_dict is a RingDevices object with doorbells, stickup_cams, chimes, other
@@ -98,6 +107,8 @@ async def async_setup_entry(
                 _LOGGER.debug("Device %s has no _attrs", getattr(device, "name", "unknown"))
                 continue
 
+            device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+
             _LOGGER.debug("Processing device: %s with %d attrs",
                          getattr(device, "name", "unknown"), len(device_attrs))
 
@@ -105,6 +116,12 @@ async def async_setup_entry(
             for description in ALL_SENSORS:
                 # Check if this sensor's attribute exists for this device
                 if description.is_available(device_attrs):
+                    unique_id = f"{device_id}_{description.key}"
+
+                    # Skip if entity already exists in registry
+                    if unique_id in existing_unique_ids:
+                        continue
+
                     # Enable by default only if category was selected
                     is_enabled = description.category in enabled_categories
                     entities.append(
@@ -125,6 +142,13 @@ async def async_setup_entry(
                 device_attrs = getattr(device, "_attrs", {})
                 # Only add for devices that have firmware info
                 if device_attrs.get("health", {}).get("firmware_version"):
+                    device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+                    unique_id = f"{device_id}_firmware_history"
+
+                    # Skip if entity already exists
+                    if unique_id in existing_unique_ids:
+                        continue
+
                     entities.append(
                         RingDeviceFirmwareHistorySensor(
                             device=device,
@@ -134,15 +158,17 @@ async def async_setup_entry(
                     )
         _LOGGER.info("Added per-device firmware history sensors")
 
-    # Add coordinator health sensor
-    entities.append(
-        RingCoordinatorHealthSensor(
-            hass=hass,
-            coordinator=coordinator,
-            entry_id=entry.entry_id,
+    # Add coordinator health sensor (skip if already exists)
+    coordinator_health_unique_id = f"{entry.entry_id}_coordinator_health"
+    if coordinator_health_unique_id not in existing_unique_ids:
+        entities.append(
+            RingCoordinatorHealthSensor(
+                hass=hass,
+                coordinator=coordinator,
+                entry_id=entry.entry_id,
+            )
         )
-    )
-    _LOGGER.info("Added coordinator health sensor")
+        _LOGGER.info("Added coordinator health sensor")
 
     _LOGGER.info("Setting up %d Ring Extended sensors", len(entities))
     async_add_entities(entities)

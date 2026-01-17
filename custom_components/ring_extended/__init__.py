@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from homeassistant.components.ring import DOMAIN as RING_DOMAIN
 from homeassistant.config_entries import ConfigEntry
@@ -10,7 +11,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import entity_registry as er
 
-from .const import DOMAIN, DEVICE_FAMILIES, get_nested
+from .const import DOMAIN, DEVICE_FAMILIES, ALL_SENSORS, get_nested
 from .firmware_history import FirmwareHistoryTracker
 
 _LOGGER = logging.getLogger(__name__)
@@ -127,8 +128,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _check_firmware_updates()
         await firmware_tracker.async_save()
 
-    # Clean up orphaned entities on startup
-    await _cleanup_orphaned_entities_on_startup(hass, entry, current_device_ids)
+    # Run entity reconciliation: remove stale, identify missing
+    devices_needing_entities, _ = await _reconcile_entities(hass, entry, devices_dict)
+    hass.data[DOMAIN][entry.entry_id]["reconcile_devices"] = devices_needing_entities
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -144,6 +146,28 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id, None)
 
     return unload_ok
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Clean up all entities when integration is permanently removed."""
+    entity_registry = er.async_get(hass)
+
+    # Remove all entities for this config entry
+    entities_to_remove = [
+        entity.entity_id
+        for entity in entity_registry.entities.values()
+        if entity.platform == DOMAIN and entity.config_entry_id == entry.entry_id
+    ]
+
+    for entity_id in entities_to_remove:
+        entity_registry.async_remove(entity_id)
+
+    _LOGGER.info("Removed %d entities on integration removal", len(entities_to_remove))
+
+    # Clean up firmware history storage
+    firmware_tracker = FirmwareHistoryTracker(hass)
+    await firmware_tracker.async_load()
+    await firmware_tracker.async_clear_all()
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -220,3 +244,98 @@ async def _cleanup_orphaned_entities_on_startup(
     for entity_id in entities_to_remove:
         _LOGGER.info("Removing orphaned entity on startup: %s", entity_id)
         entity_registry.async_remove(entity_id)
+
+
+async def _reconcile_entities(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    devices_dict: Any,
+) -> tuple[set[str], list[str]]:
+    """
+    Full entity reconciliation: add missing, remove stale.
+
+    Returns (device_ids_needing_new_entities, entity_ids_removed).
+    """
+    entity_registry = er.async_get(hass)
+
+    # Build map of existing entities: {unique_id: entity_entry}
+    existing_entities: dict[str, er.RegistryEntry] = {}
+    for entity in entity_registry.entities.values():
+        if entity.platform != DOMAIN or entity.config_entry_id != entry.entry_id:
+            continue
+        existing_entities[entity.unique_id] = entity
+
+    # Build set of expected unique_ids based on current sensor definitions + device attrs
+    expected_unique_ids: set[str] = set()
+    current_device_ids: set[str] = set()
+
+    for family in DEVICE_FAMILIES:
+        devices = getattr(devices_dict, family, []) or []
+        for device in devices:
+            device_attrs = getattr(device, "_attrs", {})
+            if not device_attrs:
+                continue
+
+            device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+            if not device_id:
+                continue
+
+            current_device_ids.add(device_id)
+
+            # Determine which sensors should exist for this device
+            for description in ALL_SENSORS:
+                if description.is_available(device_attrs):
+                    expected_unique_ids.add(f"{device_id}_{description.key}")
+
+    # Add special entities (firmware history for devices that have firmware info)
+    for family in DEVICE_FAMILIES:
+        devices = getattr(devices_dict, family, []) or []
+        for device in devices:
+            device_attrs = getattr(device, "_attrs", {})
+            if device_attrs.get("health", {}).get("firmware_version"):
+                device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+                if device_id:
+                    expected_unique_ids.add(f"{device_id}_firmware_history")
+
+    # Add coordinator health sensor
+    expected_unique_ids.add(f"{entry.entry_id}_coordinator_health")
+
+    # REMOVALS: Entities that exist but shouldn't
+    # (sensor deprecated OR device attribute no longer present OR device removed)
+    entities_removed: list[str] = []
+    for unique_id, entity_entry in existing_entities.items():
+        if unique_id not in expected_unique_ids:
+            entities_removed.append(entity_entry.entity_id)
+            _LOGGER.info(
+                "Removing stale entity: %s (unique_id: %s)",
+                entity_entry.entity_id,
+                unique_id,
+            )
+            entity_registry.async_remove(entity_entry.entity_id)
+
+    # ADDITIONS: Expected entities that don't exist yet
+    existing_unique_ids = set(existing_entities.keys())
+    missing_unique_ids = expected_unique_ids - existing_unique_ids
+
+    # Flag devices that need new entities created
+    devices_needing_entities: set[str] = set()
+    for unique_id in missing_unique_ids:
+        # Extract device_id from unique_id
+        # Format: {device_id}_{sensor_key} or {entry_id}_coordinator_health
+        if unique_id.endswith("_coordinator_health"):
+            # Coordinator health sensor needs to be added
+            devices_needing_entities.add("__coordinator__")
+        else:
+            parts = unique_id.split("_", 1)
+            if parts[0]:
+                devices_needing_entities.add(parts[0])
+                _LOGGER.debug("Will add missing entity: %s", unique_id)
+
+    _LOGGER.info(
+        "Entity reconciliation: %d entities removed, %d devices need new entities, %d missing sensors",
+        len(entities_removed),
+        len(devices_needing_entities),
+        len(missing_unique_ids),
+    )
+
+    return devices_needing_entities, entities_removed
