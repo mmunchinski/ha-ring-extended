@@ -75,3 +75,7 @@ scripts/
 ring_extended_spec.md
 ring_extended_attributes.json
 ring_attributes.md
+
+# Analysis/audit files
+*.csv
+ring_attributes_full.csv
