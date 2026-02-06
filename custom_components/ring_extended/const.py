@@ -397,6 +397,43 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="health",
         attr_path="alerts.ota_status",
     ),
+    RingExtendedSensorDescription(
+        key="alert_privacy_cover_enabled",
+        translation_key="alert_privacy_cover_enabled",
+        category="health",
+        attr_path="alerts.privacy_cover_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="alert_rssi",
+        translation_key="alert_rssi",
+        category="health",
+        attr_path="alerts.rssi",
+    ),
+    RingExtendedSensorDescription(
+        key="package_warning_active_health",
+        translation_key="package_warning_active_health",
+        category="health",
+        attr_path="health.package_warning_active",
+    ),
+    RingExtendedSensorDescription(
+        key="rssi_risk_level",
+        translation_key="rssi_risk_level",
+        category="health",
+        attr_path="health.rssi_risk_level",
+    ),
+    RingExtendedSensorDescription(
+        key="wifi_name",
+        translation_key="wifi_name",
+        category="health",
+        attr_path="health.wifi_name",
+    ),
+    # Network settings
+    RingExtendedSensorDescription(
+        key="multi_net_pref",
+        translation_key="multi_net_pref",
+        category="health",
+        attr_path="settings.network_settings.multi_net_pref",
+    ),
 )
 
 # Power & Battery sensors
@@ -914,6 +951,24 @@ VIDEO_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="video",
         attr_path="settings.ptz_settings.tilt_settings.movement.max_speed",
     ),
+    RingExtendedSensorDescription(
+        key="ptz_tilt_step_size",
+        translation_key="ptz_tilt_step_size",
+        category="video",
+        attr_path="settings.ptz_settings.tilt_settings.movement.step_size",
+    ),
+    RingExtendedSensorDescription(
+        key="ptz_pan_max_acceleration",
+        translation_key="ptz_pan_max_acceleration",
+        category="video",
+        attr_path="settings.ptz_settings.pan_settings.movement.max_acceleration",
+    ),
+    RingExtendedSensorDescription(
+        key="ptz_tilt_max_acceleration",
+        translation_key="ptz_tilt_max_acceleration",
+        category="video",
+        attr_path="settings.ptz_settings.tilt_settings.movement.max_acceleration",
+    ),
 )
 
 # Audio sensors
@@ -1120,6 +1175,166 @@ MOTION_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="pir_zone_mask",
         category="motion",
         attr_path="settings.pir_settings.zone_mask",
+    ),
+    # Hybrid motion zone settings (newer devices)
+    RingExtendedSensorDescription(
+        key="hybrid_active_motion_filter",
+        translation_key="hybrid_active_motion_filter",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.active_motion_filter",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_advanced_motion_zones_enabled",
+        translation_key="hybrid_advanced_motion_zones_enabled",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.advanced_motion_zones_enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_advanced_motion_zones_type",
+        translation_key="hybrid_advanced_motion_zones_type",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.advanced_motion_zones_type",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_enable_audio",
+        translation_key="hybrid_enable_audio",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.enable_audio",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_enable_pir_validation",
+        translation_key="hybrid_enable_pir_validation",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.enable_pir_validation",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_enable_rlmd",
+        translation_key="hybrid_enable_rlmd",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.enable_rlmd",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_motion_snooze_privacy_timeout",
+        translation_key="hybrid_motion_snooze_privacy_timeout",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.motion_snooze_privacy_timeout",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_rlmd_distance",
+        translation_key="hybrid_rlmd_distance",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.rlmd_distance",
+    ),
+    RingExtendedSensorDescription(
+        key="hybrid_sensitivity",
+        translation_key="hybrid_sensitivity",
+        category="motion",
+        attr_path="settings.hybrid_motion_zones.sensitivity",
+    ),
+    # Motion zones settings (separate from hybrid)
+    RingExtendedSensorDescription(
+        key="motion_zones_active_motion_filter",
+        translation_key="motion_zones_active_motion_filter",
+        category="motion",
+        attr_path="settings.motion_zones.active_motion_filter",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zones_enable_audio",
+        translation_key="motion_zones_enable_audio",
+        category="motion",
+        attr_path="settings.motion_zones.enable_audio",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zones_sensitivity",
+        translation_key="motion_zones_sensitivity",
+        category="motion",
+        attr_path="settings.motion_zones.sensitivity",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zones_pir_sensitivity1",
+        translation_key="motion_zones_pir_sensitivity1",
+        category="motion",
+        attr_path="settings.motion_zones.pir_settings.sensitivity1",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zones_pir_sensitivity2",
+        translation_key="motion_zones_pir_sensitivity2",
+        category="motion",
+        attr_path="settings.motion_zones.pir_settings.sensitivity2",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zones_pir_sensitivity3",
+        translation_key="motion_zones_pir_sensitivity3",
+        category="motion",
+        attr_path="settings.motion_zones.pir_settings.sensitivity3",
+    ),
+    RingExtendedSensorDescription(
+        key="motion_zones_pir_zone_mask",
+        translation_key="motion_zones_pir_zone_mask",
+        category="motion",
+        attr_path="settings.motion_zones.pir_settings.zone_mask",
+    ),
+    # Motion zones advanced object settings
+    RingExtendedSensorDescription(
+        key="mz_human_confidence_day",
+        translation_key="mz_human_confidence_day",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.human_detection_confidence.day",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_human_confidence_night",
+        translation_key="mz_human_confidence_night",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.human_detection_confidence.night",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_motion_zone_overlap_day",
+        translation_key="mz_motion_zone_overlap_day",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.motion_zone_overlap.day",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_motion_zone_overlap_night",
+        translation_key="mz_motion_zone_overlap_night",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.motion_zone_overlap.night",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_object_size_max_day",
+        translation_key="mz_object_size_max_day",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.object_size_maximum.day",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_object_size_max_night",
+        translation_key="mz_object_size_max_night",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.object_size_maximum.night",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_object_size_min_day",
+        translation_key="mz_object_size_min_day",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.object_size_minimum.day",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_object_size_min_night",
+        translation_key="mz_object_size_min_night",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.object_size_minimum.night",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_object_time_overlap_day",
+        translation_key="mz_object_time_overlap_day",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.object_time_overlap.day",
+    ),
+    RingExtendedSensorDescription(
+        key="mz_object_time_overlap_night",
+        translation_key="mz_object_time_overlap_night",
+        category="motion",
+        attr_path="settings.motion_zones.advanced_object_settings.object_time_overlap.night",
     ),
 )
 
