@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
 from .const import ALL_SENSORS, DEVICE_FAMILIES, DOMAIN
+from .sensor import _get_device_merged_attrs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -125,16 +126,20 @@ async def async_get_config_entry_diagnostics(
             device_id = str(
                 getattr(device, "device_id", None) or getattr(device, "id", "")
             )
-            attrs = getattr(device, "_attrs", {})
+            raw_attrs = getattr(device, "_attrs", {})
 
-            if not attrs:
+            if not raw_attrs:
                 continue
 
-            # Redact sensitive data
-            redacted_attrs = async_redact_data(attrs, TO_REDACT)
+            # Use merged attrs (same as sensors) for accurate coverage analysis
+            # This merges _attrs.health + _health_attrs + alerts
+            merged_attrs = _get_device_merged_attrs(device)
 
-            # Analyze sensor coverage
-            coverage = _get_sensor_coverage(attrs)
+            # Redact sensitive data
+            redacted_attrs = async_redact_data(merged_attrs, TO_REDACT)
+
+            # Analyze sensor coverage against merged attrs
+            coverage = _get_sensor_coverage(merged_attrs)
 
             # Count entities for this device
             device_entities = [

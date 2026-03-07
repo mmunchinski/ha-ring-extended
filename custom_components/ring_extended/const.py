@@ -404,22 +404,16 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="alerts.privacy_cover_enabled",
     ),
     RingExtendedSensorDescription(
-        key="alert_rssi",
-        translation_key="alert_rssi",
-        category="health",
-        attr_path="alerts.rssi",
-    ),
-    RingExtendedSensorDescription(
         key="package_warning_active_health",
         translation_key="package_warning_active_health",
         category="health",
         attr_path="health.package_warning_active",
     ),
     RingExtendedSensorDescription(
-        key="rssi_risk_level",
-        translation_key="rssi_risk_level",
+        key="encryption_group_error",
+        translation_key="encryption_group_error",
         category="health",
-        attr_path="health.rssi_risk_level",
+        attr_path="health.encryption_group_error",
     ),
     RingExtendedSensorDescription(
         key="wifi_name",
@@ -552,12 +546,6 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="power_mode",
         category="power",
         attr_path="settings.power_mode",
-    ),
-    RingExtendedSensorDescription(
-        key="powered_on",
-        translation_key="powered_on",
-        category="power",
-        attr_path="settings.powered_on",
     ),
 )
 
@@ -2703,48 +2691,11 @@ DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="device_status",
         attr_path="settings.terms_of_service_accepted",
     ),
-    # Device metadata
-    RingExtendedSensorDescription(
-        key="hardware_id",
-        translation_key="hardware_id",
-        category="device_status",
-        attr_path="hardware_id",
-    ),
     RingExtendedSensorDescription(
         key="ring_net_id",
         translation_key="ring_net_id",
         category="device_status",
         attr_path="ring_net_id",
-    ),
-    RingExtendedSensorDescription(
-        key="is_sidewalk_gateway",
-        translation_key="is_sidewalk_gateway",
-        category="device_status",
-        attr_path="metadata.is_sidewalk_gateway",
-    ),
-    RingExtendedSensorDescription(
-        key="imported_from_amazon",
-        translation_key="imported_from_amazon",
-        category="device_status",
-        attr_path="metadata.imported_from_amazon",
-    ),
-    RingExtendedSensorDescription(
-        key="legacy_fw_migrated",
-        translation_key="legacy_fw_migrated",
-        category="device_status",
-        attr_path="metadata.legacy_fw_migrated",
-    ),
-    RingExtendedSensorDescription(
-        key="third_party_manufacturer",
-        translation_key="third_party_manufacturer",
-        category="device_status",
-        attr_path="metadata.third_party_manufacturer",
-    ),
-    RingExtendedSensorDescription(
-        key="third_party_model",
-        translation_key="third_party_model",
-        category="device_status",
-        attr_path="metadata.third_party_model",
     ),
 )
 

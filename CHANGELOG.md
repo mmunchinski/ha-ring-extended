@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.9.0
+
+- Add new sensor: `health.encryption_group_error` (encryption group error status)
+- Remove 9 stale sensor definitions no longer present in Ring API:
+  - `alerts.rssi`, `health.rssi_risk_level`, `hardware_id`, `settings.powered_on`
+  - `metadata.imported_from_amazon`, `metadata.is_sidewalk_gateway` (duplicate), `metadata.legacy_fw_migrated`, `metadata.third_party_manufacturer`, `metadata.third_party_model`
+- Fix diagnostics to use merged device attributes (matches sensor data pipeline)
+- Add new `analyze_new_sensors.py` tool replacing 3 deprecated analysis scripts
+
 ## v1.8.0
 
 - Add 35 new sensor definitions from Ring API diagnostics audit

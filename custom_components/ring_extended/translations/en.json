@@ -225,6 +225,9 @@
       "encryption_enabled": {
         "name": "Encryption Enabled"
       },
+      "encryption_group_error": {
+        "name": "Encryption Group Error"
+      },
       "exposure_control": {
         "name": "Exposure Control"
       },
@@ -545,9 +548,6 @@
       },
       "power_mode": {
         "name": "Power Mode"
-      },
-      "powered_on": {
-        "name": "Powered On"
       },
       "pref_run_mode": {
         "name": "Pref Run Mode"
@@ -999,23 +999,8 @@
       "continuous_recording_unavailability_reason": {
         "name": "Continuous Recording Unavailability Reason"
       },
-      "hardware_id": {
-        "name": "Hardware ID"
-      },
       "ring_net_id": {
         "name": "Ring Net ID"
-      },
-      "imported_from_amazon": {
-        "name": "Imported From Amazon"
-      },
-      "legacy_fw_migrated": {
-        "name": "Legacy FW Migrated"
-      },
-      "third_party_manufacturer": {
-        "name": "Third Party Manufacturer"
-      },
-      "third_party_model": {
-        "name": "Third Party Model"
       },
       "cv_threshold_unverified_motion": {
         "name": "CV Threshold Unverified Motion"
