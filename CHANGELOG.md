@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.9.1
+
+- Add 7 new health sensors from Ring health check endpoint:
+  - `health.average_signal_strength`, `health.average_signal_category` (averaged WiFi signal)
+  - `health.latest_signal_strength`, `health.latest_signal_category` (latest WiFi signal)
+  - `health.firmware` (firmware update status text, e.g. "Up to Date")
+  - `health.packet_loss_strength` (raw packet loss measurement)
+  - `health.updated_at` (health data update timestamp)
+
 ## v1.9.0
 
 - Add new sensor: `health.encryption_group_error` (encryption group error status)

@@ -78,6 +78,12 @@
       "animal_detection_eligible": {
         "name": "Animal Detection Eligible"
       },
+      "average_signal_category": {
+        "name": "Average Signal Category"
+      },
+      "average_signal_strength": {
+        "name": "Average Signal Strength"
+      },
       "auto_motion_sensitivity_enabled": {
         "name": "Auto Motion Sensitivity Enabled"
       },
@@ -252,6 +258,9 @@
       "fast_ping_hop1_score": {
         "name": "Fast Ping Hop1 Score"
       },
+      "firmware_status": {
+        "name": "Firmware Status"
+      },
       "firmware_avg_bitrate": {
         "name": "Firmware Avg Bitrate"
       },
@@ -296,6 +305,12 @@
       },
       "is_sidewalk_gateway": {
         "name": "Is Sidewalk Gateway"
+      },
+      "latest_signal_category": {
+        "name": "Latest Signal Category"
+      },
+      "latest_signal_strength": {
+        "name": "Latest Signal Strength"
       },
       "last_update_time": {
         "name": "Last Update Time"
@@ -437,6 +452,9 @@
       },
       "packet_loss_category": {
         "name": "Packet Loss Category"
+      },
+      "packet_loss_strength": {
+        "name": "Packet Loss Strength"
       },
       "paid_alarm_triggered_recording": {
         "name": "Paid: Alarm Triggered Recording"
@@ -737,6 +755,9 @@
       },
       "unusual_alert_learning_state": {
         "name": "Unusual Alert Learning State"
+      },
+      "updated_at": {
+        "name": "Health Updated At"
       },
       "uptime_formatted": {
         "name": "Uptime Formatted"
