@@ -425,10 +425,8 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
     RingExtendedSensorDescription(
         key="updated_at",
         translation_key="updated_at",
-        device_class=SensorDeviceClass.TIMESTAMP,
         category="health",
         attr_path="health.updated_at",
-        value_fn=lambda v: v if v else None,
     ),
     RingExtendedSensorDescription(
         key="firmware_status",
