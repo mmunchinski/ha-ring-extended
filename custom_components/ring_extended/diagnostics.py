@@ -62,6 +62,15 @@ def _get_sensor_coverage(device_attrs: dict) -> dict[str, Any]:
         else:
             unavailable_sensors.append(description.key)
 
+    # Account for alert path aliasing: the merge function copies alerts.X
+    # into health.alert_X, so sensors using "alerts.foo" also cover "health.alert_foo"
+    aliased_paths: set[str] = set()
+    for path in defined_paths:
+        if path.startswith("alerts."):
+            suffix = path[len("alerts."):]
+            aliased_paths.add(f"health.alert_{suffix}")
+    defined_paths |= aliased_paths
+
     # Find uncovered attributes (in API but no sensor defined)
     uncovered_paths = all_attr_paths - defined_paths
 
