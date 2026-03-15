@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.9.2
+
+- Fix diagnostics false positives for alert path aliases (alerts.X / health.alert_X dedup)
+
 ## v1.9.1
 
 - Add 7 new health sensors from Ring health check endpoint:
