@@ -453,6 +453,12 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="alerts.privacy_cover_enabled",
     ),
     RingExtendedSensorDescription(
+        key="alert_battery",
+        translation_key="alert_battery",
+        category="health",
+        attr_path="alerts.battery",
+    ),
+    RingExtendedSensorDescription(
         key="package_warning_active_health",
         translation_key="package_warning_active_health",
         category="health",
@@ -595,6 +601,12 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="power_mode",
         category="power",
         attr_path="settings.power_mode",
+    ),
+    RingExtendedSensorDescription(
+        key="battery_level",
+        translation_key="battery_level",
+        category="power",
+        attr_path="health.battery_level",
     ),
 )
 
@@ -2620,6 +2632,12 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="continuous_recording_unavailability_reason",
         category="features",
         attr_path="features.video_recording.recording_mode_availability.continuous.unavailability_reason",
+    ),
+    RingExtendedSensorDescription(
+        key="ai_labs_daily_clip_enabled",
+        translation_key="ai_labs_daily_clip_enabled",
+        category="features",
+        attr_path="features.ai_labs_daily_clip.enablement.enabled",
     ),
 )
 

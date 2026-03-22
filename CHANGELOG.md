@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.9.3
+
+- Add 3 new sensors from Ring API diagnostics audit:
+  - `features.ai_labs_daily_clip.enablement.enabled` - AI Labs Daily Clip feature flag (all devices)
+  - `alerts.battery` - Battery alert status (doorbell models)
+  - `health.battery_level` - Battery level indicator (doorbell models)
+
 ## v1.9.2
 
 - Fix diagnostics false positives for alert path aliases (alerts.X / health.alert_X dedup)

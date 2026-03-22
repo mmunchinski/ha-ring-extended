@@ -42,6 +42,9 @@
       "active_streaming_event_led": {
         "name": "Active Streaming Event LED"
       },
+      "ai_labs_daily_clip_enabled": {
+        "name": "AI Labs Daily Clip Enabled"
+      },
       "advanced_motion_detection_enabled": {
         "name": "Advanced Motion Detection Enabled"
       },
@@ -1082,6 +1085,9 @@
       },
       "recording_24x7_mode": {
         "name": "Recording 24x7 Mode"
+      },
+      "alert_battery": {
+        "name": "Alert Battery"
       },
       "alert_connection": {
         "name": "Alert Connection"
