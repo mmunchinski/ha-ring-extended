@@ -42,6 +42,9 @@
       "active_streaming_event_led": {
         "name": "Active Streaming Event LED"
       },
+      "ai_labs_daily_clip_eligible": {
+        "name": "AI Labs Daily Clip Eligible"
+      },
       "ai_labs_daily_clip_enabled": {
         "name": "AI Labs Daily Clip Enabled"
       },
@@ -579,6 +582,9 @@
       "privacy_cover_enabled": {
         "name": "Privacy Cover Enabled"
       },
+      "privacy_shutter": {
+        "name": "Privacy Shutter"
+      },
       "ptz_setup_complete": {
         "name": "PTZ Setup Complete"
       },
@@ -635,6 +641,9 @@
       },
       "rssi_category": {
         "name": "WiFi Signal Quality"
+      },
+      "rssi_risk_level": {
+        "name": "WiFi Signal Risk Level"
       },
       "run_mode": {
         "name": "Run Mode"
@@ -986,6 +995,9 @@
       },
       "floodlight_always_on_duration": {
         "name": "Floodlight Always On Duration"
+      },
+      "floodlight_always_on_duration_secs": {
+        "name": "Floodlight Always On Duration (Seconds)"
       },
       "floodlight_priority": {
         "name": "Floodlight Priority"

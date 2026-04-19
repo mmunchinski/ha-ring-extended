@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.9.4
+
+- Add 4 new sensors from Ring API diagnostics audit:
+  - `features.ai_labs_daily_clip.eligibility.eligible` - AI Labs Daily Clip eligibility flag (pairs with existing `ai_labs_daily_clip_enabled`)
+  - `health.rssi_risk_level` - WiFi signal risk level (re-added; Ring API reintroduced the field since v1.9.0 removal)
+  - `health.privacy_shutter` - Privacy shutter state (integer, distinct from `alerts.privacy_cover_enabled` bool)
+  - `settings.floodlight_settings.always_on_duration_secs` - Floodlight always-on duration in seconds (pairs with existing minutes sensor)
+
 ## v1.9.3
 
 - Add 3 new sensors from Ring API diagnostics audit:

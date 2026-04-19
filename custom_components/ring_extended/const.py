@@ -173,6 +173,12 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="health.rssi_category",
     ),
     RingExtendedSensorDescription(
+        key="rssi_risk_level",
+        translation_key="rssi_risk_level",
+        category="health",
+        attr_path="health.rssi_risk_level",
+    ),
+    RingExtendedSensorDescription(
         key="average_signal_strength",
         translation_key="average_signal_strength",
         native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
@@ -2157,6 +2163,14 @@ FLOODLIGHT_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="settings.floodlight_settings.always_on_duration",
     ),
     RingExtendedSensorDescription(
+        key="floodlight_always_on_duration_secs",
+        translation_key="floodlight_always_on_duration_secs",
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        device_class=SensorDeviceClass.DURATION,
+        category="floodlight",
+        attr_path="settings.floodlight_settings.always_on_duration_secs",
+    ),
+    RingExtendedSensorDescription(
         key="floodlight_priority",
         translation_key="floodlight_priority",
         category="floodlight",
@@ -2639,6 +2653,12 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="features",
         attr_path="features.ai_labs_daily_clip.enablement.enabled",
     ),
+    RingExtendedSensorDescription(
+        key="ai_labs_daily_clip_eligible",
+        translation_key="ai_labs_daily_clip_eligible",
+        category="features",
+        attr_path="features.ai_labs_daily_clip.eligibility.eligible",
+    ),
 )
 
 # Device Status sensors
@@ -2763,6 +2783,12 @@ DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="ring_net_id",
         category="device_status",
         attr_path="ring_net_id",
+    ),
+    RingExtendedSensorDescription(
+        key="privacy_shutter",
+        translation_key="privacy_shutter",
+        category="device_status",
+        attr_path="health.privacy_shutter",
     ),
 )
 
