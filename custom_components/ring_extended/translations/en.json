@@ -642,9 +642,6 @@
       "rssi_category": {
         "name": "WiFi Signal Quality"
       },
-      "rssi_risk_level": {
-        "name": "WiFi Signal Risk Level"
-      },
       "run_mode": {
         "name": "Run Mode"
       },
@@ -1098,8 +1095,8 @@
       "recording_24x7_mode": {
         "name": "Recording 24x7 Mode"
       },
-      "alert_battery": {
-        "name": "Alert Battery"
+      "alert_sidewalk_connection": {
+        "name": "Alert Sidewalk Connection"
       },
       "alert_connection": {
         "name": "Alert Connection"
@@ -1109,9 +1106,6 @@
       },
       "status_time": {
         "name": "Status Time"
-      },
-      "battery_level": {
-        "name": "Battery Level"
       },
       "smart_video_description_eligible": {
         "name": "Smart Video Description Eligible"

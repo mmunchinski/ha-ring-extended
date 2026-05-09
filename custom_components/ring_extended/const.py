@@ -173,12 +173,6 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="health.rssi_category",
     ),
     RingExtendedSensorDescription(
-        key="rssi_risk_level",
-        translation_key="rssi_risk_level",
-        category="health",
-        attr_path="health.rssi_risk_level",
-    ),
-    RingExtendedSensorDescription(
         key="average_signal_strength",
         translation_key="average_signal_strength",
         native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
@@ -459,10 +453,10 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="alerts.privacy_cover_enabled",
     ),
     RingExtendedSensorDescription(
-        key="alert_battery",
-        translation_key="alert_battery",
+        key="alert_sidewalk_connection",
+        translation_key="alert_sidewalk_connection",
         category="health",
-        attr_path="alerts.battery",
+        attr_path="alerts.sidewalk_connection",
     ),
     RingExtendedSensorDescription(
         key="package_warning_active_health",
@@ -607,12 +601,6 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="power_mode",
         category="power",
         attr_path="settings.power_mode",
-    ),
-    RingExtendedSensorDescription(
-        key="battery_level",
-        translation_key="battery_level",
-        category="power",
-        attr_path="health.battery_level",
     ),
 )
 

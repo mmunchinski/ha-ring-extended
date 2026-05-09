@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.9.5
+
+- Add new sensor: `alerts.sidewalk_connection` - Amazon Sidewalk connection alert (71% of models)
+- Remove 4 stale sensors no longer present in Ring API:
+  - `alerts.battery` (added v1.9.3, since removed by Ring)
+  - `health.battery_level` (added v1.9.3, since removed by Ring)
+  - `health.rssi_risk_level` (re-added v1.9.4, since removed again by Ring)
+
 ## v1.9.4
 
 - Add 4 new sensors from Ring API diagnostics audit:
