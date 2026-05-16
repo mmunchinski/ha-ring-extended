@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.9.6
+
+- Add 2 Familiar Faces (person_identification) reason sensors exposing previously-hidden ineligibility detail:
+  - `person_id_ineligibility_reason` - first entry from `features.person_identification.eligibility.ineligibility_reasons` (e.g. `unsupported_device`)
+  - `person_id_disallow_reason` - first entry from `features.person_identification.enablement.disallow_reasons` (e.g. `ineligible`)
+- Sensors report unavailable when the reason list is missing or empty (i.e. on devices fully eligible for Familiar Faces)
+
 ## v1.9.5
 
 - Add new sensor: `alerts.sidewalk_connection` - Amazon Sidewalk connection alert (71% of models)

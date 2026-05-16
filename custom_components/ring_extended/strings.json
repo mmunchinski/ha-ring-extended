@@ -567,6 +567,12 @@
       "person_id_enabled": {
         "name": "Person ID Enabled"
       },
+      "person_id_ineligibility_reason": {
+        "name": "Person ID Ineligibility Reason"
+      },
+      "person_id_disallow_reason": {
+        "name": "Person ID Disallow Reason"
+      },
       "pir_sensitivity_1": {
         "name": "PIR Sensitivity"
       },

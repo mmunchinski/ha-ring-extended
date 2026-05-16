@@ -2468,6 +2468,22 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="features.person_identification.enablement.enabled",
     ),
     RingExtendedSensorDescription(
+        key="person_id_ineligibility_reason",
+        translation_key="person_id_ineligibility_reason",
+        category="features",
+        attr_path="features.person_identification.eligibility.ineligibility_reasons",
+        value_fn=lambda attrs: (v[0] if (v := get_nested(attrs, "features.person_identification.eligibility.ineligibility_reasons")) else None),
+        available_fn=lambda attrs: bool(get_nested(attrs, "features.person_identification.eligibility.ineligibility_reasons")),
+    ),
+    RingExtendedSensorDescription(
+        key="person_id_disallow_reason",
+        translation_key="person_id_disallow_reason",
+        category="features",
+        attr_path="features.person_identification.enablement.disallow_reasons",
+        value_fn=lambda attrs: (v[0] if (v := get_nested(attrs, "features.person_identification.enablement.disallow_reasons")) else None),
+        available_fn=lambda attrs: bool(get_nested(attrs, "features.person_identification.enablement.disallow_reasons")),
+    ),
+    RingExtendedSensorDescription(
         key="ptz_setup_complete",
         translation_key="ptz_setup_complete",
         category="features",
