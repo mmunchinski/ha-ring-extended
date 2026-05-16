@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.9.7
+
+- Generalize the v1.9.6 reason-list pattern to **11 features**. Adding a feature to `FEATURES_WITH_REASON_LISTS` in const.py now auto-creates both reason sensors (no hand-coded entries needed).
+- New sensors (10 features × 2 sensors each = 20 sensors per device; the 2 from v1.9.6 are regenerated under the same keys):
+  - `ai_automated_warnings_ineligibility_reason` / `_disallow_reason`
+  - `ai_labs_daily_clip_ineligibility_reason` / `_disallow_reason`
+  - `alexa_plus_greetings_ineligibility_reason` / `_disallow_reason`
+  - `live_view_audio_privacy_controls_ineligibility_reason` / `_disallow_reason`
+  - `retinal_tuning_ineligibility_reason` / `_disallow_reason`
+  - `single_alert_ineligibility_reason` / `_disallow_reason`
+  - `smart_video_description_ineligibility_reason` / `_disallow_reason`
+  - `smart_video_search_ineligibility_reason` / `_disallow_reason`
+  - `unusual_alert_ineligibility_reason` / `_disallow_reason`
+  - `video_donation_ineligibility_reason` / `_disallow_reason`
+- All report **Unavailable** when the underlying list is missing or empty. Most `unsupported_language` reasons surface here, which previously had no per-device visibility.
+
 ## v1.9.6
 
 - Add 2 Familiar Faces (person_identification) reason sensors exposing previously-hidden ineligibility detail:

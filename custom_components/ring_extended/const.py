@@ -2468,22 +2468,6 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="features.person_identification.enablement.enabled",
     ),
     RingExtendedSensorDescription(
-        key="person_id_ineligibility_reason",
-        translation_key="person_id_ineligibility_reason",
-        category="features",
-        attr_path="features.person_identification.eligibility.ineligibility_reasons",
-        value_fn=lambda attrs: (v[0] if (v := get_nested(attrs, "features.person_identification.eligibility.ineligibility_reasons")) else None),
-        available_fn=lambda attrs: bool(get_nested(attrs, "features.person_identification.eligibility.ineligibility_reasons")),
-    ),
-    RingExtendedSensorDescription(
-        key="person_id_disallow_reason",
-        translation_key="person_id_disallow_reason",
-        category="features",
-        attr_path="features.person_identification.enablement.disallow_reasons",
-        value_fn=lambda attrs: (v[0] if (v := get_nested(attrs, "features.person_identification.enablement.disallow_reasons")) else None),
-        available_fn=lambda attrs: bool(get_nested(attrs, "features.person_identification.enablement.disallow_reasons")),
-    ),
-    RingExtendedSensorDescription(
         key="ptz_setup_complete",
         translation_key="ptz_setup_complete",
         category="features",
@@ -2665,6 +2649,65 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
     ),
 )
 
+# Features that follow Ring's standard reason-list schema. Adding a feature
+# here generates two sensors that surface the first entry of each list:
+#   features.X.eligibility.ineligibility_reasons → X_ineligibility_reason
+#   features.X.enablement.disallow_reasons       → X_disallow_reason
+# When either path is missing or returns an empty list, the corresponding
+# sensor reports Unavailable. Source: API audit on 2026-05-16.
+FEATURES_WITH_REASON_LISTS = [
+    "ai_automated_warnings",
+    "ai_labs_daily_clip",
+    "alexa_plus_greetings",
+    "live_view_audio_privacy_controls",
+    "person_identification",
+    "retinal_tuning",
+    "single_alert",
+    "smart_video_description",
+    "smart_video_search",
+    "unusual_alert",
+    "video_donation",
+]
+
+
+def _create_feature_reason_sensors() -> tuple[RingExtendedSensorDescription, ...]:
+    """Generate ineligibility_reason and disallow_reason sensors for each
+    feature in FEATURES_WITH_REASON_LISTS."""
+    sensors = []
+    for feature in FEATURES_WITH_REASON_LISTS:
+        # person_identification keeps the shorter v1.9.5 sensor-key prefix
+        # `person_id` so existing entity_ids and automations keep working.
+        key_prefix = "person_id" if feature == "person_identification" else feature
+
+        elig_path = f"features.{feature}.eligibility.ineligibility_reasons"
+        disallow_path = f"features.{feature}.enablement.disallow_reasons"
+
+        sensors.append(
+            RingExtendedSensorDescription(
+                key=f"{key_prefix}_ineligibility_reason",
+                translation_key=f"{key_prefix}_ineligibility_reason",
+                category="features",
+                attr_path=elig_path,
+                value_fn=lambda attrs, p=elig_path: (v[0] if (v := get_nested(attrs, p)) else None),
+                available_fn=lambda attrs, p=elig_path: bool(get_nested(attrs, p)),
+            )
+        )
+        sensors.append(
+            RingExtendedSensorDescription(
+                key=f"{key_prefix}_disallow_reason",
+                translation_key=f"{key_prefix}_disallow_reason",
+                category="features",
+                attr_path=disallow_path,
+                value_fn=lambda attrs, p=disallow_path: (v[0] if (v := get_nested(attrs, p)) else None),
+                available_fn=lambda attrs, p=disallow_path: bool(get_nested(attrs, p)),
+            )
+        )
+    return tuple(sensors)
+
+
+FEATURE_REASON_SENSORS = _create_feature_reason_sensors()
+
+
 # Device Status sensors
 DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
     RingExtendedSensorDescription(
@@ -2812,7 +2855,7 @@ CATEGORY_SENSORS: dict[str, tuple[RingExtendedSensorDescription, ...]] = {
     "floodlight": FLOODLIGHT_SENSORS,
     "radar": RADAR_SENSORS,
     "local_processing": LOCAL_PROCESSING_SENSORS,
-    "features": FEATURE_SENSORS,
+    "features": FEATURE_SENSORS + FEATURE_REASON_SENSORS,
     "device_status": DEVICE_STATUS_SENSORS,
 }
 
