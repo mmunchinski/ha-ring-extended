@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.9.8
+
+- Add the **Network Backup** feature group, newly exposed by the Ring API on **100% of devices/models** (API audit 2026-05-28):
+  - `network_backup_eligible` - `features.network_backup.eligibility.eligible`
+  - `network_backup_allowed` - `features.network_backup.enablement.allowed`
+  - `network_backup_enabled` - `features.network_backup.enablement.enabled`
+  - `network_backup_host_eligible` - `features.network_backup_host.eligibility.eligible` (host feature is eligibility-only; no enablement block in the API)
+- Add `network_backup` to `FEATURES_WITH_REASON_LISTS`, auto-generating its two reason sensors (both paths carry real data, e.g. `unsupported_device` / `not_subscribed`):
+  - `network_backup_ineligibility_reason`
+  - `network_backup_disallow_reason`
+
 ## v1.9.7
 
 - Generalize the v1.9.6 reason-list pattern to **11 features**. Adding a feature to `FEATURES_WITH_REASON_LISTS` in const.py now auto-creates both reason sensors (no hand-coded entries needed).

@@ -2414,6 +2414,30 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="features.multiple_detection_events.enabled",
     ),
     RingExtendedSensorDescription(
+        key="network_backup_eligible",
+        translation_key="network_backup_eligible",
+        category="features",
+        attr_path="features.network_backup.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="network_backup_allowed",
+        translation_key="network_backup_allowed",
+        category="features",
+        attr_path="features.network_backup.enablement.allowed",
+    ),
+    RingExtendedSensorDescription(
+        key="network_backup_enabled",
+        translation_key="network_backup_enabled",
+        category="features",
+        attr_path="features.network_backup.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="network_backup_host_eligible",
+        translation_key="network_backup_host_eligible",
+        category="features",
+        attr_path="features.network_backup_host.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
         key="night_vision_enabled",
         translation_key="night_vision_enabled",
         category="features",
@@ -2660,6 +2684,7 @@ FEATURES_WITH_REASON_LISTS = [
     "ai_labs_daily_clip",
     "alexa_plus_greetings",
     "live_view_audio_privacy_controls",
+    "network_backup",
     "person_identification",
     "retinal_tuning",
     "single_alert",

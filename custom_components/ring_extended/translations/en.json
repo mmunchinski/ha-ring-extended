@@ -417,6 +417,24 @@
       "natural_language_search_mode": {
         "name": "Natural Language Search Mode"
       },
+      "network_backup_allowed": {
+        "name": "Network Backup Allowed"
+      },
+      "network_backup_disallow_reason": {
+        "name": "Network Backup Disallow Reason"
+      },
+      "network_backup_eligible": {
+        "name": "Network Backup Eligible"
+      },
+      "network_backup_enabled": {
+        "name": "Network Backup Enabled"
+      },
+      "network_backup_host_eligible": {
+        "name": "Network Backup Host Eligible"
+      },
+      "network_backup_ineligibility_reason": {
+        "name": "Network Backup Ineligibility Reason"
+      },
       "network_connection_value": {
         "name": "Network Connection Value"
       },
