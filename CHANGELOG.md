@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.9.9
+
+- Remove a duplicate `motion_snooze_preset_profile` sensor definition. Two definitions shared the same sensor key (different attr_paths: `settings.motion_snooze_preset_profile` vs `settings.motion_settings.motion_snooze_preset_profile`), so HA rejected the second as a duplicate unique_id and logged a startup warning per device. Both paths return identical values, so no sensor data changes — this only removes the dead definition and the recurring warning. The surviving sensor keeps reading `settings.motion_snooze_preset_profile`.
+
 ## v1.9.8
 
 - Add the **Network Backup** feature group, newly exposed by the Ring API on **100% of devices/models** (API audit 2026-05-28):

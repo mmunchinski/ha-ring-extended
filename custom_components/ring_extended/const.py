@@ -1187,13 +1187,6 @@ MOTION_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="motion",
         attr_path="settings.motion_announcement",
     ),
-    # Motion snooze settings
-    RingExtendedSensorDescription(
-        key="motion_snooze_preset_profile",
-        translation_key="motion_snooze_preset_profile",
-        category="motion",
-        attr_path="settings.motion_settings.motion_snooze_preset_profile",
-    ),
     # PIR sensor settings
     RingExtendedSensorDescription(
         key="pir_sensitivity1",
