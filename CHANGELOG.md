@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.9.11
+
+Project health audit (2026-06-04) — a multi-dimensional review of the integration code, sensor definitions, translations, and docs.
+
+**Bug fixes (integration)**
+
+- **Entity reconciliation no longer deletes valid entities on every reload.** It previously rebuilt the "expected" set from raw `_attrs` (which omits the merged health/alert data sensors actually read) and removed any entity whose value was momentarily unavailable — destroying conditional sensors (e.g. low-battery alerts) and their history each reload. Reconciliation now removes an entity only when its **device is gone** or its **sensor key was deleted from the code**; live availability is handled by the entity itself.
+- Replace the deprecated `hass.components.persistent_notification.async_create` (raises on current HA cores) with the module API, and key the firmware-update notification on `device_id` instead of device name.
+- `value_fn` crash/zero safety: numeric coercions for `egress_tx_rate`, `firmware_avg_bitrate`, and `ac_power` now use safe helpers that preserve a genuine `0` and never raise `ValueError` (which the value handler did not catch).
+- `unique_id` no longer falls back to the literal `"unknown"` (which collided across id-less devices); such devices are skipped instead.
+- Firmware-history sensor uses a public `get_current_version()` accessor instead of a private attribute; correct the `device_info` return-type annotations; remove a dead, never-called cleanup function.
+
+**Sensor cleanup** (these change/remove entities)
+
+- Remove 11 always-Unavailable sensors that never held a value on any device (vestigial config keys whose live data is already exposed via nested sensors): `enable_ir`, `enable_audio`, `enable_pir_validation`, `enable_rlmd`, `rlmd_distance`, `sensitivity`, `active_motion_filter`, `motion_snooze_privacy_timeout`, `light_settings`, `device_placement_info`, `terms_of_service_accepted`.
+- Remove `current_bandwidth_raw` — a byte-identical duplicate of `bandwidth` (both expose `health.bandwidth`). `current_bandwidth_mb` and `current_bandwidth_category` are unaffected.
+- Move `second_battery_percentage_category` and `second_battery_voltage_category` to the **Power** category to match every other battery sensor. This renames their entity IDs (`*_health_second_battery_*` → `*_power_second_battery_*`).
+- Remove the incorrect `Mbps` unit from `tx_rate` (its values are a small WiFi PHY/link-rate index, not Mbps).
+
+**Translations**
+
+- Remove 8 fully-orphaned entity names for sensors that no longer exist; rename the `concierge_alexa_delay` / `concierge_autoreply_delay` entries to their current `_ms` keys. `strings.json` and `en.json` stay in sync.
+
+**Docs**
+
+- Fix the README "Example Sensors" entity IDs (they omitted the mandatory category prefix) and document the `sensor.{device}_{category}_{key}` pattern; refresh the sensor count; correct a v1.9.5 changelog miscount ("4" → "3"); update the `claude.md` count and add `diagnostics.py` to the file tree; label the static API snapshots as point-in-time and add a superseded-spec banner.
+
 ## v1.9.10
 
 API audit 2026-06-04.
@@ -53,7 +80,7 @@ API audit 2026-06-04.
 ## v1.9.5
 
 - Add new sensor: `alerts.sidewalk_connection` - Amazon Sidewalk connection alert (71% of models)
-- Remove 4 stale sensors no longer present in Ring API:
+- Remove 3 stale sensors no longer present in Ring API:
   - `alerts.battery` (added v1.9.3, since removed by Ring)
   - `health.battery_level` (added v1.9.3, since removed by Ring)
   - `health.rssi_risk_level` (re-added v1.9.4, since removed again by Ring)

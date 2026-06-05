@@ -36,9 +36,6 @@
       "ac_power": {
         "name": "Ac Power"
       },
-      "active_motion_filter": {
-        "name": "Active Motion Filter"
-      },
       "active_streaming_event_led": {
         "name": "Active Streaming Event LED"
       },
@@ -177,9 +174,6 @@
       "current_bandwidth_mb": {
         "name": "Current Bandwidth MB"
       },
-      "current_bandwidth_raw": {
-        "name": "Current Bandwidth Raw"
-      },
       "cv_threshold_loitering": {
         "name": "CV Threshold Loitering"
       },
@@ -194,9 +188,6 @@
       },
       "device_kind": {
         "name": "Device Kind"
-      },
-      "device_placement_info": {
-        "name": "Device Placement Info"
       },
       "device_type": {
         "name": "Device Type"
@@ -213,14 +204,8 @@
       "egress_tx_rate_category": {
         "name": "Egress Tx Rate Category"
       },
-      "enable_audio": {
-        "name": "Enable Audio"
-      },
       "enable_audio_recording": {
         "name": "Enable Audio Recording"
-      },
-      "enable_ir": {
-        "name": "IR Enabled"
       },
       "enable_ir_led": {
         "name": "IR LED Enabled"
@@ -231,14 +216,8 @@
       "enable_live_view_audio_override": {
         "name": "Enable Live View Audio Override"
       },
-      "enable_pir_validation": {
-        "name": "PIR Validation"
-      },
       "enable_rich_notifications": {
         "name": "Enable Rich Notifications"
-      },
-      "enable_rlmd": {
-        "name": "RLMD Enabled"
       },
       "enable_vod_setting": {
         "name": "Enable VOD Setting"
@@ -336,9 +315,6 @@
       "light_schedule_enabled": {
         "name": "Light Schedule Enabled"
       },
-      "light_settings": {
-        "name": "Light Settings"
-      },
       "lite_24x7_enabled": {
         "name": "Lite 24X7 Enabled"
       },
@@ -404,9 +380,6 @@
       },
       "motion_snooze_preset_profile": {
         "name": "Motion Snooze Preset Profile"
-      },
-      "motion_snooze_privacy_timeout": {
-        "name": "Motion Snooze Privacy Timeout"
       },
       "motion_stop_edge_eligible": {
         "name": "Motion Stop Edge Eligible"
@@ -657,15 +630,6 @@
       "rich_notifications_scene_source": {
         "name": "Rich Notifications Scene Source"
       },
-      "ring_cam_light_installed": {
-        "name": "Ring Cam Light Installed"
-      },
-      "ring_cam_setup_flow": {
-        "name": "Ring Cam Setup Flow"
-      },
-      "rlmd_distance": {
-        "name": "RLMD Distance"
-      },
       "rss_connected": {
         "name": "RSS Connected"
       },
@@ -683,9 +647,6 @@
       },
       "second_battery_voltage_category": {
         "name": "Second Battery Voltage Category"
-      },
-      "sensitivity": {
-        "name": "Sensitivity"
       },
       "shadow_correction_enabled": {
         "name": "Shadow Correction Enabled"
@@ -761,9 +722,6 @@
       },
       "subscribed_motions": {
         "name": "Subscribed Motions"
-      },
-      "terms_of_service_accepted": {
-        "name": "Terms Of Service Accepted"
       },
       "time_zone": {
         "name": "Time Zone"
@@ -1032,18 +990,6 @@
       "floodlight_priority": {
         "name": "Floodlight Priority"
       },
-      "light_schedule_start_hour": {
-        "name": "Light Schedule Start Hour"
-      },
-      "light_schedule_start_minute": {
-        "name": "Light Schedule Start Minute"
-      },
-      "light_schedule_end_hour": {
-        "name": "Light Schedule End Hour"
-      },
-      "light_schedule_end_minute": {
-        "name": "Light Schedule End Minute"
-      },
       "light_snooze_always_on": {
         "name": "Light Snooze Always On"
       },
@@ -1107,10 +1053,10 @@
       "concierge_mode": {
         "name": "Concierge Mode"
       },
-      "concierge_alexa_delay": {
+      "concierge_alexa_delay_ms": {
         "name": "Concierge Alexa Delay"
       },
-      "concierge_autoreply_delay": {
+      "concierge_autoreply_delay_ms": {
         "name": "Concierge Autoreply Delay"
       },
       "ring_media_server_enabled": {

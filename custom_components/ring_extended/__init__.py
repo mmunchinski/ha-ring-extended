@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from homeassistant.components import persistent_notification
 from homeassistant.components.ring import DOMAIN as RING_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
@@ -13,6 +14,7 @@ from homeassistant.helpers import entity_registry as er
 
 from .const import DOMAIN, DEVICE_FAMILIES, ALL_SENSORS, get_nested
 from .firmware_history import FirmwareHistoryTracker
+from .sensor import _get_device_merged_attrs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -93,11 +95,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             if changes:
                 hass.async_create_task(firmware_tracker.async_save())
                 for change in changes:
-                    hass.components.persistent_notification.async_create(
+                    persistent_notification.async_create(
+                        hass,
                         f"**{change['device_name']}** firmware updated\n\n"
                         f"`{change['previous_version']}` → `{change['version']}`",
                         title="Ring Firmware Update",
-                        notification_id=f"ring_firmware_{change['device_name']}",
+                        notification_id=f"ring_firmware_{change['device_id']}",
                     )
 
             # Detect removed devices
@@ -215,37 +218,6 @@ async def _cleanup_orphaned_entities(
         await firmware_tracker.async_save()
 
 
-async def _cleanup_orphaned_entities_on_startup(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    current_device_ids: set[str],
-) -> None:
-    """Remove entities that reference devices no longer in Ring."""
-    entity_registry = er.async_get(hass)
-
-    entities_to_remove = []
-    for entity_entry in entity_registry.entities.values():
-        if entity_entry.platform != DOMAIN:
-            continue
-        if entity_entry.config_entry_id != entry.entry_id:
-            continue
-        # Extract device_id from unique_id (format: {device_id}_{sensor_key})
-        unique_id = entity_entry.unique_id
-        # Skip coordinator health sensor (not device-specific)
-        if unique_id.endswith("_coordinator_health"):
-            continue
-        # Split on first underscore to get device_id
-        parts = unique_id.split("_", 1)
-        if len(parts) >= 1:
-            device_id = parts[0]
-            if device_id and device_id not in current_device_ids:
-                entities_to_remove.append(entity_entry.entity_id)
-
-    for entity_id in entities_to_remove:
-        _LOGGER.info("Removing orphaned entity on startup: %s", entity_id)
-        entity_registry.async_remove(entity_id)
-
-
 async def _reconcile_entities(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -272,7 +244,10 @@ async def _reconcile_entities(
     for family in DEVICE_FAMILIES:
         devices = getattr(devices_dict, family, []) or []
         for device in devices:
-            device_attrs = getattr(device, "_attrs", {})
+            # Use the SAME merged attribute view as sensor.py, so the expected
+            # set matches what the platform actually creates (raw _attrs misses
+            # _health_attrs and the alerts->alert_ merge).
+            device_attrs = _get_device_merged_attrs(device)
             if not device_attrs:
                 continue
 
@@ -291,7 +266,7 @@ async def _reconcile_entities(
     for family in DEVICE_FAMILIES:
         devices = getattr(devices_dict, family, []) or []
         for device in devices:
-            device_attrs = getattr(device, "_attrs", {})
+            device_attrs = _get_device_merged_attrs(device)
             if device_attrs.get("health", {}).get("firmware_version"):
                 device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
                 if device_id:
@@ -300,16 +275,41 @@ async def _reconcile_entities(
     # Add coordinator health sensor
     expected_unique_ids.add(f"{entry.entry_id}_coordinator_health")
 
-    # REMOVALS: Entities that exist but shouldn't
-    # (sensor deprecated OR device attribute no longer present OR device removed)
+    # REMOVALS: only when the DEVICE is gone or the SENSOR KEY was deleted from
+    # code. An entity is NOT removed merely because its value is currently
+    # unavailable -- many sensors are conditional (e.g. low-battery alerts) and
+    # must keep their entity and history across periods when the field is absent.
+    # (Availability is handled live by RingExtendedSensor.available.)
+    defined_keys: set[str] = {description.key for description in ALL_SENSORS}
+    defined_keys.add("firmware_history")
+
     entities_removed: list[str] = []
     for unique_id, entity_entry in existing_entities.items():
-        if unique_id not in expected_unique_ids:
+        # The coordinator health sensor for this entry is always valid.
+        if unique_id == f"{entry.entry_id}_coordinator_health":
+            continue
+
+        # Find the current device that owns this entity (prefix match).
+        owning_device_id = next(
+            (did for did in current_device_ids if unique_id.startswith(f"{did}_")),
+            None,
+        )
+
+        remove_reason: str | None = None
+        if owning_device_id is None:
+            remove_reason = "device no longer present"
+        else:
+            sensor_key = unique_id[len(owning_device_id) + 1:]
+            if sensor_key not in defined_keys:
+                remove_reason = "sensor definition removed from code"
+
+        if remove_reason:
             entities_removed.append(entity_entry.entity_id)
             _LOGGER.info(
-                "Removing stale entity: %s (unique_id: %s)",
+                "Removing stale entity: %s (unique_id: %s) - %s",
                 entity_entry.entity_id,
                 unique_id,
+                remove_reason,
             )
             entity_registry.async_remove(entity_entry.entity_id)
 

@@ -132,6 +132,30 @@ def _parse_throughput_to_mbps(value: str | int | float | None) -> float | None:
         return None
 
 
+def _safe_float(value: Any) -> float | None:
+    """Coerce a value to float, returning None on missing/unparseable input.
+
+    Unlike a truthy guard, this preserves a genuine 0/0.0 and never raises
+    ValueError (which native_value does not catch).
+    """
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def _safe_int(value: Any) -> int | None:
+    """Coerce a value to int, returning None on missing/unparseable input."""
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return None
+
+
 @dataclass(frozen=True, kw_only=True)
 class RingExtendedSensorDescription(SensorEntityDescription):
     """Describes Ring extended sensor entity."""
@@ -254,7 +278,7 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         category="health",
         attr_path="health.egress_tx_rate",
-        value_fn=lambda attrs: float(v) if (v := get_nested(attrs, "health.egress_tx_rate")) else None,
+        value_fn=lambda attrs: _safe_float(get_nested(attrs, "health.egress_tx_rate")),
     ),
     RingExtendedSensorDescription(
         key="egress_tx_rate_category",
@@ -311,14 +335,6 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="health.wifi_is_ring_network",
     ),
     RingExtendedSensorDescription(
-        key="current_bandwidth_raw",
-        translation_key="current_bandwidth_raw",
-        native_unit_of_measurement="kbps",
-        state_class=SensorStateClass.MEASUREMENT,
-        category="health",
-        attr_path="health.current_bandwidth",
-    ),
-    RingExtendedSensorDescription(
         key="current_bandwidth_category",
         translation_key="current_bandwidth_category",
         category="health",
@@ -372,18 +388,6 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="health.rss_connected",
     ),
     RingExtendedSensorDescription(
-        key="second_battery_percentage_category",
-        translation_key="second_battery_percentage_category",
-        category="health",
-        attr_path="health.second_battery_percentage_category",
-    ),
-    RingExtendedSensorDescription(
-        key="second_battery_voltage_category",
-        translation_key="second_battery_voltage_category",
-        category="health",
-        attr_path="health.second_battery_voltage_category",
-    ),
-    RingExtendedSensorDescription(
         key="stream_profile",
         translation_key="stream_profile",
         category="health",
@@ -404,7 +408,8 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
     RingExtendedSensorDescription(
         key="tx_rate",
         translation_key="tx_rate",
-        native_unit_of_measurement="Mbps",
+        # No unit: values are a small WiFi PHY/link-rate index (4-72), not Mbps
+        # (they do not track egress_tx_rate). An unlabeled measurement is honest.
         state_class=SensorStateClass.MEASUREMENT,
         category="health",
         attr_path="health.tx_rate",
@@ -526,6 +531,20 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="power",
         attr_path="health.battery_voltage_category",
     ),
+    # Second-battery category sensors live with the other battery sensors in the
+    # "power" category (attr_path stays health.* as the API nests them there).
+    RingExtendedSensorDescription(
+        key="second_battery_percentage_category",
+        translation_key="second_battery_percentage_category",
+        category="power",
+        attr_path="health.second_battery_percentage_category",
+    ),
+    RingExtendedSensorDescription(
+        key="second_battery_voltage_category",
+        translation_key="second_battery_voltage_category",
+        category="power",
+        attr_path="health.second_battery_voltage_category",
+    ),
     RingExtendedSensorDescription(
         key="battery_present",
         translation_key="battery_present",
@@ -567,7 +586,7 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="ac_power",
         category="power",
         attr_path="health.ac_power",
-        value_fn=lambda attrs: bool(int(v)) if (v := get_nested(attrs, "health.ac_power")) is not None else None,
+        value_fn=lambda attrs: (lambda iv: bool(iv) if iv is not None else None)(_safe_int(get_nested(attrs, "health.ac_power"))),
     ),
     RingExtendedSensorDescription(
         key="transformer_voltage",
@@ -658,7 +677,7 @@ FIRMWARE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         category="firmware",
         attr_path="health.firmware_avg_bitrate",
-        value_fn=lambda attrs: int(v) if (v := get_nested(attrs, "health.firmware_avg_bitrate")) else None,
+        value_fn=lambda attrs: _safe_int(get_nested(attrs, "health.firmware_avg_bitrate")),
     ),
     RingExtendedSensorDescription(
         key="firmware_version_root",
@@ -747,12 +766,6 @@ VIDEO_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="max_digital_zoom_level",
         category="video",
         attr_path="features.video_rendering.max_digital_zoom_level",
-    ),
-    RingExtendedSensorDescription(
-        key="enable_ir",
-        translation_key="enable_ir",
-        category="video",
-        attr_path="settings.enable_ir",
     ),
     RingExtendedSensorDescription(
         key="enable_ir_led",
@@ -1084,12 +1097,6 @@ AUDIO_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="settings.chime_settings.duration",
     ),
     RingExtendedSensorDescription(
-        key="enable_audio",
-        translation_key="enable_audio",
-        category="audio",
-        attr_path="settings.enable_audio",
-    ),
-    RingExtendedSensorDescription(
         key="mic_volume",
         translation_key="mic_volume",
         category="audio",
@@ -1172,43 +1179,6 @@ MOTION_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="motion_detection_enabled_root",
         category="motion",
         attr_path="motion_detection_enabled",
-    ),
-    RingExtendedSensorDescription(
-        key="enable_pir_validation",
-        translation_key="enable_pir_validation",
-        category="motion",
-        attr_path="settings.enable_pir_validation",
-    ),
-    RingExtendedSensorDescription(
-        key="enable_rlmd",
-        translation_key="enable_rlmd",
-        category="motion",
-        attr_path="settings.enable_rlmd",
-    ),
-    RingExtendedSensorDescription(
-        key="rlmd_distance",
-        translation_key="rlmd_distance",
-        category="motion",
-        attr_path="settings.rlmd_distance",
-    ),
-    RingExtendedSensorDescription(
-        key="sensitivity",
-        translation_key="sensitivity",
-        category="motion",
-        attr_path="settings.sensitivity",
-    ),
-    RingExtendedSensorDescription(
-        key="active_motion_filter",
-        translation_key="active_motion_filter",
-        category="motion",
-        attr_path="settings.active_motion_filter",
-    ),
-    RingExtendedSensorDescription(
-        key="motion_snooze_privacy_timeout",
-        translation_key="motion_snooze_privacy_timeout",
-        native_unit_of_measurement=UnitOfTime.SECONDS,
-        category="motion",
-        attr_path="settings.motion_snooze_privacy_timeout",
     ),
     RingExtendedSensorDescription(
         key="advanced_motion_zones_type",
@@ -2153,12 +2123,6 @@ FLOODLIGHT_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="settings.floodlight_settings.always_on",
     ),
     RingExtendedSensorDescription(
-        key="light_settings",
-        translation_key="light_settings",
-        category="floodlight",
-        attr_path="settings.light_settings",
-    ),
-    RingExtendedSensorDescription(
         key="ir_led_settings",
         translation_key="ir_led_settings",
         category="floodlight",
@@ -2869,12 +2833,6 @@ DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="settings.active_streaming_event_led_enabled",
     ),
     RingExtendedSensorDescription(
-        key="device_placement_info",
-        translation_key="device_placement_info",
-        category="device_status",
-        attr_path="settings.device_placement_info",
-    ),
-    RingExtendedSensorDescription(
         key="flick_elim_recommended_mode",
         translation_key="flick_elim_recommended_mode",
         category="device_status",
@@ -2885,12 +2843,6 @@ DEVICE_STATUS_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="max_resolution_mode_eligible",
         category="device_status",
         attr_path="settings.max_resolution_mode_eligible",
-    ),
-    RingExtendedSensorDescription(
-        key="terms_of_service_accepted",
-        translation_key="terms_of_service_accepted",
-        category="device_status",
-        attr_path="settings.terms_of_service_accepted",
     ),
     RingExtendedSensorDescription(
         key="ring_net_id",

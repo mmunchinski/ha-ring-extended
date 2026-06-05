@@ -129,6 +129,12 @@ async def async_setup_entry(
                 continue
 
             device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+            if not device_id:
+                # No stable id -> skip; otherwise unique_ids collide on "unknown"
+                # and never match reconciliation's expected set.
+                _LOGGER.debug("Skipping device with no device_id: %s",
+                              getattr(device, "name", "unknown"))
+                continue
 
             _LOGGER.debug("Processing device: %s with %d merged health keys",
                           getattr(device, "name", "unknown"),
@@ -162,6 +168,8 @@ async def async_setup_entry(
                 # Only add for devices that have firmware info
                 if device_attrs.get("health", {}).get("firmware_version"):
                     device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+                    if not device_id:
+                        continue
 
                     entities.append(
                         RingDeviceFirmwareHistorySensor(
@@ -209,7 +217,7 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
         self.entity_description = description
 
         # Store device identification for refreshing the reference
-        self._device_id = str(getattr(device, "device_id", None) or getattr(device, "id", "unknown"))
+        self._device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
         self._device_family = self._detect_device_family(device)
 
         # Set whether entity is enabled by default based on category selection
@@ -269,7 +277,7 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
         return f"{self._category_prefix}: {base_name}"
 
     @property
-    def device_info(self) -> dict[str, Any]:
+    def device_info(self) -> dict[str, Any] | None:
         """Return device info to link this sensor to the existing Ring device."""
         device_id = getattr(self._device, "device_id", None) or getattr(self._device, "id", None)
         if device_id is None:
@@ -335,7 +343,7 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
         self._ring_entry = ring_entry
         self._firmware_tracker = firmware_tracker
 
-        device_id = str(getattr(device, "device_id", None) or getattr(device, "id", "unknown"))
+        device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
         self._device_id = device_id
         self._device_family = self._detect_device_family(device)
         self._attr_unique_id = f"{device_id}_firmware_history"
@@ -375,7 +383,7 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
                     return
 
     @property
-    def device_info(self) -> dict[str, Any]:
+    def device_info(self) -> dict[str, Any] | None:
         """Return device info to link this sensor to the existing Ring device."""
         device_id = getattr(self._device, "device_id", None) or getattr(self._device, "id", None)
         if device_id is None:
@@ -388,7 +396,7 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
     def native_value(self) -> str:
         """Return the current firmware version and change count."""
         history = self._firmware_tracker.get_device_history(self._device_id)
-        current_version = self._firmware_tracker._current_versions.get(self._device_id, "Unknown")
+        current_version = self._firmware_tracker.get_current_version(self._device_id)
         change_count = len(history)
 
         if change_count <= 1:
@@ -502,7 +510,7 @@ class RingCoordinatorHealthSensor(CoordinatorEntity, SensorEntity):
         self.async_write_ha_state()
 
     @property
-    def device_info(self) -> dict[str, Any]:
+    def device_info(self) -> dict[str, Any] | None:
         """Return device info for this sensor."""
         return {
             "identifiers": {(DOMAIN, "ring_extended_diagnostics")},

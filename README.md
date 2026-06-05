@@ -3,7 +3,7 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/release/mmunchinski/ha-ring-extended.svg)](https://github.com/mmunchinski/ha-ring-extended/releases)
 
-Expose **467+ hidden Ring device attributes** as Home Assistant sensors. This integration surfaces the health metrics, CV detection settings, subscription features, and device configurations that Ring's API provides but the core integration doesn't expose.
+Expose **470+ hidden Ring device attributes** as Home Assistant sensors. This integration surfaces the health metrics, CV detection settings, subscription features, and device configurations that Ring's API provides but the core integration doesn't expose.
 
 ## Features
 
@@ -68,21 +68,20 @@ When adding the integration, select which sensor categories to enable. You can a
 
 ## Example Sensors
 
-After installation, you'll see sensors like:
+After installation, you'll see sensors like these. Entity IDs follow the
+pattern `sensor.{device}_{category}_{key}` — the category prefix (e.g. `health`,
+`power`, `cv`, `firmware`) is always present, and a few keys carry their own
+prefix too (so CV detection sensors read `..._cv_cv_human_...`):
 
 ```
-sensor.front_door_wifi_signal          # -52 dBm
-sensor.front_door_wifi_signal_quality  # good
-sensor.front_door_battery_voltage      # 3926 mV
-sensor.front_door_bandwidth            # 6947 kbps
-sensor.front_door_uptime               # 1003992 s
-sensor.front_door_cv_human_enabled     # true
-sensor.front_door_cv_human_mode        # edge
-sensor.front_door_firmware_version     # cam-1.28.10800
-sensor.front_door_firmware_history     # cam-1.28.10800 (2 updates)
-sensor.front_door_lite_24x7_enabled    # true
-sensor.backyard_floodlight_brightness  # 8
-sensor.backyard_birds_eye_view_enabled # true
+sensor.front_door_health_rssi               # -65 dBm
+sensor.front_door_health_bandwidth          # 28868 kbps
+sensor.front_door_health_uptime_sec         # 18 s
+sensor.front_door_power_battery_percentage  # 6 %
+sensor.front_door_cv_cv_human_enabled       # true   (CV prefix + cv_human key)
+sensor.front_door_cv_cv_human_mode          # edge
+sensor.front_door_firmware_firmware_version # 22.0.5
+sensor.front_door_firmware_history          # 22.0.5 (1 updates)
 ```
 
 ## Use Cases
