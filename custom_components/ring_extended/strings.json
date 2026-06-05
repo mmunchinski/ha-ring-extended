@@ -114,6 +114,12 @@
       "battery_present": {
         "name": "Battery Present"
       },
+      "battery_level": {
+        "name": "Battery Level"
+      },
+      "battery_temp": {
+        "name": "Battery Temperature"
+      },
       "battery_save": {
         "name": "Battery Save"
       },
@@ -218,6 +224,9 @@
       },
       "enable_ir_led": {
         "name": "IR LED Enabled"
+      },
+      "enable_ir_led_root": {
+        "name": "IR LED Enabled Root"
       },
       "enable_live_view_audio_override": {
         "name": "Enable Live View Audio Override"
@@ -1121,6 +1130,9 @@
       },
       "alert_sidewalk_connection": {
         "name": "Alert Sidewalk Connection"
+      },
+      "alert_battery": {
+        "name": "Alert Battery"
       },
       "alert_connection": {
         "name": "Alert Connection"

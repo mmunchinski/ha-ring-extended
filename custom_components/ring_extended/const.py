@@ -458,6 +458,15 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="health",
         attr_path="alerts.sidewalk_connection",
     ),
+    # Conditional: present only when a battery is low. Re-added in v1.9.10 after
+    # v1.9.5 wrongly removed it as "stale" during a healthy-battery window. The
+    # alerts.X path also covers health.alert_battery via the merge alias.
+    RingExtendedSensorDescription(
+        key="alert_battery",
+        translation_key="alert_battery",
+        category="health",
+        attr_path="alerts.battery",
+    ),
     RingExtendedSensorDescription(
         key="package_warning_active_health",
         translation_key="package_warning_active_health",
@@ -534,6 +543,24 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="battery_error",
         category="power",
         attr_path="health.battery_error",
+    ),
+    # Conditional battery fields, present only when a battery is low.
+    # battery_level is categorical (e.g. "lowest"); re-added in v1.9.10 after
+    # v1.9.5 wrongly removed it as "stale" during a healthy-battery window.
+    RingExtendedSensorDescription(
+        key="battery_level",
+        translation_key="battery_level",
+        category="power",
+        attr_path="health.battery_level",
+    ),
+    # Raw numeric value; the Ring API does not document its unit/scale, so it is
+    # exposed unconverted (no device_class/unit) to avoid misrepresenting it.
+    RingExtendedSensorDescription(
+        key="battery_temp",
+        translation_key="battery_temp",
+        state_class=SensorStateClass.MEASUREMENT,
+        category="power",
+        attr_path="health.battery_temp",
     ),
     RingExtendedSensorDescription(
         key="ac_power",
@@ -732,6 +759,14 @@ VIDEO_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="enable_ir_led",
         category="video",
         attr_path="settings.enable_ir_led",
+    ),
+    # Root-level copy of enable_ir_led (distinct path from settings.enable_ir_led),
+    # following the existing root/settings dual-sensor precedent (*_root keys).
+    RingExtendedSensorDescription(
+        key="enable_ir_led_root",
+        translation_key="enable_ir_led_root",
+        category="video",
+        attr_path="enable_ir_led",
     ),
     RingExtendedSensorDescription(
         key="ir_led_brightness",
@@ -2687,6 +2722,19 @@ FEATURES_WITH_REASON_LISTS = [
     "video_donation",
 ]
 
+# These features expose an eligibility node but NO usable enablement.disallow_reasons
+# in the Ring API schema: enablement is null (live_view_audio_privacy_controls,
+# video_donation) or a reduced {enabled}-only object (ai_labs_daily_clip). Verified
+# structurally absent on all 20 devices / 7 models (audit 2026-06-04) — not a
+# conditional/low-state absence. Their disallow_reason sensors would be permanently
+# Unavailable, so they are skipped. (Their eligibility.ineligibility_reasons ARE
+# present 20/20 and keep their sensors.)
+FEATURES_WITHOUT_DISALLOW_REASONS = {
+    "ai_labs_daily_clip",
+    "live_view_audio_privacy_controls",
+    "video_donation",
+}
+
 
 def _create_feature_reason_sensors() -> tuple[RingExtendedSensorDescription, ...]:
     """Generate ineligibility_reason and disallow_reason sensors for each
@@ -2710,16 +2758,17 @@ def _create_feature_reason_sensors() -> tuple[RingExtendedSensorDescription, ...
                 available_fn=lambda attrs, p=elig_path: bool(get_nested(attrs, p)),
             )
         )
-        sensors.append(
-            RingExtendedSensorDescription(
-                key=f"{key_prefix}_disallow_reason",
-                translation_key=f"{key_prefix}_disallow_reason",
-                category="features",
-                attr_path=disallow_path,
-                value_fn=lambda attrs, p=disallow_path: (v[0] if (v := get_nested(attrs, p)) else None),
-                available_fn=lambda attrs, p=disallow_path: bool(get_nested(attrs, p)),
+        if feature not in FEATURES_WITHOUT_DISALLOW_REASONS:
+            sensors.append(
+                RingExtendedSensorDescription(
+                    key=f"{key_prefix}_disallow_reason",
+                    translation_key=f"{key_prefix}_disallow_reason",
+                    category="features",
+                    attr_path=disallow_path,
+                    value_fn=lambda attrs, p=disallow_path: (v[0] if (v := get_nested(attrs, p)) else None),
+                    available_fn=lambda attrs, p=disallow_path: bool(get_nested(attrs, p)),
+                )
             )
-        )
     return tuple(sensors)
 
 

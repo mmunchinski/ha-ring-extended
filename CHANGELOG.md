@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.9.10
+
+API audit 2026-06-04.
+
+- Add 3 conditional battery sensors, newly visible because a Doorbell 4's battery is low (these fields are only emitted by the API while a battery is low):
+  - `alert_battery` - `alerts.battery` (also covers `health.alert_battery` via the merge alias)
+  - `battery_level` - `health.battery_level` (categorical, e.g. `lowest`)
+  - `battery_temp` - `health.battery_temp` (raw numeric; the API does not document its unit/scale, so it is exposed unconverted, with no device_class or unit)
+- Note: `alert_battery` and `battery_level` were originally added in v1.9.3 and wrongly removed in v1.9.5 as "stale" during a healthy-battery window. They are **conditional** fields, not removed-from-API ones. The audit "stale" heuristic flags a path absent on all devices, which conflates *permanently gone* with *conditionally absent*; known-conditional `health.*`/`alerts.*` fields should be monitored, not removed.
+- Add `enable_ir_led_root` - root-level `enable_ir_led` (a distinct path from the existing `settings.enable_ir_led` sensor), following the existing root/settings dual-sensor precedent (`*_root` keys).
+- Remove 3 permanently-dead `*_disallow_reason` sensors for features whose Ring API schema has no usable `enablement.disallow_reasons` (verified structurally absent on all 20 devices / 7 models — `enablement` is null or a reduced `{enabled}`-only object): `ai_labs_daily_clip`, `live_view_audio_privacy_controls`, `video_donation`. Their `*_ineligibility_reason` sensors (eligibility node, present 20/20) are kept.
+
 ## v1.9.9
 
 - Remove a duplicate `motion_snooze_preset_profile` sensor definition. Two definitions shared the same sensor key (different attr_paths: `settings.motion_snooze_preset_profile` vs `settings.motion_settings.motion_snooze_preset_profile`), so HA rejected the second as a duplicate unique_id and logged a startup warning per device. Both paths return identical values, so no sensor data changes — this only removes the dead definition and the recurring warning. The surviving sensor keeps reading `settings.motion_snooze_preset_profile`.
