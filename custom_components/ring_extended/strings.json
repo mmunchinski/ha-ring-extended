@@ -1086,6 +1086,9 @@
       "alert_ota_status": {
         "name": "Alert OTA Status"
       },
+      "alert_rssi": {
+        "name": "Alert Wi-Fi Signal"
+      },
       "status_time": {
         "name": "Status Time"
       },

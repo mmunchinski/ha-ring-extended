@@ -472,6 +472,17 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="health",
         attr_path="alerts.battery",
     ),
+    # Conditional: emitted only while Wi-Fi signal is weak (Ring's categorical
+    # signal-risk flag, distinct from the numeric health.rssi / rssi_category).
+    # The alerts.rssi path also covers health.alert_rssi via the merge alias, and
+    # health.rssi_risk_level mirrors the same value. 'rssi' is in the analyzer's
+    # CONDITIONAL_FIELD_SUBSTRINGS so a healthy-window absence won't flag it stale.
+    RingExtendedSensorDescription(
+        key="alert_rssi",
+        translation_key="alert_rssi",
+        category="health",
+        attr_path="alerts.rssi",
+    ),
     RingExtendedSensorDescription(
         key="package_warning_active_health",
         translation_key="package_warning_active_health",

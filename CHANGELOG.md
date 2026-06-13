@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.9.12
+
+API audit 2026-06-13.
+
+- Add `alert_rssi` - `alerts.rssi` (also covers `health.alert_rssi` via the merge alias). A conditional Wi-Fi signal-risk flag the API emits only while a device's signal is weak (currently `low` on 2/20 devices: Garage Doorbell, Front Yard), distinct from the numeric `health.rssi` / `rssi_category` sensors. `health.rssi_risk_level` mirrors the same value. Like the `alert_battery` family this is a **conditional** `health.*`/`alerts.*` field — `rssi` is already in the audit's `CONDITIONAL_FIELD_SUBSTRINGS`, so a healthy-Wi-Fi window won't flag it as stale-removed.
+- Audit confirmed no other genuinely-new metrics. The analyzer's two "high priority" hits were value-identical duplicates of existing sensors, not gaps: `health.current_bandwidth` equals the `bandwidth` sensor (cf. v1.9.11's `current_bandwidth_raw` removal) and `settings.motion_settings.motion_snooze_preset_profile` equals the `motion_snooze_preset_profile` sensor (cf. v1.9.9's dedup). The remaining candidates are always-null config keys or raw list containers already covered by scalar sensors.
+
 ## v1.9.11
 
 Project health audit (2026-06-04) — a multi-dimensional review of the integration code, sensor definitions, translations, and docs.

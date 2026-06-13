@@ -1,13 +1,17 @@
 {
   "domain": "ring_extended",
   "name": "Ring Extended Sensors",
-  "codeowners": ["@mmunchinski"],
+  "codeowners": [
+    "@mmunchinski"
+  ],
   "config_flow": true,
-  "dependencies": ["ring"],
+  "dependencies": [
+    "ring"
+  ],
   "documentation": "https://github.com/mmunchinski/ha-ring-extended",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/mmunchinski/ha-ring-extended/issues",
   "requirements": [],
-  "version": "1.9.11"
+  "version": "1.9.12"
 }
