@@ -12,7 +12,14 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import entity_registry as er
 
-from .const import DOMAIN, DEVICE_FAMILIES, ALL_SENSORS, get_nested
+from .const import (
+    ALL_SENSORS,
+    DEFAULT_CATEGORIES,
+    DEVICE_FAMILIES,
+    DOMAIN,
+    KEY_TO_CATEGORY,
+    get_nested,
+)
 from .firmware_history import FirmwareHistoryTracker
 from .sensor import _get_device_merged_attrs
 
@@ -135,6 +142,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     devices_needing_entities, _ = await _reconcile_entities(hass, entry, devices_dict)
     hass.data[DOMAIN][entry.entry_id]["reconcile_devices"] = devices_needing_entities
 
+    # Reconcile registry enable/disable state with the selected categories.
+    # Category selection only sets entity_registry_enabled_default for NEW
+    # entities, so deselecting a category previously left its (already enabled)
+    # entities live -- keeping the enabled set huge and flooding the startup
+    # websocket push to slow clients. This actively disables deselected
+    # categories (and re-enables reselected ones) so Options is a real lever.
+    enabled_categories = set(entry.data.get("categories") or DEFAULT_CATEGORIES)
+    _apply_category_enablement(hass, entry, enabled_categories, current_device_ids)
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     # Register update listener for options changes
@@ -216,6 +232,79 @@ async def _cleanup_orphaned_entities(
 
     if removed_device_ids:
         await firmware_tracker.async_save()
+
+
+@callback
+def _apply_category_enablement(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    enabled_categories: set[str],
+    device_ids: set[str],
+) -> None:
+    """Enable/disable existing registry entities to match the selected categories.
+
+    ``entity_registry_enabled_default`` only affects entities at first
+    registration, so a category deselected after setup would otherwise leave its
+    entities enabled forever. This reconciles the live set:
+
+    - entities in a DEselected category that are currently enabled are disabled
+      (marked ``disabled_by = INTEGRATION``);
+    - entities in a (re)selected category that WE previously disabled are
+      re-enabled.
+
+    A user's manual disables (``disabled_by = USER``) are never re-enabled, and
+    the coordinator-health sensor is always left enabled.
+    """
+    registry = er.async_get(hass)
+    disabled = 0
+    enabled = 0
+
+    for entity in list(registry.entities.values()):
+        if entity.platform != DOMAIN or entity.config_entry_id != entry.entry_id:
+            continue
+
+        unique_id = entity.unique_id
+        # Coordinator health is a fixed diagnostic entity, always kept enabled.
+        if unique_id.endswith("_coordinator_health"):
+            continue
+
+        # Derive the sensor key by stripping the owning device_id prefix.
+        owning_device_id = next(
+            (did for did in device_ids if unique_id.startswith(f"{did}_")),
+            None,
+        )
+        if owning_device_id is None:
+            # Device is gone (reconciliation removes it) -> don't touch here.
+            continue
+
+        sensor_key = unique_id[len(owning_device_id) + 1:]
+        category = KEY_TO_CATEGORY.get(sensor_key)
+        if category is None:
+            # Unknown key (e.g. removed from code) -> leave to reconciliation.
+            continue
+
+        if category in enabled_categories:
+            # Re-enable only entities WE disabled; respect user's manual disables.
+            if entity.disabled_by == er.RegistryEntryDisabler.INTEGRATION:
+                registry.async_update_entity(entity.entity_id, disabled_by=None)
+                enabled += 1
+        else:
+            # Disable currently-enabled entities in a deselected category.
+            if entity.disabled_by is None:
+                registry.async_update_entity(
+                    entity.entity_id,
+                    disabled_by=er.RegistryEntryDisabler.INTEGRATION,
+                )
+                disabled += 1
+
+    if disabled or enabled:
+        _LOGGER.info(
+            "Category enablement: disabled %d, re-enabled %d entities "
+            "(selected categories: %s)",
+            disabled,
+            enabled,
+            sorted(enabled_categories),
+        )
 
 
 async def _reconcile_entities(

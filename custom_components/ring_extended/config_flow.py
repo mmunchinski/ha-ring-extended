@@ -12,7 +12,7 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 
-from .const import CATEGORY_NAMES, DOMAIN, SENSOR_CATEGORIES
+from .const import CATEGORY_NAMES, DEFAULT_CATEGORIES, DOMAIN, SENSOR_CATEGORIES
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class RingExtendedConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(
-                        "categories", default=SENSOR_CATEGORIES
+                        "categories", default=DEFAULT_CATEGORIES
                     ): selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=category_options,
@@ -103,7 +103,7 @@ class RingExtendedOptionsFlow(OptionsFlow):
                 return self.async_create_entry(title="", data={})
 
         # Get current categories
-        current_categories = self.config_entry.data.get("categories", SENSOR_CATEGORIES)
+        current_categories = self.config_entry.data.get("categories", DEFAULT_CATEGORIES)
 
         # Build category options
         category_options = [

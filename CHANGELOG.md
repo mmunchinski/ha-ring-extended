@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.9.12
+## v1.10.0
+
+Reduce the enabled-entity surface to stop the startup websocket flood (companion-app tablets hitting "Client unable to keep up with pending messages. Reached 4096 pending messages" during boot). The root cause was cardinality, not state churn: ~900+ enabled entities each emit a per-entity websocket *add* frame at startup, overrunning a slow client's outbound queue. The paid/CV/eligibility flags that dominate the count are static config values, not a runtime `state_changed` firehose.
+
+- **Deselecting a category now actually disables its entities.** `entity_registry_enabled_default` only applies to entities at first registration, so a category deselected in Options previously left its (already enabled) entities live forever. Setup now reconciles the registry: entities in a deselected category are disabled (`disabled_by = INTEGRATION`) and are re-enabled if the category is reselected. A user's manual disables (`disabled_by = USER`) are never overridden, and the coordinator-health sensor is always kept enabled. This makes the Options category picker a real lever for shrinking the live set.
+- **Leaner defaults on fresh installs.** The default enabled categories are now `health`, `power`, and `firmware` (connectivity/signal, battery, firmware) instead of all 16. The remaining categories are informational static config/eligibility flags and can be opted back in via Options.
+- No entity definitions changed and no `unique_id`s changed; this is non-breaking for existing installs until the user narrows their category selection.
 
 API audit 2026-06-13.
 

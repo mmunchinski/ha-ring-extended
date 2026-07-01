@@ -43,6 +43,16 @@ SENSOR_CATEGORIES = [
     "device_status",
 ]
 
+# Categories enabled by default on a fresh install. The remaining categories are
+# static config / eligibility flags that are informational-only for most users;
+# leaving ~300 of them enabled per device floods the startup websocket push to
+# slow clients (companion-app tablets). Users can opt them back in via Options.
+DEFAULT_CATEGORIES = [
+    "health",
+    "power",
+    "firmware",
+]
+
 CATEGORY_NAMES = {
     "health": "Health & Connectivity",
     "power": "Power & Battery",
@@ -2893,3 +2903,11 @@ CATEGORY_SENSORS: dict[str, tuple[RingExtendedSensorDescription, ...]] = {
 ALL_SENSORS: tuple[RingExtendedSensorDescription, ...] = tuple(
     sensor for sensors in CATEGORY_SENSORS.values() for sensor in sensors
 )
+
+# Map every sensor key to its category (single source of truth for the
+# enable/disable-by-category reconciliation in __init__.py). The per-device
+# firmware-history sensor is not in ALL_SENSORS but follows the firmware
+# category; the coordinator-health sensor is always enabled and handled
+# separately (never disabled by category).
+KEY_TO_CATEGORY: dict[str, str] = {desc.key: desc.category for desc in ALL_SENSORS}
+KEY_TO_CATEGORY["firmware_history"] = "firmware"
