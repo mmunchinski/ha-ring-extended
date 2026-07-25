@@ -45,6 +45,30 @@
       "ai_labs_daily_clip_enabled": {
         "name": "AI Labs Daily Clip Enabled"
       },
+      "ai_labs_daily_clip_allows_no_location": {
+        "name": "AI Labs Daily Clip Allows No Location"
+      },
+      "ai_labs_daily_clip_ineligibility_reason": {
+        "name": "AI Labs Daily Clip Ineligibility Reason"
+      },
+      "ai_labs_memorable_moments_eligible": {
+        "name": "AI Labs Memorable Moments Eligible"
+      },
+      "ai_labs_memorable_moments_enabled": {
+        "name": "AI Labs Memorable Moments Enabled"
+      },
+      "ai_labs_memorable_moments_allows_no_location": {
+        "name": "AI Labs Memorable Moments Allows No Location"
+      },
+      "ai_labs_memorable_moments_ineligibility_reason": {
+        "name": "AI Labs Memorable Moments Ineligibility Reason"
+      },
+      "original_video_quality_download_offer_enabled": {
+        "name": "Original Video Quality Download Offer Enabled"
+      },
+      "property_view_enabled": {
+        "name": "Property View Enabled"
+      },
       "advanced_motion_detection_enabled": {
         "name": "Advanced Motion Detection Enabled"
       },

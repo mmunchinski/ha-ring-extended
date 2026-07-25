@@ -36,7 +36,7 @@ Expose **480+ hidden Ring device attributes** as Home Assistant sensors. This in
 | **Floodlight** | Brightness, duration, always-on, light settings |
 | **Radar** | Bird's Eye View, BEZ, auto motion sensitivity |
 | **Local Processing** | Sheila CV/storage, Stark settings |
-| **Features** | 50+ eligibility flags (AI warnings, person ID, smart video search, etc.) |
+| **Features** | 50+ eligibility flags (AI warnings, person ID, smart video search, AI Labs daily clip / memorable moments, property view, etc.) |
 | **Device Status** | Timezone, LED status, siren countdown, setup flow |
 
 ## Requirements

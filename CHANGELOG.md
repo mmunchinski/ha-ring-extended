@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.11.0
+
+API audit 2026-07-25 (21 devices / 7 models) plus a recorder-warning fix surfaced by the HA log.
+
+**New sensors (7)** — two new Ring features and a new AI-Labs-wide flag. None of these paths existed in the previous audit snapshots.
+
+- `features.ai_labs_memorable_moments` — a new AI Labs feature carrying Ring's standard schema on all 21 devices. Adds 4 sensors: `ai_labs_memorable_moments_enabled` (`.enablement.enabled`), `ai_labs_memorable_moments_eligible` (`.eligibility.eligible`), `ai_labs_memorable_moments_allows_no_location`, and `ai_labs_memorable_moments_ineligibility_reason` (via `FEATURES_WITH_REASON_LISTS`; currently `unsupported_language`, from the list `[unsupported_language, not_subscribed, svd_not_eligible, svs_not_eligible]`). Its `enablement` is a reduced `{enabled}`-only object, so it is also added to `FEATURES_WITHOUT_DISALLOW_REASONS` — no permanently-Unavailable `_disallow_reason` sensor is generated (same treatment as `ai_labs_daily_clip` in v1.9.10).
+- `ai_labs_daily_clip_allows_no_location` - `features.ai_labs_daily_clip.allows_no_location`. `allows_no_location` is an AI-Labs-wide flag: it appears on exactly the two `features.ai_labs_*` nodes (21/21 devices each) and nowhere else in the features tree.
+- `property_view_enabled` - `features.property_view.enablement.enabled`. New feature, present on 18/21 devices (`False` on all of them). Exposes an `enablement` node only — no `eligibility`, so it gets no eligibility/reason sensors. The whole node is null on 3 devices (both doorbells plus Basement Office), where the sensor reports Unknown.
+- `original_video_quality_download_offer_enabled` - `features.original_video_quality_download_offer.is_enabled`. New feature with a flat `{is_enabled}` shape rather than the usual eligibility/enablement pair. The only new flag with live variation: `True` on 5 devices (Front Door, Garage, Driveway, Porch, Deck), `False` on 15, node absent on 1.
+
+**Bug fix**
+
+- `video_packets_total` state class changed from `TOTAL_INCREASING` to `MEASUREMENT`. Despite the name, `health.video_packets_total` is not a cumulative counter — Ring reports a per-health-report window sample, so the value routinely steps down (e.g. front_yard 2846 → 2807, basement_single_door 8692 → 8615) and does not track uptime (3D Printers: 1,638 packets against 2.9 M seconds of uptime). Every dip made the recorder log `state is not strictly increasing` and ask for a bug report; 5 entities warned 9 times over 2026-07-23/24. Long-term statistics for this sensor restart under the new state class.
+
+**Translations**
+
+- Add the 7 new entity names, plus the missing `ai_labs_daily_clip_ineligibility_reason` name (its sensor has existed since v1.9.10 but had no translation entry). `strings.json` and `en.json` stay in sync.
+
+Audit notes: no paths were removed from the API this cycle. The analyzer's other two "high priority" hits are the same value-identical duplicates rejected in v1.10.0, re-verified against live data here — `health.current_bandwidth` (15097) equals the `bandwidth` sensor (15097), and `settings.motion_settings.motion_snooze_preset_profile` equals `settings.motion_snooze_preset_profile` on 21/21 devices. The 5 "stale" leaves are the known conditional battery/RSSI alert fields (absent while devices are healthy — monitor, do not remove).
+
 ## v1.10.0
 
 Reduce the enabled-entity surface to stop the startup websocket flood (companion-app tablets hitting "Client unable to keep up with pending messages. Reached 4096 pending messages" during boot). The root cause was cardinality, not state churn: ~900+ enabled entities each emit a per-entity websocket *add* frame at startup, overrunning a slow client's outbound queue. The paid/CV/eligibility flags that dominate the count are static config values, not a runtime `state_changed` firehose.

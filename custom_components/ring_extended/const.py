@@ -424,10 +424,14 @@ HEALTH_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="health",
         attr_path="health.tx_rate",
     ),
+    # NOT a cumulative counter despite the name: Ring reports a per-health-report
+    # window sample, so the value routinely steps DOWN (e.g. 2846 -> 2807) and does
+    # not track uptime. TOTAL_INCREASING made the recorder log "state is not
+    # strictly increasing" warnings on every dip, so this is MEASUREMENT.
     RingExtendedSensorDescription(
         key="video_packets_total",
         translation_key="video_packets_total",
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        state_class=SensorStateClass.MEASUREMENT,
         category="health",
         attr_path="health.video_packets_total",
     ),
@@ -2684,6 +2688,53 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="features",
         attr_path="features.ai_labs_daily_clip.eligibility.eligible",
     ),
+    # `allows_no_location` is an AI-Labs-wide flag: as of the 2026-07-25 audit it
+    # appears on exactly the two features.ai_labs_* nodes (21/21 devices each) and
+    # nowhere else in the features tree.
+    RingExtendedSensorDescription(
+        key="ai_labs_daily_clip_allows_no_location",
+        translation_key="ai_labs_daily_clip_allows_no_location",
+        category="features",
+        attr_path="features.ai_labs_daily_clip.allows_no_location",
+    ),
+    # AI Labs Memorable Moments — new feature in Ring's API (audit 2026-07-25).
+    # Standard eligibility/enablement schema on 21/21 devices, but enablement is a
+    # reduced {enabled}-only object, so it is in FEATURES_WITHOUT_DISALLOW_REASONS.
+    RingExtendedSensorDescription(
+        key="ai_labs_memorable_moments_enabled",
+        translation_key="ai_labs_memorable_moments_enabled",
+        category="features",
+        attr_path="features.ai_labs_memorable_moments.enablement.enabled",
+    ),
+    RingExtendedSensorDescription(
+        key="ai_labs_memorable_moments_eligible",
+        translation_key="ai_labs_memorable_moments_eligible",
+        category="features",
+        attr_path="features.ai_labs_memorable_moments.eligibility.eligible",
+    ),
+    RingExtendedSensorDescription(
+        key="ai_labs_memorable_moments_allows_no_location",
+        translation_key="ai_labs_memorable_moments_allows_no_location",
+        category="features",
+        attr_path="features.ai_labs_memorable_moments.allows_no_location",
+    ),
+    # Property View — new feature (audit 2026-07-25). Exposes an enablement node
+    # only (no eligibility), and the whole node is null on some models, so the
+    # sensor reports Unknown there.
+    RingExtendedSensorDescription(
+        key="property_view_enabled",
+        translation_key="property_view_enabled",
+        category="features",
+        attr_path="features.property_view.enablement.enabled",
+    ),
+    # Original Video Quality Download Offer — new feature (audit 2026-07-25). Flat
+    # {is_enabled} shape rather than the usual eligibility/enablement pair.
+    RingExtendedSensorDescription(
+        key="original_video_quality_download_offer_enabled",
+        translation_key="original_video_quality_download_offer_enabled",
+        category="features",
+        attr_path="features.original_video_quality_download_offer.is_enabled",
+    ),
 )
 
 # Features that follow Ring's standard reason-list schema. Adding a feature
@@ -2695,6 +2746,7 @@ FEATURE_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
 FEATURES_WITH_REASON_LISTS = [
     "ai_automated_warnings",
     "ai_labs_daily_clip",
+    "ai_labs_memorable_moments",
     "alexa_plus_greetings",
     "live_view_audio_privacy_controls",
     "network_backup",
@@ -2709,13 +2761,15 @@ FEATURES_WITH_REASON_LISTS = [
 
 # These features expose an eligibility node but NO usable enablement.disallow_reasons
 # in the Ring API schema: enablement is null (live_view_audio_privacy_controls,
-# video_donation) or a reduced {enabled}-only object (ai_labs_daily_clip). Verified
-# structurally absent on all 20 devices / 7 models (audit 2026-06-04) — not a
-# conditional/low-state absence. Their disallow_reason sensors would be permanently
-# Unavailable, so they are skipped. (Their eligibility.ineligibility_reasons ARE
-# present 20/20 and keep their sensors.)
+# video_donation) or a reduced {enabled}-only object (ai_labs_daily_clip,
+# ai_labs_memorable_moments). Verified structurally absent on all 21 devices /
+# 7 models (audits 2026-06-04, 2026-07-25) — not a conditional/low-state absence.
+# Their disallow_reason sensors would be permanently Unavailable, so they are
+# skipped. (Their eligibility.ineligibility_reasons ARE present on every device and
+# keep their sensors.)
 FEATURES_WITHOUT_DISALLOW_REASONS = {
     "ai_labs_daily_clip",
+    "ai_labs_memorable_moments",
     "live_view_audio_privacy_controls",
     "video_donation",
 }
