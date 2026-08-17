@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.11.1
+
+Fix newly-added Ring devices landing under an **"Unnamed device"** in the HA UI.
+
+- **`device_info` now supplies `name`, `manufacturer`, and `model`.** Both `RingExtendedSensor.device_info` and `RingDeviceFirmwareHistorySensor.device_info` previously returned `identifiers` only, on the assumption (stated in a code comment since the first release) that this merely *links* to the device row created by the base `ring` integration. It does not. Current HA gives each config entry its own device registry row, so `ring_extended` has always created its own row per camera — verified on a live 309-device registry, where **no** device has more than one config entry and all 24 identifier collisions are Ring cameras holding a `ring` row (7-10 entities) alongside a `ring_extended` row (300+ entities). Rows created in earlier HA versions inherited a name from the `ring` row, which hid the defect; any device added to the Ring account now produced a `ring_extended` row with `name: null`, rendered as "Unnamed device" with several hundred sensors under it.
+- Uses `name` rather than `default_name` deliberately: `default_name` applies only when a row is first created and would leave already-nameless rows nameless forever. With `name`, HA backfills the existing unnamed rows on the next restart — no entity IDs, `unique_id`s, or user-assigned names (`name_by_user`) are affected.
+
 ## v1.11.0
 
 API audit 2026-07-25 (21 devices / 7 models) plus a recorder-warning fix surfaced by the HA log.

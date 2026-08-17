@@ -285,7 +285,11 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
 
         return {
             "identifiers": {(RING_DOMAIN, device_id)},
-            # Only identifiers - this links to existing Ring device, doesn't create new one
+            # HA gives each config entry its own device registry row, so supply
+            # name/model here too - identifiers alone leave new devices unnamed.
+            "name": getattr(self._device, "name", None),
+            "manufacturer": "Ring",
+            "model": getattr(self._device, "model", None),
         }
 
     def _get_merged_attrs(self) -> dict:
@@ -390,6 +394,9 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
             return None
         return {
             "identifiers": {(RING_DOMAIN, device_id)},
+            "name": getattr(self._device, "name", None),
+            "manufacturer": "Ring",
+            "model": getattr(self._device, "model", None),
         }
 
     @property
