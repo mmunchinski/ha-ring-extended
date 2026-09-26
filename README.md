@@ -14,7 +14,7 @@ Expose **470+ hidden Ring device attributes** as Home Assistant sensors. This in
 - **Firmware history tracking** - Persistent changelog of firmware updates with notifications
 - **Coordinator health monitoring** - Detects when Ring updates stop working
 - **Automatic orphan cleanup** - Removes stale entities when devices are deleted from Ring
-- **Entity reconciliation** - Automatically adds missing sensors when new definitions are added
+- **Entity reconciliation** - Automatically adds missing sensors when new definitions are added, or when a device starts reporting a field it didn't have at startup
 - **Clean uninstall** - Fully purges all entities and storage when integration is removed
 - **Diagnostics support** - Download API audit data for troubleshooting and sensor coverage analysis
 
@@ -23,7 +23,7 @@ Expose **470+ hidden Ring device attributes** as Home Assistant sensors. This in
 | Category | Example Sensors |
 |----------|-----------------|
 | **Health** | WiFi signal (RSSI), bandwidth, packet loss, uptime, TX rate, video packets, alerts |
-| **Power** | Battery %, voltage, AC power, transformer voltage, power mode, battery level |
+| **Power** | Battery %, voltage, AC power, transformer voltage, power mode, battery level, battery pack family and firmware |
 | **Firmware** | Version, update status, OTA status, bitrate, version history |
 | **Video** | Stream resolution, VOD status, HEVC, IR settings, server settings, bitrate profile |
 | **Audio** | Recording enabled, doorbell volume, mic volume, live view audio |
@@ -78,6 +78,7 @@ sensor.front_door_health_rssi               # -65 dBm
 sensor.front_door_health_bandwidth          # 28868 kbps
 sensor.front_door_health_uptime_sec         # 18 s
 sensor.front_door_power_battery_percentage  # 6 %
+sensor.front_door_power_battery_family      # QRBPv1
 sensor.front_door_cv_cv_human_enabled       # true   (CV prefix + cv_human key)
 sensor.front_door_cv_cv_human_mode          # edge
 sensor.front_door_firmware_firmware_version # 22.0.5
@@ -154,6 +155,7 @@ You can also manually delete orphaned devices:
 When you update Ring Extended to a version with new sensor definitions, the integration automatically:
 
 - **Adds missing entities** - New sensors are created for existing devices on reload
+- **Adds late-arriving sensors** - Some fields only appear after startup (Ring's health data, such as signal strength and packet loss, arrives about a minute after Home Assistant starts; alert fields appear only while the condition is active). Their sensors are added as soon as the field first appears, with no reload needed
 - **Removes stale entities** - Sensors for deprecated definitions are cleaned up
 - **Ensures consistency** - Same-model devices always have the same entity structure
 
@@ -172,6 +174,8 @@ The diagnostic file includes:
 - **Inconsistency detection** - Flags same-model devices with different attributes
 - **Full device attributes** - Raw API data (with sensitive info redacted)
 
+Fields nested inside lists (such as the per-battery entries in `health.batteries`) are listed with index paths like `health.batteries.0.battery_family`. Devices that share a display name are listed as `Name (device_id)` so none are hidden.
+
 ### Clean Uninstall
 
 When you remove the Ring Extended integration, it fully cleans up:
@@ -186,13 +190,14 @@ When you remove the Ring Extended integration, it fully cleans up:
 - Verify the core Ring integration is working
 - Check Home Assistant logs for errors
 - Ensure you selected at least one category during setup
+- Health sensors that come from Ring's separate health data (signal strength, packet loss, last health update) appear about a minute after startup; this is normal
 
 ### Sensors show "Unknown"
 - The attribute may not exist for that device type
 - Check if the device supports the feature (e.g., floodlight sensors only work on floodlight cams)
 
 ### Sensors not updating
-- Updates come from the Ring integration's coordinator (every ~5 minutes)
+- Updates come from the Ring integration's coordinator (about every minute)
 - Check that the Ring integration itself is updating
 - Monitor `sensor.ring_extended_diagnostics_coordinator_health` for status
 - If status is `Stale` or `Critical`, try reloading the Ring integration
