@@ -81,7 +81,7 @@ def get_nested(data: dict, path: str, default: Any = None) -> Any:
     for key in keys:
         if isinstance(data, dict):
             data = data.get(key)
-        elif isinstance(data, list) and key.isdigit():
+        elif isinstance(data, list) and key.isdecimal():
             # Numeric segments index into lists, e.g. "health.batteries.0.battery_family"
             index = int(key)
             data = data[index] if index < len(data) else None
@@ -181,15 +181,19 @@ def _installed_battery(attrs: dict, field: str) -> Any:
     return get_nested(attrs, f"health.batteries.0.{field}")
 
 
+def _first_not_none(*values: Any) -> Any:
+    """Return the first value that is not None."""
+    return next((value for value in values if value is not None), None)
+
+
 def _battery_field(attrs: dict, field: str) -> Any:
     """Return health.<field>, falling back to the installed battery's entry.
 
     Doorbells report battery voltage only inside the health.batteries array.
     """
-    value = get_nested(attrs, f"health.{field}")
-    if value is None:
-        value = _installed_battery(attrs, field)
-    return value
+    return _first_not_none(
+        get_nested(attrs, f"health.{field}"), _installed_battery(attrs, field)
+    )
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -564,6 +568,8 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="power",
         attr_path="health.battery_percentage",
         covers=("health.batteries.0.battery_percentage",),
+        value_fn=lambda attrs: _battery_field(attrs, "battery_percentage"),
+        available_fn=lambda attrs: _battery_field(attrs, "battery_percentage") is not None,
     ),
     RingExtendedSensorDescription(
         key="battery_percentage_category",
@@ -571,6 +577,8 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="power",
         attr_path="health.battery_percentage_category",
         covers=("health.batteries.0.battery_percentage_category",),
+        value_fn=lambda attrs: _battery_field(attrs, "battery_percentage_category"),
+        available_fn=lambda attrs: _battery_field(attrs, "battery_percentage_category") is not None,
     ),
     RingExtendedSensorDescription(
         key="battery_voltage",
@@ -613,6 +621,15 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         category="power",
         attr_path="health.battery_present",
         covers=("health.batteries.0.battery_present",),
+        # Not gated by _installed_battery: here the array value IS the presence flag.
+        value_fn=lambda attrs: _first_not_none(
+            get_nested(attrs, "health.battery_present"),
+            get_nested(attrs, "health.batteries.0.battery_present"),
+        ),
+        available_fn=lambda attrs: _first_not_none(
+            get_nested(attrs, "health.battery_present"),
+            get_nested(attrs, "health.batteries.0.battery_present"),
+        ) is not None,
     ),
     # Battery-pack details that exist only in the health.batteries array
     RingExtendedSensorDescription(

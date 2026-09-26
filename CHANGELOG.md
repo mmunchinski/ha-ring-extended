@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.11.6
+
+Follow-up fixes from a QA review of v1.11.2–v1.11.5. No change to any current sensor value.
+
+- **`battery_percentage`, `battery_percentage_category` and `battery_present` now read the `health.batteries` array when the flat field is missing**, like `battery_voltage` does since v1.11.5. v1.11.5 marked those array paths as covered for the audit without reading them, so a device reporting them only in the array would have had no sensor and no audit flag. Percentage and category are read only from a battery that reports itself present. On today's devices the flat fields are always present, so no value changes.
+- **A device that briefly drops out of the Ring API gets its sensors back when it returns.** Orphan cleanup deleted its entities, but the late-add listener still remembered their unique_ids and would not recreate them until the next reload. Cleanup now forgets the removed device's unique_ids.
+- **New entities fall back to the default categories when a config entry has no category list,** matching `__init__.py`. Previously `sensor.py` treated a missing list as "no categories", briefly registering new entities as disabled until the next reload. Config entries created by the setup flow always store a list, so this is defensive only.
+- `get_nested` accepts only ASCII-digit list indexes (`str.isdecimal`), so a path segment like `"²"` can no longer raise.
+
 ## v1.11.5
 
 Expose the battery-pack details that Ring reports only inside the `health.batteries` array, and make the audit see inside arrays.

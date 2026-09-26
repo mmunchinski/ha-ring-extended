@@ -21,6 +21,7 @@ from .const import (
     ALL_SENSORS,
     CATEGORY_NAMES,
     CATEGORY_SENSORS,
+    DEFAULT_CATEGORIES,
     DEVICE_FAMILIES,
     DOMAIN,
     RingExtendedSensorDescription,
@@ -110,11 +111,14 @@ async def async_setup_entry(
         return
 
     # Get enabled categories - these will be enabled by default
-    enabled_categories: set[str] = set(entry.data.get("categories", []))
+    enabled_categories: set[str] = set(entry.data.get("categories") or DEFAULT_CATEGORIES)
 
     # unique_ids of RingExtendedSensors created so far; shared with the
-    # late-add listener below so each sensor is only ever added once.
+    # late-add listener below so each sensor is only ever added once. Stored in
+    # hass.data so orphan cleanup can forget a removed device's sensors, letting
+    # them be re-added if the device comes back.
     created_unique_ids: set[str] = set()
+    our_data["created_unique_ids"] = created_unique_ids
 
     _LOGGER.debug("Ring devices type: %s", type(devices_dict))
     entities: list[Any] = _build_new_sensors(

@@ -225,6 +225,16 @@ async def _cleanup_orphaned_entities(
         _LOGGER.info("Removing orphaned entity: %s", entity_id)
         entity_registry.async_remove(entity_id)
 
+    # Let the sensor platform's late-add listener recreate these sensors if the
+    # device reappears (e.g. a transient drop from the Ring API).
+    created_unique_ids: set[str] = (
+        hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("created_unique_ids", set())
+    )
+    for device_id in removed_device_ids:
+        created_unique_ids.difference_update(
+            {uid for uid in created_unique_ids if uid.startswith(f"{device_id}_")}
+        )
+
     # Clean up firmware history
     for device_id in removed_device_ids:
         firmware_tracker.remove_device(device_id)
