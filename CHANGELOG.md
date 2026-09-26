@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.11.4
+
+Remove the 17 `settings.motion_zones.*` sensor definitions, which no longer exist in the Ring API.
+
+- `settings.motion_zones` is no longer an object: it is now a flat list of per-zone enable flags (e.g. `[1, 1, 1, 1, 1]`) on 20/21 devices, so none of the object-shaped paths below it resolve. The 2026-09-26 audit (all 21 devices, after the v1.11.2 diagnostics fix) reported all 17 leaves and their parent nodes missing on every device, and none of them had a registry entity on any current device; the legacy object shape was most likely carried by hardware retired in August. Removed keys: `motion_zones_active_motion_filter`, `motion_zones_enable_audio`, `motion_zones_sensitivity`, `motion_zones_pir_sensitivity1`/`2`/`3`, `motion_zones_pir_zone_mask`, and the ten `mz_*` advanced-object-settings sensors (`human_confidence`, `motion_zone_overlap`, `object_size_max`, `object_size_min`, `object_time_overlap`, each `_day`/`_night`). The equivalent `settings.hybrid_motion_zones.*` sensors are unaffected.
+- No entities are removed on this install. On any install that still has registry entries for these keys, reconciliation deletes them on the next restart ("sensor definition removed from code").
+
 ## v1.11.3
 
 Fix the health-endpoint sensors never being created, leaving them permanently `unavailable`.
