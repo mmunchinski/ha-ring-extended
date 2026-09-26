@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.11.3
+
+Fix the health-endpoint sensors never being created, leaving them permanently `unavailable`.
+
+- **Sensors whose field appears after setup are now added when it appears.** Entities are only created for fields present at setup, and the health-endpoint fields are never present then: base `ring`'s coordinator fetches `device_health` only for devices with a subscribed entity, and its first refresh runs before any entity subscribes, so `_health_attrs` is empty until the second refresh about a minute later. Every restart therefore skipped `latest_signal_strength`, `latest_signal_category`, `average_signal_strength`, `average_signal_category`, `packet_loss_strength`, `updated_at` and `firmware_status` on all devices; HA showed their old registry entries as `unavailable` with `restored: true` (147 entities on a 21-device install, unavailable for at least the 8 days of recorder history). A coordinator listener now adds any sensor that has become available since setup, once per `unique_id`. The same path picks up conditional fields (battery/RSSI alerts) that first appear while HA is running, which previously also needed a restart to get an entity.
+- The base `ring` Wi-Fi sensors were unaffected because their entities subscribe with the device as coordinator context, which is what triggers the health fetch.
+
 ## v1.11.2
 
 Fix the diagnostics dump silently dropping devices that share a display name.

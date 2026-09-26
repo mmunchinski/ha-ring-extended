@@ -112,51 +112,14 @@ async def async_setup_entry(
     # Get enabled categories - these will be enabled by default
     enabled_categories: set[str] = set(entry.data.get("categories", []))
 
-    entities: list[RingExtendedSensor] = []
+    # unique_ids of RingExtendedSensors created so far; shared with the
+    # late-add listener below so each sensor is only ever added once.
+    created_unique_ids: set[str] = set()
 
-    # devices_dict is a RingDevices object with doorbells, stickup_cams, chimes, other
     _LOGGER.debug("Ring devices type: %s", type(devices_dict))
-
-    # Iterate through all device families
-    for family in DEVICE_FAMILIES:
-        devices = getattr(devices_dict, family, []) or []
-        _LOGGER.debug("Found %d devices in family %s", len(devices), family)
-
-        for device in devices:
-            device_attrs = _get_device_merged_attrs(device)
-            if not device_attrs:
-                _LOGGER.debug("Device %s has no _attrs", getattr(device, "name", "unknown"))
-                continue
-
-            device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
-            if not device_id:
-                # No stable id -> skip; otherwise unique_ids collide on "unknown"
-                # and never match reconciliation's expected set.
-                _LOGGER.debug("Skipping device with no device_id: %s",
-                              getattr(device, "name", "unknown"))
-                continue
-
-            _LOGGER.debug("Processing device: %s with %d merged health keys",
-                          getattr(device, "name", "unknown"),
-                          len(device_attrs.get("health", {})))
-
-            # Create sensors for ALL categories
-            for description in ALL_SENSORS:
-                # Check if this sensor's attribute exists for this device
-                if description.is_available(device_attrs):
-                    unique_id = f"{device_id}_{description.key}"
-
-                    # Enable by default only if category was selected
-                    is_enabled = description.category in enabled_categories
-                    entities.append(
-                        RingExtendedSensor(
-                            device=device,
-                            coordinator=coordinator,
-                            description=description,
-                            enabled_default=is_enabled,
-                            ring_entry=ring_entry,
-                        )
-                    )
+    entities: list[Any] = _build_new_sensors(
+        devices_dict, coordinator, ring_entry, enabled_categories, created_unique_ids
+    )
 
     # Add per-device firmware history sensors
     firmware_tracker = our_data.get("firmware_tracker")
@@ -193,6 +156,73 @@ async def async_setup_entry(
 
     _LOGGER.info("Setting up %d Ring Extended sensors", len(entities))
     async_add_entities(entities)
+
+    # Fields can appear after setup. In particular the base ring coordinator's
+    # first refresh runs before any entity subscribes, so it skips the health
+    # endpoint and every _health_attrs-only field (latest_signal_strength,
+    # updated_at, ...) is absent at setup and only arrives a refresh later.
+    # Conditional fields (battery/RSSI alerts) likewise appear at runtime.
+    # Add any sensor that has become available since setup.
+    @callback
+    def _add_late_sensors() -> None:
+        new_entities = _build_new_sensors(
+            ring_entry.runtime_data.devices,
+            coordinator,
+            ring_entry,
+            enabled_categories,
+            created_unique_ids,
+        )
+        if new_entities:
+            _LOGGER.info("Adding %d newly available Ring Extended sensors", len(new_entities))
+            async_add_entities(new_entities)
+
+    entry.async_on_unload(coordinator.async_add_listener(_add_late_sensors))
+
+
+def _build_new_sensors(
+    devices_dict: Any,
+    coordinator: DataUpdateCoordinator,
+    ring_entry: Any,
+    enabled_categories: set[str],
+    created_unique_ids: set[str],
+) -> list[RingExtendedSensor]:
+    """Build a sensor for each available attribute not already in created_unique_ids."""
+    entities: list[RingExtendedSensor] = []
+
+    # devices_dict is a RingDevices object with doorbells, stickup_cams, chimes, other
+    for family in DEVICE_FAMILIES:
+        devices = getattr(devices_dict, family, []) or []
+
+        for device in devices:
+            device_attrs = _get_device_merged_attrs(device)
+            if not device_attrs:
+                continue
+
+            device_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+            if not device_id:
+                # No stable id -> skip; otherwise unique_ids collide on "unknown"
+                # and never match reconciliation's expected set.
+                continue
+
+            for description in ALL_SENSORS:
+                unique_id = f"{device_id}_{description.key}"
+                if unique_id in created_unique_ids:
+                    continue
+                # Check if this sensor's attribute exists for this device
+                if description.is_available(device_attrs):
+                    created_unique_ids.add(unique_id)
+                    entities.append(
+                        RingExtendedSensor(
+                            device=device,
+                            coordinator=coordinator,
+                            description=description,
+                            # Enable by default only if category was selected
+                            enabled_default=description.category in enabled_categories,
+                            ring_entry=ring_entry,
+                        )
+                    )
+
+    return entities
 
 
 class RingExtendedSensor(CoordinatorEntity, SensorEntity):
