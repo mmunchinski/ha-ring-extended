@@ -98,7 +98,7 @@ class RingExtendedOptionsFlow(OptionsFlow):
                 # Update the config entry data
                 self.hass.config_entries.async_update_entry(
                     self.config_entry,
-                    data={"categories": categories},
+                    data={**self.config_entry.data, "categories": categories},
                 )
                 return self.async_create_entry(title="", data={})
 

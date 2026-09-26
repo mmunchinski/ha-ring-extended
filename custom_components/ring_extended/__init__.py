@@ -18,6 +18,7 @@ from .const import (
     DEVICE_FAMILIES,
     DOMAIN,
     KEY_TO_CATEGORY,
+    SENSOR_CATEGORIES,
     get_nested,
 )
 from .firmware_history import FirmwareHistoryTracker
@@ -148,8 +149,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # entities live -- keeping the enabled set huge and flooding the startup
     # websocket push to slow clients. This actively disables deselected
     # categories (and re-enables reselected ones) so Options is a real lever.
+    # Only a category that was selected last time and is not now counts as
+    # deselected, so a sensor the user enables by hand stays enabled. Entries
+    # from before v1.11.7 have no record and are reconciled once against all.
     enabled_categories = set(entry.data.get("categories") or DEFAULT_CATEGORIES)
-    _apply_category_enablement(hass, entry, enabled_categories, current_device_ids)
+    applied = entry.data.get("applied_categories")
+    previous_categories = set(SENSOR_CATEGORIES if applied is None else applied)
+    _apply_category_enablement(
+        hass, entry, enabled_categories, previous_categories, current_device_ids
+    )
+    if applied is None or set(applied) != enabled_categories:
+        # Saved before the update listener is registered below, so this does
+        # not trigger a reload.
+        hass.config_entries.async_update_entry(
+            entry,
+            data={**entry.data, "applied_categories": sorted(enabled_categories)},
+        )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -249,6 +264,7 @@ def _apply_category_enablement(
     hass: HomeAssistant,
     entry: ConfigEntry,
     enabled_categories: set[str],
+    previous_categories: set[str],
     device_ids: set[str],
 ) -> None:
     """Enable/disable existing registry entities to match the selected categories.
@@ -257,13 +273,16 @@ def _apply_category_enablement(
     registration, so a category deselected after setup would otherwise leave its
     entities enabled forever. This reconciles the live set:
 
-    - entities in a DEselected category that are currently enabled are disabled
-      (marked ``disabled_by = INTEGRATION``);
+    - entities in a category deselected since the last setup (in
+      ``previous_categories`` but not ``enabled_categories``) that are currently
+      enabled are disabled (marked ``disabled_by = INTEGRATION``);
     - entities in a (re)selected category that WE previously disabled are
       re-enabled.
 
-    A user's manual disables (``disabled_by = USER``) are never re-enabled, and
-    the coordinator-health sensor is always left enabled.
+    Categories that were already deselected are left alone, so a sensor the
+    user enabled by hand survives restarts. A user's manual disables
+    (``disabled_by = USER``) are never re-enabled, and the coordinator-health
+    sensor is always left enabled.
     """
     registry = er.async_get(hass)
     disabled = 0
@@ -298,8 +317,8 @@ def _apply_category_enablement(
             if entity.disabled_by == er.RegistryEntryDisabler.INTEGRATION:
                 registry.async_update_entity(entity.entity_id, disabled_by=None)
                 enabled += 1
-        else:
-            # Disable currently-enabled entities in a deselected category.
+        elif category in previous_categories:
+            # Disable currently-enabled entities in a newly deselected category.
             if entity.disabled_by is None:
                 registry.async_update_entity(
                     entity.entity_id,

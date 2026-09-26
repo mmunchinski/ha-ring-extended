@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.7
+
+Keep sensors the user enables by hand enabled across restarts.
+
+- **Category reconciliation now acts only on categories deselected since the last setup.** Since v1.10.0, every setup disabled every enabled entity in any unselected category. That kept the Options picker authoritative, but it also silently reverted a user who enabled a single sensor from a disabled category (e.g. motion detection on/off for a dashboard): the next restart disabled it again, with no way to keep one sensor without enabling its whole category. The entry now records the categories it last applied (`applied_categories`). A category that goes from selected to unselected still has its entities disabled, and selecting a category still re-enables what the integration disabled. Categories that were already off are left alone, so hand-enabled sensors in them stay enabled, the same way hand-disabled sensors are already respected.
+- Entries from before v1.11.7 have no record and are reconciled once against all categories, matching the old behaviour, before the record is saved.
+- The Options flow now merges `categories` into the entry data instead of replacing it, so the record survives a category change.
+
 ## v1.11.6
 
 Follow-up fixes from a QA review of v1.11.2–v1.11.5. No change to any current sensor value.
