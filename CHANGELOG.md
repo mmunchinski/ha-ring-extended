@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.2
+
+Fix the diagnostics dump silently dropping devices that share a display name.
+
+- **Diagnostics now keys duplicate-named devices as `"<name> (<device_id>)"`.** `devices` in the diagnostics payload was a dict keyed by device name, so when two Ring devices had the same name the later one overwrote the earlier. On a live instance with two "Basement Door" devices (a Stick Up Cam 3rd Gen and a 4K doorbell) the doorbell vanished from the dump — 20 devices reported instead of 21. Because `scripts/analyze_new_sensors.py` treats the dump as its source of truth, the hidden device's fields were never audited, and paths that exist only on it were reported as "removed from API" (the 2026-09-26 audit flagged all four `features.package_warning.*` sensors, whose only entities belong to the hidden doorbell). Devices with unique names keep their plain-name keys; `total_devices`, `model_comparison` and `inconsistencies` now count every device.
+
+API audit 2026-09-26: no new sensors. `features.auto_track` (a new PTZ auto-tracking feature) appears on every device but is `unsupported_device` / disabled everywhere, so it carries no signal and was deliberately not added. `health.battery_auth_status` appears on a single doorbell only.
+
 ## v1.11.1
 
 Fix newly-added Ring devices landing under an **"Unnamed device"** in the HA UI.

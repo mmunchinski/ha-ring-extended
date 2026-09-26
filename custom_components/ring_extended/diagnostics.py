@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections import Counter
 from typing import Any
 
 from homeassistant.components.diagnostics import async_redact_data
@@ -123,9 +124,19 @@ async def async_get_config_entry_diagnostics(
         if entity.platform == DOMAIN and entity.config_entry_id == entry.entry_id
     ]
 
-    # Collect device information
+    # Collect device information. Devices are keyed by display name, but names
+    # are not unique (e.g. two devices both called "Basement Door"); a duplicate
+    # name would overwrite the earlier device and hide it from coverage analysis,
+    # so every device sharing a name is keyed as "<name> (<device_id>)" instead.
     devices_info: dict[str, Any] = {}
     model_comparison: dict[str, list[str]] = {}
+
+    name_counts = Counter(
+        getattr(device, "name", "unknown")
+        for family in DEVICE_FAMILIES
+        for device in getattr(devices_dict, family, []) or []
+        if getattr(device, "_attrs", {})
+    )
 
     for family in DEVICE_FAMILIES:
         devices = getattr(devices_dict, family, []) or []
@@ -155,6 +166,9 @@ async def async_get_config_entry_diagnostics(
                 e for e in ring_extended_entities
                 if e["unique_id"].startswith(f"{device_id}_")
             ]
+
+            if name_counts[name] > 1:
+                name = f"{name} ({device_id})"
 
             devices_info[name] = {
                 "device_id": device_id,
