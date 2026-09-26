@@ -81,6 +81,10 @@ def get_nested(data: dict, path: str, default: Any = None) -> Any:
     for key in keys:
         if isinstance(data, dict):
             data = data.get(key)
+        elif isinstance(data, list) and key.isdigit():
+            # Numeric segments index into lists, e.g. "health.batteries.0.battery_family"
+            index = int(key)
+            data = data[index] if index < len(data) else None
         else:
             return default
         if data is None:
@@ -166,6 +170,28 @@ def _safe_int(value: Any) -> int | None:
         return None
 
 
+def _installed_battery(attrs: dict, field: str) -> Any:
+    """Return a field of health.batteries[0], only while that battery is present.
+
+    Wired devices still carry a batteries entry with battery_present false (or
+    null) and placeholder readings (0, 208), so those are ignored.
+    """
+    if get_nested(attrs, "health.batteries.0.battery_present") is not True:
+        return None
+    return get_nested(attrs, f"health.batteries.0.{field}")
+
+
+def _battery_field(attrs: dict, field: str) -> Any:
+    """Return health.<field>, falling back to the installed battery's entry.
+
+    Doorbells report battery voltage only inside the health.batteries array.
+    """
+    value = get_nested(attrs, f"health.{field}")
+    if value is None:
+        value = _installed_battery(attrs, field)
+    return value
+
+
 @dataclass(frozen=True, kw_only=True)
 class RingExtendedSensorDescription(SensorEntityDescription):
     """Describes Ring extended sensor entity."""
@@ -174,6 +200,9 @@ class RingExtendedSensorDescription(SensorEntityDescription):
     attr_path: str = ""
     value_fn: Callable[[dict], Any] | None = None
     available_fn: Callable[[dict], bool] | None = None
+    # Extra API paths this sensor accounts for, so the diagnostics coverage
+    # check does not report them as uncovered (e.g. a fallback source path).
+    covers: tuple[str, ...] = ()
 
     def get_value(self, attrs: dict) -> Any:
         """Get the sensor value from device attributes."""
@@ -534,12 +563,14 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         category="power",
         attr_path="health.battery_percentage",
+        covers=("health.batteries.0.battery_percentage",),
     ),
     RingExtendedSensorDescription(
         key="battery_percentage_category",
         translation_key="battery_percentage_category",
         category="power",
         attr_path="health.battery_percentage_category",
+        covers=("health.batteries.0.battery_percentage_category",),
     ),
     RingExtendedSensorDescription(
         key="battery_voltage",
@@ -549,12 +580,18 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         category="power",
         attr_path="health.battery_voltage",
+        covers=("health.batteries.0.battery_voltage",),
+        value_fn=lambda attrs: _battery_field(attrs, "battery_voltage"),
+        available_fn=lambda attrs: _battery_field(attrs, "battery_voltage") is not None,
     ),
     RingExtendedSensorDescription(
         key="battery_voltage_category",
         translation_key="battery_voltage_category",
         category="power",
         attr_path="health.battery_voltage_category",
+        covers=("health.batteries.0.battery_voltage_category",),
+        value_fn=lambda attrs: _battery_field(attrs, "battery_voltage_category"),
+        available_fn=lambda attrs: _battery_field(attrs, "battery_voltage_category") is not None,
     ),
     # Second-battery category sensors live with the other battery sensors in the
     # "power" category (attr_path stays health.* as the API nests them there).
@@ -575,6 +612,24 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         translation_key="battery_present",
         category="power",
         attr_path="health.battery_present",
+        covers=("health.batteries.0.battery_present",),
+    ),
+    # Battery-pack details that exist only in the health.batteries array
+    RingExtendedSensorDescription(
+        key="battery_family",
+        translation_key="battery_family",
+        category="power",
+        attr_path="health.batteries.0.battery_family",
+        value_fn=lambda attrs: _installed_battery(attrs, "battery_family"),
+        available_fn=lambda attrs: _installed_battery(attrs, "battery_family") is not None,
+    ),
+    RingExtendedSensorDescription(
+        key="battery_fw_version",
+        translation_key="battery_fw_version",
+        category="power",
+        attr_path="health.batteries.0.battery_fw_version",
+        value_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version"),
+        available_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version") is not None,
     ),
     RingExtendedSensorDescription(
         key="battery_save",

@@ -35,12 +35,24 @@ TO_REDACT = {
 
 
 def _extract_all_attribute_paths(attrs: dict, prefix: str = "") -> set[str]:
-    """Recursively extract all attribute paths from a nested dict."""
+    """Recursively extract all attribute paths from a nested dict.
+
+    Lists of dicts are descended into with numeric index segments
+    (e.g. "health.batteries.0.battery_family", readable by get_nested), so
+    fields nested in arrays are audited instead of hidden behind one list leaf.
+    """
     paths: set[str] = set()
     for key, value in attrs.items():
         full_path = f"{prefix}.{key}" if prefix else key
         if isinstance(value, dict):
             paths.update(_extract_all_attribute_paths(value, full_path))
+        elif (
+            isinstance(value, list)
+            and value
+            and all(isinstance(item, dict) for item in value)
+        ):
+            for index, item in enumerate(value):
+                paths.update(_extract_all_attribute_paths(item, f"{full_path}.{index}"))
         else:
             paths.add(full_path)
     return paths
@@ -58,6 +70,7 @@ def _get_sensor_coverage(device_attrs: dict) -> dict[str, Any]:
 
     for description in ALL_SENSORS:
         defined_paths.add(description.attr_path)
+        defined_paths.update(description.covers)
         if description.is_available(device_attrs):
             available_sensors.append(description.key)
         else:

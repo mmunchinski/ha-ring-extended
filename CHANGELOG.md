@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.11.5
+
+Expose the battery-pack details that Ring reports only inside the `health.batteries` array, and make the audit see inside arrays.
+
+**New sensors (power category)**
+
+- `battery_family` - `health.batteries[0].battery_family`: the battery pack generation (`QRBPv1` on 7 cams, `QRBPv2` on the Garage Doorbell).
+- `battery_fw_version` - `health.batteries[0].battery_fw_version`: the battery pack's own firmware (currently reported only by the Garage Doorbell, `2.5.4`).
+- Both read the array entry only while it reports `battery_present: true`. Wired devices still carry an entry with `battery_present` false/null and placeholder readings (0 or 208), which would otherwise surface as bogus values.
+
+**Improved sensors**
+
+- `battery_voltage` and `battery_voltage_category` fall back to the installed battery's array entry when the flat `health.*` field is absent. The 4K doorbells report voltage only in the array, so they previously had no battery voltage sensor at all (Garage Doorbell 3626 mV, Basement Doorbell 3697 mV). Devices that report the flat field are unchanged.
+
+**Audit tooling**
+
+- The diagnostics coverage walk now descends into lists of dicts using numeric index segments (`health.batteries.0.battery_family`), which `get_nested` now resolves. Previously any list was a single opaque leaf that the analyzer discarded as noise, which is how `health.batteries` went unnoticed. Sensor descriptions gain an optional `covers` tuple for extra API paths they account for (the fallback sources and the value-identical array copies of `battery_percentage`, `battery_percentage_category` and `battery_present`).
+
 ## v1.11.4
 
 Remove the 17 `settings.motion_zones.*` sensor definitions, which no longer exist in the Ring API.

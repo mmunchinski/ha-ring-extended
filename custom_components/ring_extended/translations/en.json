@@ -135,6 +135,12 @@
       "battery_present": {
         "name": "Battery Present"
       },
+      "battery_family": {
+        "name": "Battery Family"
+      },
+      "battery_fw_version": {
+        "name": "Battery Firmware Version"
+      },
       "battery_level": {
         "name": "Battery Level"
       },
