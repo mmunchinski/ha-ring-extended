@@ -23,6 +23,19 @@ DOMAIN = "ring_extended"
 # Device families to scan
 DEVICE_FAMILIES = ["doorbells", "stickup_cams", "chimes", "other"]
 
+# Model names for kinds python-ring-doorbell 0.9.14 doesn't map. Its stickup
+# cam .model logs "Unknown kind" on every read, so these kinds never touch it.
+# Names as Ring's website gives them.
+KIND_MODEL_OVERRIDES = {
+    "cocoa_camera_v2": "Outdoor Cam Plus",
+    "cocoa_camera_v3": "Outdoor Cam 4K Pro",
+    "cocoa_floodlight_v2": "Floodlight Cam 4K Pro",
+    "stickup_cam_medusa": "Stick Up Cam Pro",
+    "cocoa_doorbell_v5": "Wired Doorbell 4K Pro",
+    "cocoa_doorbell_v6": "Battery Doorbell 4K Pro",
+    "doorbell_sunray": "Battery Doorbell 2K",
+}
+
 # Sensor categories for config flow
 SENSOR_CATEGORIES = [
     "health",

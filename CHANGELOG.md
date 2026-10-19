@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.9
+
+Stop the "Unknown kind" error storm at startup, and show real model names for newer Ring devices.
+
+- **Ring Extended no longer reads the library's `model` for every entity.** python-ring-doorbell 0.9.14 (the version Home Assistant pins) doesn't know several newer Ring devices, and for a stick up cam it logs `ERROR Unknown kind: <kind>` each time the model is read. Home Assistant reads device info for every entity at startup, disabled ones included, so a system with a few thousand Ring Extended entities on such cameras logged about 4,000 errors per start. The model is now looked up once per device.
+- **Newer devices get their real model name** on Ring Extended's device entries instead of "Unknown Stickup Cam" or "Unknown Doorbell": Outdoor Cam Plus (`cocoa_camera_v2`), Outdoor Cam 4K Pro (`cocoa_camera_v3`), Floodlight Cam 4K Pro (`cocoa_floodlight_v2`), Stick Up Cam Pro (`stickup_cam_medusa`), Wired Doorbell 4K Pro (`cocoa_doorbell_v5`), Battery Doorbell 4K Pro (`cocoa_doorbell_v6`) and Battery Doorbell 2K (`doorbell_sunray`). Diagnostics group these devices by their real model, so the same-model comparison no longer mixes different hardware.
+- Not fixed here: the core Ring integration still reads the model itself (about one error per core entity on these devices at startup), and the library still reports these devices as lacking siren, light, motion and ding support, so core Ring creates no siren, floodlight light or motion/ding event entities for them. Both need a python-ring-doorbell release.
+
 ## v1.11.8
 
 API audit 2026-10-19: one new sensor.

@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
 from .const import ALL_SENSORS, DEVICE_FAMILIES, DOMAIN
-from .sensor import _get_device_merged_attrs
+from .sensor import _device_model, _get_device_merged_attrs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ async def async_get_config_entry_diagnostics(
         devices = getattr(devices_dict, family, []) or []
         for device in devices:
             name = getattr(device, "name", "unknown")
-            model = getattr(device, "model", "unknown")
+            model = _device_model(device) or "unknown"
             device_id = str(
                 getattr(device, "device_id", None) or getattr(device, "id", "")
             )

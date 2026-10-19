@@ -196,6 +196,11 @@ When you remove the Ring Extended integration, it fully cleans up:
 - The attribute may not exist for that device type
 - Check if the device supports the feature (e.g., floodlight sensors only work on floodlight cams)
 
+### "Unknown kind" errors or "Unknown Stickup Cam" models
+- These come from the python-ring-doorbell library that Home Assistant uses, which doesn't recognise some newer Ring devices
+- Since v1.11.9, Ring Extended shows the real model name for the newer devices it knows and no longer triggers these errors; the remaining few at startup come from the core Ring integration
+- Because the library doesn't recognise these devices, the core Ring integration also skips their siren, floodlight light and motion/ding event entities. Ring Extended can't add those back
+
 ### Sensors not updating
 - Updates come from the Ring integration's coordinator (about every minute)
 - Check that the Ring integration itself is updating

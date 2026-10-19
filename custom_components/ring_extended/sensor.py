@@ -24,6 +24,7 @@ from .const import (
     DEFAULT_CATEGORIES,
     DEVICE_FAMILIES,
     DOMAIN,
+    KIND_MODEL_OVERRIDES,
     RingExtendedSensorDescription,
 )
 from .firmware_history import FirmwareHistoryTracker
@@ -49,6 +50,25 @@ CATEGORY_PREFIXES = {
 }
 
 _LOGGER = logging.getLogger(__name__)
+
+# Model per device id, so the library's .model is read at most once per device
+_MODEL_CACHE: dict[str, str | None] = {}
+
+
+def _device_model(device: Any) -> str | None:
+    """Return the device's model name without repeating library error logs.
+
+    HA reads device_info for every entity at setup, disabled ones included.
+    For a kind the library doesn't know, each .model read logs an error, so
+    reading it per entity flooded the log with thousands of lines per start.
+    """
+    kind = (getattr(device, "_attrs", None) or {}).get("kind")
+    if kind in KIND_MODEL_OVERRIDES:
+        return KIND_MODEL_OVERRIDES[kind]
+    dev_id = str(getattr(device, "device_id", None) or getattr(device, "id", ""))
+    if dev_id not in _MODEL_CACHE:
+        _MODEL_CACHE[dev_id] = getattr(device, "model", None)
+    return _MODEL_CACHE[dev_id]
 
 
 def _get_device_merged_attrs(device: Any) -> dict:
@@ -323,7 +343,7 @@ class RingExtendedSensor(CoordinatorEntity, SensorEntity):
             # name/model here too - identifiers alone leave new devices unnamed.
             "name": getattr(self._device, "name", None),
             "manufacturer": "Ring",
-            "model": getattr(self._device, "model", None),
+            "model": _device_model(self._device),
         }
 
     def _get_merged_attrs(self) -> dict:
@@ -430,7 +450,7 @@ class RingDeviceFirmwareHistorySensor(CoordinatorEntity, SensorEntity):
             "identifiers": {(RING_DOMAIN, device_id)},
             "name": getattr(self._device, "name", None),
             "manufacturer": "Ring",
-            "model": getattr(self._device, "model", None),
+            "model": _device_model(self._device),
         }
 
     @property
