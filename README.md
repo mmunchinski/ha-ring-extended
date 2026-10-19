@@ -23,7 +23,7 @@ Expose **470+ hidden Ring device attributes** as Home Assistant sensors. This in
 | Category | Example Sensors |
 |----------|-----------------|
 | **Health** | WiFi signal (RSSI), bandwidth, packet loss, uptime, TX rate, video packets, alerts |
-| **Power** | Battery %, voltage, AC power, transformer voltage, power mode, battery level, battery pack family and firmware |
+| **Power** | Battery %, voltage, AC power, transformer voltage, power mode, battery level, battery pack family and firmware, last known charging time |
 | **Firmware** | Version, update status, OTA status, bitrate, version history |
 | **Video** | Stream resolution, VOD status, HEVC, IR settings, server settings, bitrate profile |
 | **Audio** | Recording enabled, doorbell volume, mic volume, live view audio |

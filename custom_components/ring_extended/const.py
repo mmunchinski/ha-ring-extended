@@ -648,6 +648,16 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         value_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version"),
         available_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version") is not None,
     ),
+    # Unix time of the battery's last known charge (currently only a solar-charged
+    # doorbell reports it).
+    RingExtendedSensorDescription(
+        key="last_known_charging_time",
+        translation_key="last_known_charging_time",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        category="power",
+        attr_path="health.last_known_charging_time",
+        value_fn=lambda attrs: _unix_to_datetime(get_nested(attrs, "health.last_known_charging_time")),
+    ),
     RingExtendedSensorDescription(
         key="battery_save",
         translation_key="battery_save",

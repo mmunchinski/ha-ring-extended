@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.11.8
+
+API audit 2026-10-19: one new sensor.
+
+- Add `last_known_charging_time` (power category) - `health.last_known_charging_time`, a timestamp sensor for when the battery last charged. Only one doorbell reports it so far, a battery doorbell on a solar charger. A charging time that keeps getting older while the battery percentage falls means the panel is no longer charging.
+- Not added: `features.auto_track` (still unsupported on every device); `health.batteries.0.battery_id` (pack serial number, an identifier, not a measurement); `battery_auth_status`/`battery_ota_status` in the battery array (one doorbell, constant `1`); and several keys that are null on every device: `features.automated_siren`, `tracklight`, `remote_access_control`, `auto_zoom_track`, `auto_shutoff_device`, `health.ptz_connected`, `settings.ptz_settings.mode`, `settings.network_settings.data_restriction_enabled` and `max_dynamic_listen_interval`.
+
 ## v1.11.7
 
 Keep sensors the user enables by hand enabled across restarts.
