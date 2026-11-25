@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.10
+
+API audit 2026-11-25: one new sensor, and a model name for the Indoor Cam 4K.
+
+- Add `battery_charging` (power category) - `health.batteries[0].battery_charging`, true or false. It is read only while that battery reports itself present, because wired cams carry an entry with `battery_present` false whose `battery_charging` is always false. On this install 9 devices have an installed battery that reports it (7 Outdoor Cam Plus and 2 battery doorbells). Whether `true` means "charging now" or only "charger attached" is not confirmed.
+- Show the Indoor Cam 4K (`jewelfish_camera`) by name on Ring Extended's device entries instead of "Unknown Stickup Cam".
+- Not added: `features.auto_track` (still unsupported on every device), `health.rssi_risk_level` (one device), `features.ai_automated_warnings.agents.*.profile` (empty on the one device that has them), and `battery_temp`/`battery_id` in the battery array (see earlier audits).
+
 ## v1.11.9
 
 Stop the "Unknown kind" error storm at startup, and show real model names for newer Ring devices.

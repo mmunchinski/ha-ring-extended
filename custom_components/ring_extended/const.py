@@ -31,6 +31,7 @@ KIND_MODEL_OVERRIDES = {
     "cocoa_camera_v3": "Outdoor Cam 4K Pro",
     "cocoa_floodlight_v2": "Floodlight Cam 4K Pro",
     "stickup_cam_medusa": "Stick Up Cam Pro",
+    "jewelfish_camera": "Indoor Cam 4K",
     "cocoa_doorbell_v5": "Wired Doorbell 4K Pro",
     "cocoa_doorbell_v6": "Battery Doorbell 4K Pro",
     "doorbell_sunray": "Battery Doorbell 2K",
@@ -660,6 +661,14 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         attr_path="health.batteries.0.battery_fw_version",
         value_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version"),
         available_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version") is not None,
+    ),
+    RingExtendedSensorDescription(
+        key="battery_charging",
+        translation_key="battery_charging",
+        category="power",
+        attr_path="health.batteries.0.battery_charging",
+        value_fn=lambda attrs: _installed_battery(attrs, "battery_charging"),
+        available_fn=lambda attrs: _installed_battery(attrs, "battery_charging") is not None,
     ),
     # Unix time of the battery's last known charge (currently only a solar-charged
     # doorbell reports it).

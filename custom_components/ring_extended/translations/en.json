@@ -141,6 +141,9 @@
       "battery_fw_version": {
         "name": "Battery Firmware Version"
       },
+      "battery_charging": {
+        "name": "Battery Charging"
+      },
       "last_known_charging_time": {
         "name": "Last Known Charging Time"
       },
