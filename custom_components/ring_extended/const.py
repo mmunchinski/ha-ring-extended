@@ -662,6 +662,9 @@ POWER_SENSORS: tuple[RingExtendedSensorDescription, ...] = (
         value_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version"),
         available_fn=lambda attrs: _installed_battery(attrs, "battery_fw_version") is not None,
     ),
+    # health.batteries[0].battery_charging: despite the name, this is true while a
+    # solar panel or charger is attached, not only while charging (it stays true
+    # all night). Shown as "Solar/Charger Attached"; the key keeps entity IDs stable.
     RingExtendedSensorDescription(
         key="battery_charging",
         translation_key="battery_charging",

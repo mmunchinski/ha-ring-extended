@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.11
+
+Rename the v1.11.10 `battery_charging` sensor to **Solar/Charger Attached**.
+
+- Overnight history (2026-11-25/26) showed `health.batteries[0].battery_charging` staying `true` on all 8 solar-charged devices through the dark hours, while fresh health reports kept arriving. It means a solar panel or charger is attached, not that the battery is charging right now. The one battery device without a panel reported `false` the whole time.
+- Only the display name changes. The key, unique ID and entity IDs (`sensor.<device>_power_battery_charging`) stay the same, so history and dashboards are unaffected.
+- For "is it actually charging", use `last_known_charging_time` where a device reports it.
+
 ## v1.11.10
 
 API audit 2026-11-25: one new sensor, and a model name for the Indoor Cam 4K.

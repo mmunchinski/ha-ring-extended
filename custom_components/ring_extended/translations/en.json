@@ -142,7 +142,7 @@
         "name": "Battery Firmware Version"
       },
       "battery_charging": {
-        "name": "Battery Charging"
+        "name": "Solar/Charger Attached"
       },
       "last_known_charging_time": {
         "name": "Last Known Charging Time"
